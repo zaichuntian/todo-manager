@@ -1,10 +1,10 @@
 import { createApp } from 'vue';
-import App from './App.vue';
-import ElementPlus from 'element-plus';
-import 'element-plus/dist/index.css';
-import router from './router';
 import { createPinia } from 'pinia';
+import ElementPlus from 'element-plus';
+import router from './router';
 import './assets/css/main.css';
+import 'element-plus/dist/index.css';
+import App from './App.vue';
 // @ts-ignore
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'; // 导入中文包
 

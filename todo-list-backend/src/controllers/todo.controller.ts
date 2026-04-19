@@ -14,12 +14,14 @@ export class TodoController {
 
       const data = await TodoService.findAll(userId, pageNum, pageSize, boolCompleted);
 
-      res.json(success({
-        list: data.rows,
-        total: data.count,
-        pageNum,
-        pageSize,
-      }));
+      res.json(
+        success({
+          list: data.rows,
+          total: data.count,
+          pageNum,
+          pageSize,
+        })
+      );
     } catch (err) {
       res.json(fail('获取列表失败'));
     }

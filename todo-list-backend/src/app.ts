@@ -17,7 +17,7 @@ app.use(
   cors({
     origin: 'http://localhost:5137', // 你的前端地址
     credentials: true,
-  }),
+  })
 );
 app.use(express.json());
 

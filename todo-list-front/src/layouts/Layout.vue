@@ -53,29 +53,29 @@
 </template>
 
 <script setup lang="ts">
-import { User, ArrowDown, UserFilled, HomeFilled } from '@element-plus/icons-vue'
-import { useAuthStore } from '../stores/auth'
-import { useRouter, useRoute } from 'vue-router'
+import { User, ArrowDown, UserFilled, HomeFilled } from '@element-plus/icons-vue';
+import { useAuthStore } from '../stores/auth';
+import { useRouter, useRoute } from 'vue-router';
 import { computed } from 'vue';
 
-const authStore = useAuthStore()
-const router = useRouter()
-const route = useRoute()
+const authStore = useAuthStore();
+const router = useRouter();
+const route = useRoute();
 
 // 核心：用计算属性动态获取当前路由
 const activeMenu = computed(() => {
-  const path = route.path
+  const path = route.path;
   // 可以在这里加路由匹配逻辑，比如嵌套路由的情况
   if (path.startsWith('/user')) {
-    return '/user'
+    return '/user';
   }
-  return path
-})
+  return path;
+});
 
 const handleLogout = () => {
-  authStore.clearToken()
-  router.push('/login')
-}
+  authStore.clearToken();
+  router.push('/login');
+};
 </script>
 
 <style scoped>

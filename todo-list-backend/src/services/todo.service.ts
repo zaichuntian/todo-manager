@@ -38,9 +38,6 @@ export class TodoService {
 
   // 只能删除自己的
   static async deleteByUuid(userId: number, uuid: string) {
-    return await Todo.update(
-      { isDeleted: 0 },
-      { where: { uuid, userId, isDeleted: 1 } }
-    );
+    return await Todo.update({ isDeleted: 0 }, { where: { uuid, userId, isDeleted: 1 } });
   }
 }

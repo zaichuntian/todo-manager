@@ -79,7 +79,7 @@ export class UserController {
           total: data.count,
           pageNum,
           pageSize,
-        }),
+        })
       );
     } catch (err) {
       res.json(fail('获取用户列表失败'));

@@ -39,9 +39,6 @@ export class UserService {
 
   // 根据 uuid 软删除用户
   static async deleteByUuid(uuid: string) {
-    return await User.update(
-      { isDeleted: 0 },
-      { where: { uuid, isDeleted: 1 } }
-    );
+    return await User.update({ isDeleted: 0 }, { where: { uuid, isDeleted: 1 } });
   }
 }

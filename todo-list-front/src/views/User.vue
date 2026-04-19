@@ -8,8 +8,8 @@
 
     <!-- 用户表格 -->
     <el-table :data="tableData" border style="width: 100%">
-      <el-table-column type="index" label="序号" width="80" align="center"/>
-      <el-table-column prop="username" label="用户名" align="center"/>
+      <el-table-column type="index" label="序号" width="80" align="center" />
+      <el-table-column prop="username" label="用户名" align="center" />
       <el-table-column label="创建时间" align="center">
         <template #default="{ row }">
           {{ formatTime(row.createdAt) }}
@@ -23,25 +23,15 @@
       <el-table-column label="状态" width="160" align="center">
         <template #default="{ row }">
           <div class="status-switch-wrapper">
-            <span
-                class="status-label disabled"
-                :class="{ active: row.status === 0 }"
-            >
-              禁用
-            </span>
+            <span class="status-label disabled" :class="{ active: row.status === 0 }"> 禁用 </span>
             <el-switch
-                v-model="row.status"
-                :active-value="1"
-                :inactive-value="0"
-                class="custom-switch"
-                @change="(val: number) => handleStatusChange(row, val)"
+              v-model="row.status"
+              :active-value="1"
+              :inactive-value="0"
+              class="custom-switch"
+              @change="(val: number) => handleStatusChange(row, val)"
             />
-            <span
-                class="status-label enabled"
-                :class="{ active: row.status === 1 }"
-            >
-              启用
-            </span>
+            <span class="status-label enabled" :class="{ active: row.status === 1 }"> 启用 </span>
           </div>
         </template>
       </el-table-column>
@@ -57,30 +47,25 @@
     <!-- 分页组件 -->
     <div class="pagination-wrapper">
       <el-pagination
-          v-model:current-page="pageNum"
-          v-model:page-size="pageSize"
-          :total="total"
-          :page-sizes="[5, 10, 15]"
-          layout="total, prev, pager, next, sizes"
-          @current-change="getUserList"
-          @size-change="getUserList"
+        v-model:current-page="pageNum"
+        v-model:page-size="pageSize"
+        :total="total"
+        :page-sizes="[5, 10, 15]"
+        layout="total, prev, pager, next, sizes"
+        @current-change="getUserList"
+        @size-change="getUserList"
       />
     </div>
   </el-card>
 
   <!-- 新增/编辑弹窗 -->
   <el-dialog v-model="dialogVisible" title="用户信息">
-    <el-form
-        :model="form"
-        :rules="rules"
-        ref="formRef"
-        label-width="80px"
-    >
+    <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
       <el-form-item label="用户名" prop="username">
-        <el-input v-model="form.username" placeholder="请输入用户名"/>
+        <el-input v-model="form.username" placeholder="请输入用户名" />
       </el-form-item>
       <el-form-item v-if="isAdd" label="密码" prop="password">
-        <el-input v-model="form.password" type="password" placeholder="请输入密码"/>
+        <el-input v-model="form.password" type="password" placeholder="请输入密码" />
       </el-form-item>
     </el-form>
     <template #footer>
@@ -91,130 +76,130 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from 'vue'
-import {ElMessage, ElMessageBox, ElForm} from 'element-plus'
-import dayjs from 'dayjs'
-import {getUserListApi, deleteUserApi, updateUserApi, registerApi, updateUserStatusApi} from '../api/user'
-import {encrypt} from '../utils/crypto'
+import { ref, onMounted } from 'vue';
+import { ElMessage, ElMessageBox, ElForm } from 'element-plus';
+import dayjs from 'dayjs';
+import { getUserListApi, deleteUserApi, updateUserApi, registerApi, updateUserStatusApi } from '../api/user';
+import { encrypt } from '../utils/crypto';
 
-const tableData = ref<any[]>([])
-const total = ref(0)
-const pageNum = ref(1)
-const pageSize = ref(5)
-const dialogVisible = ref(false)
-const isAdd = ref(true)
-const formRef = ref<InstanceType<typeof ElForm>>()
+const tableData = ref<any[]>([]);
+const total = ref(0);
+const pageNum = ref(1);
+const pageSize = ref(5);
+const dialogVisible = ref(false);
+const isAdd = ref(true);
+const formRef = ref<InstanceType<typeof ElForm>>();
 
 const form = ref({
   uuid: '',
   username: '',
-  password: ''
-})
+  password: '',
+});
 
 // 表单校验规则
 const rules = ref({
   username: [
-    {required: true, message: '请输入用户名', trigger: 'blur'},
-    {min: 2, max: 20, message: '用户名长度需在 2-20 个字符之间', trigger: 'blur'}
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 2, max: 20, message: '用户名长度需在 2-20 个字符之间', trigger: 'blur' },
   ],
   password: [
-    {required: true, message: '请输入密码', trigger: 'blur'},
-    {min: 6, max: 20, message: '密码长度需在 6-20 个字符之间', trigger: 'blur'}
-  ]
-})
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度需在 6-20 个字符之间', trigger: 'blur' },
+  ],
+});
 
 // 格式化时间
 const formatTime = (time: string) => {
-  return dayjs(time).format('YYYY.MM.DD HH:mm:ss')
+  return dayjs(time).format('YYYY.MM.DD HH:mm:ss');
 };
 
 // 获取用户列表
 const getUserList = async () => {
   const res: any = await getUserListApi({
     pageNum: pageNum.value,
-    pageSize: pageSize.value
-  })
+    pageSize: pageSize.value,
+  });
   if (res.code === 200) {
-    tableData.value = res.data.list
-    total.value = res.data.total
+    tableData.value = res.data.list;
+    total.value = res.data.total;
   }
-}
+};
 
 // 新增用户
 const handleAdd = () => {
-  isAdd.value = true
-  form.value = {uuid: '', username: '', password: ''}
-  dialogVisible.value = true
+  isAdd.value = true;
+  form.value = { uuid: '', username: '', password: '' };
+  dialogVisible.value = true;
   setTimeout(() => {
-    formRef.value?.clearValidate()
-  }, 0)
-}
+    formRef.value?.clearValidate();
+  }, 0);
+};
 
 // 编辑用户
 const handleEdit = (row: any) => {
-  isAdd.value = false
+  isAdd.value = false;
   form.value = {
     uuid: row.uuid,
     username: row.username,
-    password: ''
-  }
-  dialogVisible.value = true
+    password: '',
+  };
+  dialogVisible.value = true;
   setTimeout(() => {
-    formRef.value?.clearValidate()
-  }, 0)
-}
+    formRef.value?.clearValidate();
+  }, 0);
+};
 
 // 删除用户
 const handleDelete = async (row: any) => {
   await ElMessageBox.confirm('确定要删除该用户吗？', '提示', {
-    type: 'warning'
-  })
-  await deleteUserApi(row.uuid)
-  ElMessage.success('删除成功')
-  getUserList()
-}
+    type: 'warning',
+  });
+  await deleteUserApi(row.uuid);
+  ElMessage.success('删除成功');
+  getUserList();
+};
 
 // 状态开关变更
 const handleStatusChange = async (row: any, val: number) => {
   try {
-    await updateUserStatusApi(row.uuid, val)
+    await updateUserStatusApi(row.uuid, val);
 
     if (val === 1) {
-      ElMessage.success(`${row.username} 用户已启用`)
+      ElMessage.success(`${row.username} 用户已启用`);
     } else {
-      ElMessage.success(`${row.username} 用户已禁用`)
+      ElMessage.success(`${row.username} 用户已禁用`);
     }
   } catch (err) {
-    ElMessage.error('状态更新失败')
-    row.status = val === 1 ? 0 : 1
+    ElMessage.error('状态更新失败');
+    row.status = val === 1 ? 0 : 1;
   }
-}
+};
 
 // 提交新增/编辑
 const handleSubmit = async () => {
-  const valid = await formRef.value?.validate()
-  if (!valid) return
+  const valid = await formRef.value?.validate();
+  if (!valid) return;
 
   if (isAdd.value) {
     await registerApi({
       username: form.value.username,
-      password: encrypt(form.value.password)
-    })
-    ElMessage.success('新增成功')
+      password: encrypt(form.value.password),
+    });
+    ElMessage.success('新增成功');
   } else {
     await updateUserApi(form.value.uuid, {
-      username: form.value.username
-    })
-    ElMessage.success('修改成功')
+      username: form.value.username,
+    });
+    ElMessage.success('修改成功');
   }
 
-  dialogVisible.value = false
-  getUserList()
-}
+  dialogVisible.value = false;
+  getUserList();
+};
 
 onMounted(() => {
-  getUserList()
-})
+  getUserList();
+});
 </script>
 
 <style scoped lang="less">

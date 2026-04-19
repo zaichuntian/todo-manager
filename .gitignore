@@ -110,6 +110,7 @@ htmlcov/
 config.ini
 config.yaml
 config.yml
+pnpm-lock.yaml
 *.pem
 *.key
 *.pub

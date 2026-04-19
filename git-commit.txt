@@ -1,0 +1,23 @@
+1. 在需要提交的文件夹下 git init
+2. 设置 git config 配置文件
+    git config --global user.email "3034983887@qq.com"
+    git config --global user.name "zaichuntian"
+3. 把文件夹下所有的文件提交到暂存区 git add .
+4. 执行首次提交
+    git commit -m '首次提交项目'
+5. 拉取远程仓库地址
+    git remote add origin https://github.com/zaichuntian/xxx.git
+6. 推送代码到远程仓库（注意看分支是 main 或者 master）
+    git push -u origin main
+7. 从 master 分支切换到 main 分支
+    git branch -M main
+8. 切换之后再次执行推送
+    git push -u origin main
+
+## 提交规范
+1. 提交新功能：feat: add login page
+2. 修复 bug：fix: fix login validation
+3. 文档修改：docs: update README
+4. 格式调整（空格、分号等）：style: format code
+5. 构建 / 工具 / 配置修改：chore: add .gitignore
+                                       chore: update gitignore rules

@@ -1,8 +1,56 @@
+/* 全局字体重置，覆盖浏览器默认样式 */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-html, body, #app {
-  height: 100%;
+
+/* 根节点字体配置，继承给所有子元素 */
+:root {
+  /* 16px 为基准，方便后续 rem 计算 */
+  font-size: 16px;
+  /* 关键：兼容多系统的字体栈，保证不同设备都有最优字体 */
+  font-family: -apple-system,
+  BlinkMacSystemFont,
+  "Segoe UI",
+  Roboto,
+  "Helvetica Neue",
+  Arial,
+  "PingFang SC",
+  "Hiragino Sans GB",
+  "Microsoft YaHei",
+  sans-serif;
+  /* 优化字体渲染，让文字更清晰 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* 针对 Element Plus 组件强制继承字体 */
+.el-button,
+.el-input,
+.el-table,
+.el-dialog,
+.el-pagination,
+.el-switch {
+  font-family: inherit;
+}
+
+/* 响应式字体大小适配（可选，根据屏幕宽度自动调整） */
+@media (max-width: 1440px) {
+  :root {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 1200px) {
+  :root {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    font-size: 13px;
+  }
 }

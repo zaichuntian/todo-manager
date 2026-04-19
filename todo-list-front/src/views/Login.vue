@@ -53,7 +53,8 @@ const handleLogin = async () => {
     if (res.code === 200) {
       ElMessage.success('登录成功');
       auth.setToken(res.data.token);
-      router.push('/');
+      localStorage.setItem('userUuid', res.data.userUuid);
+      await router.push('/');
     } else {
       ElMessage.error(res.msg);
     }

@@ -1,21 +1,129 @@
-.output
-.data
-.cache
-dist
+# ==============================================
+# 🔥 系统级垃圾文件（所有项目通用）
+# ==============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.tmp
+*.temp
 
-# Node dependencies
-node_modules
+# ==============================================
+# 📝 IDE / 编辑器配置（所有开发者通用）
+# ==============================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.idea
+*.iml
+*.iws
+*.ipr
+.project
+.cproject
+.classpath
+.settings/
+*.launch
 
-# Logs
-logs
+# ==============================================
+# 📦 依赖包 / 第三方库（绝对不能提交）
+# ==============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+vendor/
+composer.lock
+
+# ==============================================
+# 🚀 构建产物 / 打包文件（自动生成，不提交）
+# ==============================================
+dist/
+build/
+output/
+bin/
+obj/
+*.o
+*.out
 *.log
 
-# Misc
-.DS_Store
-.fleet
-.idea
+# ==============================================
+# 🌐 前端项目专用（Vue/React/小程序等）
+# ==============================================
+.parcel-cache/
+.next/
+.nuxt/
+.vuepress/dist
+.expo/
+.temp/
+.cache/
+coverage/
+.umi/
+.umi-production/
 
-# Local env files
+# ==============================================
+# ☕ Java / SpringBoot 专用
+# ==============================================
+*.class
+*.jar
+*.war
+*.ear
+target/
+.mvn/
+gradle/
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# ==============================================
+# 🐍 Python 专用
+# ==============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ==============================================
+# 🔒 环境变量 / 密钥 / 配置（严禁提交！）
+# ==============================================
 .env
-.env.*
-!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+config.ini
+config.yaml
+config.yml
+*.pem
+*.key
+*.pub
+secrets/
+credentials/
+
+# ==============================================
+# 📸 上传文件 / 运行时文件
+# ==============================================
+uploads/
+upload/
+files/
+temp/
+tmp/
+runtime/
+*.log
+logs/

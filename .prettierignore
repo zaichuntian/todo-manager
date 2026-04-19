@@ -1,0 +1,24 @@
+# 依赖
+node_modules/
+
+# 构建产物
+output/
+
+# 日志
+*.log
+
+# 配置
+.env
+.env.*
+
+# IDE
+.idea/
+# 图片/字体
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.ico
+*.woff
+*.woff2

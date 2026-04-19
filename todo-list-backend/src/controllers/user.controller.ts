@@ -55,7 +55,7 @@ export class UserController {
       }
 
       const token = jwt.sign({ uuid: user.uuid }, process.env.JWT_SECRET!, { expiresIn: '7d' });
-      return res.json({ code: 200, msg: '登录成功', data: { token } });
+      return res.json({ code: 200, msg: '登录成功', data: { userUuid: user.uuid, token } });
     } catch (error) {
       console.error('登录接口异常', error);
       return res.json({ code: 500, msg: '服务器错误' });

@@ -23,7 +23,7 @@
       <el-table-column label="状态" width="160" align="center">
         <template #default="{ row }">
           <div class="status-switch-wrapper">
-            <span class="status-label disabled" :class="{ show: row.status === 0 }">禁用</span>
+            <span class="status-label show disabled">禁用</span>
             <el-switch
               v-model="row.status"
               :active-value="1"
@@ -31,7 +31,7 @@
               class="custom-switch"
               @change="(val) => handleStatusChange(row, val)"
             />
-            <span class="status-label enabled" :class="{ show: row.status === 1 }">启用</span>
+            <span class="status-label show enabled">启用</span>
           </div>
         </template>
       </el-table-column>

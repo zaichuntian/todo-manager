@@ -1,43 +1,48 @@
 import Todo from '../models/todo.model';
+import User from '../models/user.model';
 
 export class TodoService {
-  // 只查当前用户 + 未删除
-  static async findAll(userId: number, pageNum: number, pageSize: number, completed?: boolean) {
-    const where: any = { isDeleted: 1, userId };
-
-    if (completed !== undefined) {
-      where.completed = completed;
-    }
+  // 查询所有任务（所有人可见）
+  static async findAllTodos(pageNum: number, pageSize: number) {
+    const offset = (pageNum - 1) * pageSize;
+    const limit = pageSize;
 
     return await Todo.findAndCountAll({
-      where,
-      offset: (pageNum - 1) * pageSize,
-      limit: pageSize,
-      order: [['id', 'DESC']],
+      where: { isDeleted: 1 },
+      offset,
+      limit,
+      order: [['createdAt', 'DESC']],
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['username'],
+        },
+      ],
     });
   }
 
-  // 只查自己的
-  static async findByUuid(userId: number, uuid: string) {
+  // 根据UUID查询单条（用于编辑/删除校验）
+  static async findByUuid(uuid: string) {
     return await Todo.findOne({
-      where: { uuid, isDeleted: 1, userId },
+      where: { uuid, isDeleted: 1 },
     });
   }
 
-  // 创建时自动带上 userId
-  static async create(data: any) {
-    return await Todo.create(data);
+  // 创建
+  static async create(todo: any) {
+    return await Todo.create(todo);
   }
 
-  // 只能更新自己的
-  static async updateByUuid(userId: number, uuid: string, data: any) {
+  // 更新
+  static async updateByUuid(uuid: string, data: any) {
     return await Todo.update(data, {
-      where: { uuid, isDeleted: 1, userId },
+      where: { uuid, isDeleted: 1 },
     });
   }
 
-  // 只能删除自己的
-  static async deleteByUuid(userId: number, uuid: string) {
-    return await Todo.update({ isDeleted: 0 }, { where: { uuid, userId, isDeleted: 1 } });
+  // 删除
+  static async deleteByUuid(uuid: string) {
+    return await Todo.update({ isDeleted: 0 }, { where: { uuid, isDeleted: 1 } });
   }
 }

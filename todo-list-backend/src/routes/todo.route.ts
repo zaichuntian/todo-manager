@@ -4,11 +4,10 @@ import { authMiddleware } from '../middleware/auth.middleware';
 
 const router = Router();
 
-// 所有 todo 接口必须登录
-router.get('/todos', authMiddleware, TodoController.getList);
-router.get('/todos/:uuid', authMiddleware, TodoController.getOne);
+router.get('/todos', authMiddleware, TodoController.getMyList);
 router.post('/todos', authMiddleware, TodoController.create);
 router.put('/todos/:uuid', authMiddleware, TodoController.update);
 router.delete('/todos/:uuid', authMiddleware, TodoController.delete);
+router.put('/todos/:uuid/status', authMiddleware, TodoController.updateStatus);
 
 export default router;

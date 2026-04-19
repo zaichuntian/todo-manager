@@ -1,23 +1,27 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
-import { v4 as uuidv4 } from 'uuid';
+import User from './user.model';
 
 class Todo extends Model {
   public id!: number;
   public uuid!: string;
+  public userUuid!: string;
   public title!: string;
   public content!: string;
-  public completed!: boolean;
+  public status!: number;
   public isDeleted!: number;
-  public userId!: number; // 关联用户
 }
 
 Todo.init(
   {
     uuid: {
       type: DataTypes.UUID,
-      allowNull: true,
-      // unique: true,
+      allowNull: false,
+      defaultValue: DataTypes.UUIDV4,
+    },
+    userUuid: {
+      type: DataTypes.UUID,
+      allowNull: false,
     },
     title: {
       type: DataTypes.STRING,
@@ -25,19 +29,15 @@ Todo.init(
     },
     content: {
       type: DataTypes.TEXT,
+      allowNull: true,
     },
-    completed: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
+    status: {
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
     },
     isDeleted: {
       type: DataTypes.TINYINT,
       defaultValue: 1,
-    },
-    // 关键：关联用户
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
     },
   },
   {
@@ -46,10 +46,8 @@ Todo.init(
   }
 );
 
-Todo.beforeCreate((todo: Todo) => {
-  if (!todo.uuid) {
-    todo.uuid = uuidv4();
-  }
-});
+// 关联：根据 userUuid 关联 User 的 uuid 字段
+Todo.belongsTo(User, { foreignKey: 'userUuid', targetKey: 'uuid', as: 'user' });
+User.hasMany(Todo, { foreignKey: 'userUuid', sourceKey: 'uuid', as: 'todos' });
 
 export default Todo;

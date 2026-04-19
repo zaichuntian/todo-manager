@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Login from '../views/Login.vue';
 import Home from '../views/Home.vue';
 import User from '../views/User.vue';
+import Todo from '../views/Todo.vue';
 import Layout from '../layouts/Layout.vue';
 
 const routes = [
@@ -12,6 +13,7 @@ const routes = [
     children: [
       { path: '', component: Home },
       { path: '/user', component: User },
+      { path: '/todo', component: Todo },
     ],
   },
 ];

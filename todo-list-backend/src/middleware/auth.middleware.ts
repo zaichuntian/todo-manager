@@ -23,8 +23,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
       return res.json(fail('请先登录', 401));
     }
 
-    // 用同一个 SECRET 验证
-    const decoded: any = jwt.verify(token, SECRET);
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
     const user = await User.findOne({
       where: { uuid: decoded.uuid, isDeleted: 1 },
     });
@@ -33,10 +32,10 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
       return res.json(fail('用户不存在', 401));
     }
 
-    req.user = user;
+    req.user = user; // 必须赋值给 req.user
     next();
   } catch (err) {
-    console.error('JWT 验证失败', err); // 加个日志，方便调试
+    console.error('❌ JWT 验证失败', err);
     return res.json(fail('登录已过期或无效', 401));
   }
 }

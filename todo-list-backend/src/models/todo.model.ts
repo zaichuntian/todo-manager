@@ -6,6 +6,7 @@ class Todo extends Model {
   public id!: number;
   public uuid!: string;
   public userUuid!: string;
+  public categoryUuid!: string;
   public title!: string;
   public content!: string;
   public status!: number;
@@ -22,6 +23,10 @@ Todo.init(
     userUuid: {
       type: DataTypes.UUID,
       allowNull: false,
+    },
+    categoryUuid: {
+      type: DataTypes.UUID,
+      allowNull: true,
     },
     title: {
       type: DataTypes.STRING,

@@ -30,7 +30,7 @@
                 :active-value="1"
                 :inactive-value="0"
                 class="custom-switch"
-                @change="(val: number) => handleStatusChange(row, val)"
+                @change="(val: number) => handleStatusChange?.(row, val)"
               />
               <span class="status-label enabled" :class="{ active: row.status === 1 }"> 启用 </span>
             </div>
@@ -60,7 +60,7 @@
     </el-card>
 
     <!-- 新增/编辑弹窗 -->
-    <el-dialog v-model="dialogVisible" title="用户信息">
+    <el-dialog v-model="dialogVisible" title="用户信息" append-to-body>
       <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
         <el-form-item label="用户名" prop="username">
           <el-input v-model="form.username" placeholder="请输入用户名" />

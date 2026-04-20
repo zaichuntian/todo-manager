@@ -49,12 +49,17 @@
       <div class="breadcrumb-wrapper">
         <el-breadcrumb separator="/">
           <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+          <el-breadcrumb-item v-if="route.path === '/todo'">代办任务</el-breadcrumb-item>
           <el-breadcrumb-item v-if="route.path === '/user'">用户管理</el-breadcrumb-item>
         </el-breadcrumb>
       </div>
 
       <el-main class="main">
-        <router-view />
+        <router-view v-slot="{ Component }">
+          <transition mode="out-in" @enter="enterAnimation" @leave="leaveAnimation">
+            <component :is="Component" />
+          </transition>
+        </router-view>
       </el-main>
     </el-container>
   </el-container>
@@ -65,6 +70,7 @@ import { User, ArrowDown, UserFilled, HomeFilled } from '@element-plus/icons-vue
 import { useAuthStore } from '../stores/auth';
 import { useRouter, useRoute } from 'vue-router';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import gsap from 'gsap';
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -93,6 +99,44 @@ const handleLogout = () => {
 
 const refreshPage = () => {
   router.go(0);
+};
+
+// 进入动画
+const enterAnimation = (el: HTMLElement, done: () => void) => {
+  const tl = gsap.timeline({
+    onComplete: done,
+  });
+
+  tl.fromTo(
+    el,
+    { opacity: 0, x: 12 }, // 起始位置：右边10px，透明
+    {
+      opacity: 0.8,
+      x: -3, // 移动到左边-10px，半透明
+      duration: 0.5,
+      ease: 'power2.inOut',
+    }
+  ).to(el, {
+    opacity: 1, // 回到原点，完全不透明
+    x: 0,
+    duration: 0.3,
+    ease: 'power2.out',
+  });
+};
+
+// 离开动画
+const leaveAnimation = (el: HTMLElement, done: () => void) => {
+  const tl = gsap.timeline({
+    onComplete: done,
+  });
+
+  tl.to(el, {
+    opacity: 0, // 从100%变为0%
+    x: 10, // 从原点移动到右边10px
+    duration: 0.2,
+    ease: 'power2.out',
+    onComplete: done,
+  });
 };
 
 onMounted(() => {

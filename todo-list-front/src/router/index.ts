@@ -4,6 +4,7 @@ import Home from '../views/Home.vue';
 import User from '../views/User.vue';
 import Todo from '../views/Todo.vue';
 import Layout from '../layouts/Layout.vue';
+import Category from '../views/Category.vue';
 
 const routes = [
   { path: '/login', component: Login },
@@ -14,6 +15,7 @@ const routes = [
       { path: '', component: Home },
       { path: '/user', component: User },
       { path: '/todo', component: Todo },
+      { path: '/category', component: Category },
     ],
   },
 ];

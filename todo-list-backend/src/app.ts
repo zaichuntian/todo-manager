@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 // 然后是 cors、json 解析
 app.use(
   cors({
-    origin: 'http://localhost:5137',
+    origin: 'http://localhost:5173', // 仅开发环境使用
     credentials: true,
   })
 );

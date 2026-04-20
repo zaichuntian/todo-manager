@@ -2,7 +2,7 @@
   <div class="todo-page">
     <el-card>
       <div class="header-bar">
-        <h3>任务管理</h3>
+        <h3>代办任务</h3>
         <el-button type="primary" @click="handleAdd">新增任务</el-button>
       </div>
 
@@ -42,7 +42,7 @@
                 :inactive-value="0"
                 :disabled="!isMyTask(row)"
                 class="custom-switch"
-                @change="(val: number) => handleStatusChange(row, val)"
+                @change="(val: number) => handleStatusChange?.(row, val)"
               />
               <span class="status-label enabled" :class="{ active: row.status === 1 }"> 已完成 </span>
             </div>
@@ -70,7 +70,7 @@
       </div>
     </el-card>
 
-    <el-dialog v-model="dialogVisible" title="任务信息" @keyup.enter="handleSubmit">
+    <el-dialog v-model="dialogVisible" title="任务信息" @keyup.enter="handleSubmit" append-to-body>
       <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
         <el-form-item label="标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入标题" />

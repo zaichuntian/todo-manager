@@ -1,5 +1,5 @@
 import request from '../utils/request';
-import type { ApiResponse, UserListResponse } from '../types/user';
+import type { ApiResponse } from '../types/user';
 
 // 登录
 export function loginApi(data: { username: string; password: string }) {
@@ -13,7 +13,7 @@ export function registerApi(data: { username: string; password: string }) {
 
 // 获取用户列表
 export function getUserListApi(params: { pageNum: number; pageSize: number }) {
-  return request.get<ApiResponse<UserListResponse>>('/users', { params });
+  return request.get<ApiResponse>('/users', { params });
 }
 
 // 修改用户

@@ -22,3 +22,13 @@ output/
 *.ico
 *.woff
 *.woff2
+
+# 构建产物
+dist/
+build/
+
+# 测试覆盖率
+coverage/
+
+# 文档
+*.md

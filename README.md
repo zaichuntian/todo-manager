@@ -9,6 +9,7 @@
 ## 技术栈
 
 ### 前端
+
 - **框架**: Vue 3 + Composition API
 - **语言**: TypeScript
 - **UI 库**: Element Plus
@@ -18,6 +19,7 @@
 - **构建工具**: Vite
 
 ### 后端
+
 - **框架**: Express
 - **语言**: TypeScript
 - **数据库**: MySQL
@@ -65,6 +67,7 @@ todo-manager/
 ## 核心功能
 
 ### 1. 用户管理
+
 - 用户列表展示
 - 用户新增
 - 用户编辑
@@ -72,6 +75,7 @@ todo-manager/
 - 用户状态管理（启用/禁用）
 
 ### 2. 任务管理
+
 - 任务列表展示
 - 任务新增
 - 任务编辑
@@ -80,6 +84,7 @@ todo-manager/
 - 任务权限控制（仅能操作自己的任务）
 
 ### 3. 系统功能
+
 - 登录认证
 - 路由导航
 - 面包屑导航
@@ -89,6 +94,7 @@ todo-manager/
 ## 安装和运行
 
 ### 前置条件
+
 - Node.js 16+
 - MySQL 5.7+
 - pnpm （推荐）
@@ -96,17 +102,20 @@ todo-manager/
 ### 后端安装
 
 1. 进入后端目录
+
 ```bash
 cd todo-list-backend
 ```
 
 2. 安装依赖
+
 ```bash
 pnpm install
 ```
 
 3. 配置环境变量
-编辑 `.env` 文件，设置数据库连接信息：
+   编辑 `.env` 文件，设置数据库连接信息：
+
 ```
 # 数据库配置
 DB_HOST=localhost
@@ -123,6 +132,7 @@ JWT_SECRET=your_jwt_secret_key
 ```
 
 4. 启动服务
+
 ```bash
 pnpm dev
 ```
@@ -130,21 +140,25 @@ pnpm dev
 ### 前端安装
 
 1. 进入前端目录
+
 ```bash
 cd todo-list-front
 ```
 
 2. 安装依赖
+
 ```bash
 pnpm install
 ```
 
 3. 启动开发服务器
+
 ```bash
 pnpm dev
 ```
 
 4. 构建生产版本
+
 ```bash
 pnpm build
 ```
@@ -162,6 +176,7 @@ pnpm build
 ## 关键技术点
 
 ### 1. 自定义 Hooks
+
 - **useCrud**: 通用 CRUD 操作 Hook，减少重复代码
 - **useLayout**: 布局相关逻辑 Hook
 - **useAnimation**: 动画相关逻辑 Hook
@@ -169,14 +184,17 @@ pnpm build
 - **useUser**: 用户管理 Hook
 
 ### 2. 类型定义
+
 - 统一的类型定义，确保类型安全
 - 提取公共类型到 `types/common.ts`
 
 ### 3. 动画效果
+
 - 使用 GSAP 实现页面切换动画
 - 淡入淡出效果，提升用户体验
 
 ### 4. 权限控制
+
 - 任务权限控制，仅能操作自己的任务
 - 用户状态管理，禁用的用户无法登录
 

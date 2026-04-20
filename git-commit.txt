@@ -13,6 +13,10 @@
     git branch -M main
 8. 切换之后再次执行推送
     git push -u origin main
+9. 删除所有未跟踪的文件
+   git clean -f
+10. 删除所有未跟踪的文件和目录
+   git clean -fd
 
 ## 提交规范
 1. 提交新功能：feat: add login page

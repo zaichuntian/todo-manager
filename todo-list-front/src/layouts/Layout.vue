@@ -67,86 +67,13 @@
 
 <script setup lang="ts">
 import { User, ArrowDown, UserFilled, HomeFilled } from '@element-plus/icons-vue';
-import { useAuthStore } from '../stores/auth';
-import { useRouter, useRoute } from 'vue-router';
-import { computed, onMounted, onUnmounted, ref } from 'vue';
-import gsap from 'gsap';
+import { useRoute } from 'vue-router';
+import { useLayout } from '../hooks/useLayout';
+import { useAnimation } from '../hooks/useAnimation';
 
-const authStore = useAuthStore();
-const router = useRouter();
 const route = useRoute();
-
-const isCollapsed = ref(false);
-
-// 监听窗口宽度变化
-const handleResize = () => {
-  isCollapsed.value = window.innerWidth < 700;
-};
-
-// 核心：用计算属性动态获取当前路由
-const activeMenu = computed(() => {
-  const path = route.path;
-  if (path.startsWith('/user')) {
-    return '/user';
-  }
-  return path;
-});
-
-const handleLogout = () => {
-  authStore.clearToken();
-  router.push('/login');
-};
-
-const refreshPage = () => {
-  router.go(0);
-};
-
-// 进入动画
-const enterAnimation = (el: HTMLElement, done: () => void) => {
-  const tl = gsap.timeline({
-    onComplete: done,
-  });
-
-  tl.fromTo(
-    el,
-    { opacity: 0, x: 12 }, // 起始位置：右边10px，透明
-    {
-      opacity: 0.8,
-      x: -3, // 移动到左边-10px，半透明
-      duration: 0.5,
-      ease: 'power2.inOut',
-    }
-  ).to(el, {
-    opacity: 1, // 回到原点，完全不透明
-    x: 0,
-    duration: 0.3,
-    ease: 'power2.out',
-  });
-};
-
-// 离开动画
-const leaveAnimation = (el: HTMLElement, done: () => void) => {
-  const tl = gsap.timeline({
-    onComplete: done,
-  });
-
-  tl.to(el, {
-    opacity: 0, // 从100%变为0%
-    x: 10, // 从原点移动到右边10px
-    duration: 0.2,
-    ease: 'power2.out',
-    onComplete: done,
-  });
-};
-
-onMounted(() => {
-  handleResize();
-  window.addEventListener('resize', handleResize);
-});
-
-onUnmounted(() => {
-  window.removeEventListener('resize', handleResize);
-});
+const { isCollapsed, activeMenu, handleLogout, refreshPage } = useLayout();
+const { enterAnimation, leaveAnimation } = useAnimation();
 </script>
 
 <style scoped lang="less">

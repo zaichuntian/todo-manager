@@ -17,13 +17,14 @@ Category.init(
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
+      unique: true, // 添加唯一索引
+    },
+    userUuid: {
+      type: DataTypes.UUID, // 确保与用户表的 uuid 类型一致
+      allowNull: false,
     },
     name: {
       type: DataTypes.STRING(50),
-      allowNull: false,
-    },
-    userUuid: {
-      type: DataTypes.UUID,
       allowNull: false,
     },
     isDeleted: {

@@ -15,9 +15,9 @@ User.init(
   {
     uuid: {
       type: DataTypes.UUID,
-      // unique: true,
       allowNull: false,
-      defaultValue: uuidv4,
+      defaultValue: DataTypes.UUIDV4,
+      unique: true, // 添加唯一索引
     },
     username: {
       type: DataTypes.STRING,

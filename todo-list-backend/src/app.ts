@@ -5,10 +5,12 @@ import express from 'express';
 import sequelize from './config/database';
 import todoRoutes from './routes/todo.route';
 import userRoutes from './routes/user.route';
+import categoryRoutes from './routes/category.route';
 import cors from 'cors';
 
 import './models/user.model';
 import './models/todo.model';
+import './models/category.model';
 
 const app = express();
 
@@ -37,6 +39,7 @@ app.use(express.json());
 // 最后才是 路由！！！
 app.use('/api', userRoutes);
 app.use('/api', todoRoutes);
+app.use('/api', categoryRoutes);
 
 // 数据库同步
 sequelize.sync({ alter: true }).then(() => {

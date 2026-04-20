@@ -1,29 +1,78 @@
 <template>
   <div class="login">
     <div class="login-container">
-      <el-card class="login-card">
-        <div class="login-header">
-          <h2 class="login-title">欢迎登录</h2>
-          <p class="login-subtitle">请输入您的账号和密码</p>
-        </div>
-        <el-form @submit.prevent="handleLogin" :rules="rules" :model="form" ref="formRef" class="login-form">
-          <el-form-item prop="username" class="form-item">
-            <el-input v-model="form.username" placeholder="请输入用户名" prefix-icon="User" class="login-input" />
-          </el-form-item>
-          <el-form-item prop="password" class="form-item">
-            <el-input
-              v-model="form.password"
-              type="password"
-              placeholder="请输入密码"
-              prefix-icon="Lock"
-              class="login-input"
-            />
-          </el-form-item>
-          <el-form-item class="form-item">
-            <el-button type="primary" class="login-button" native-type="submit" :loading="loading"> 登录 </el-button>
-          </el-form-item>
-        </el-form>
-      </el-card>
+      <transition name="card-fade">
+        <!-- 登录卡片 -->
+        <el-card v-if="!isRegister" class="login-card">
+          <div class="login-header">
+            <h2 class="login-title">欢迎登录</h2>
+            <p class="login-subtitle">请输入您的账号和密码</p>
+          </div>
+          <el-form @submit.prevent="handleLogin" :rules="rules" :model="form" ref="formRef" class="login-form">
+            <el-form-item prop="username" class="form-item">
+              <el-input v-model="form.username" placeholder="请输入用户名" prefix-icon="User" class="login-input" />
+            </el-form-item>
+            <el-form-item prop="password" class="form-item">
+              <el-input
+                v-model="form.password"
+                type="password"
+                placeholder="请输入密码"
+                prefix-icon="Lock"
+                class="login-input"
+              />
+            </el-form-item>
+            <el-form-item class="form-item">
+              <el-button type="primary" class="login-button" native-type="submit" :loading="loading"> 登录 </el-button>
+            </el-form-item>
+          </el-form>
+          <div class="login-footer">
+            <span>还没注册，</span>
+            <el-text type="primary" @click="toggleCard" class="link">去注册</el-text>
+          </div>
+        </el-card>
+
+        <!-- 注册卡片 -->
+        <el-card v-else class="login-card">
+          <div class="login-header">
+            <h2 class="login-title">欢迎注册</h2>
+            <p class="login-subtitle">请设置您的账号和密码</p>
+          </div>
+          <el-form
+            @submit.prevent="handleRegister"
+            :rules="rules"
+            :model="registerForm"
+            ref="registerFormRef"
+            class="login-form"
+          >
+            <el-form-item prop="username" class="form-item">
+              <el-input
+                v-model="registerForm.username"
+                placeholder="请输入用户名"
+                prefix-icon="User"
+                class="login-input"
+              />
+            </el-form-item>
+            <el-form-item prop="password" class="form-item">
+              <el-input
+                v-model="registerForm.password"
+                type="password"
+                placeholder="请输入密码"
+                prefix-icon="Lock"
+                class="login-input"
+              />
+            </el-form-item>
+            <el-form-item class="form-item">
+              <el-button type="primary" class="login-button" native-type="submit" :loading="registerLoading">
+                注册
+              </el-button>
+            </el-form-item>
+          </el-form>
+          <div class="login-footer">
+            <span>已有账号，</span>
+            <el-text type="primary" @click="toggleCard" class="link">去登录</el-text>
+          </div>
+        </el-card>
+      </transition>
     </div>
   </div>
 </template>
@@ -32,16 +81,29 @@
 import { reactive, ref } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
-import { loginApi } from '../api/user';
+import { loginApi, registerApi } from '../api/user';
 import { encrypt } from '../utils/crypto';
 import { ElMessage } from 'element-plus';
 
+// 状态管理
+const isRegister = ref(false);
+
+// 登录表单
 const form = reactive({
   username: '',
   password: '',
 });
 const loading = ref(false);
 const formRef = ref();
+
+// 注册表单
+const registerForm = reactive({
+  username: '',
+  password: '',
+});
+const registerLoading = ref(false);
+const registerFormRef = ref();
+
 const auth = useAuthStore();
 const router = useRouter();
 
@@ -57,6 +119,12 @@ const rules = {
   ],
 };
 
+// 切换卡片
+const toggleCard = () => {
+  isRegister.value = !isRegister.value;
+};
+
+// 登录处理
 const handleLogin = async () => {
   // 表单验证
   if (!formRef.value) return;
@@ -94,6 +162,42 @@ const handleLogin = async () => {
     }
   });
 };
+
+// 注册处理
+const handleRegister = async () => {
+  // 表单验证
+  if (!registerFormRef.value) return;
+
+  registerFormRef.value.validate(async (valid: boolean) => {
+    if (valid) {
+      registerLoading.value = true;
+      try {
+        // ✅ 前端加密密码
+        const encryptedPwd = encrypt(registerForm.password);
+
+        // ✅ 请求后端
+        const res = await registerApi({
+          username: registerForm.username,
+          password: encryptedPwd,
+        });
+
+        // @ts-ignore
+        if (res.code === 200) {
+          ElMessage.success('注册成功');
+          // 注册成功后切换到登录页面
+          isRegister.value = false;
+        } else {
+          // @ts-ignore
+          ElMessage.error(res.msg);
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        registerLoading.value = false;
+      }
+    }
+  });
+};
 </script>
 
 <style scoped>
@@ -117,7 +221,7 @@ const handleLogin = async () => {
 
 .login-card {
   background: #ffffff;
-  border-radius: 16px;
+  border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   padding: 40px 30px;
   border: 1px solid #e4e7ed;
@@ -127,6 +231,97 @@ const handleLogin = async () => {
 .login-card:hover {
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
   transform: translateY(-5px);
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #909399;
+}
+
+.link {
+  cursor: pointer;
+  margin-left: 5px;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+/* 卡片过渡动画 */
+/* 定义冒泡动画 */
+@keyframes bubbleUp {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  25% {
+    opacity: 0.25;
+    transform: translateY(30px);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(20px);
+  }
+  75% {
+    opacity: 0.75;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 定义淡出动画 */
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  25% {
+    opacity: 0.75;
+    transform: translateY(-7.5px);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translateY(-15px);
+  }
+  75% {
+    opacity: 0.25;
+    transform: translateY(-22.5px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+}
+
+.card-fade-enter-active {
+  animation: bubbleUp 0.8s linear;
+  position: relative;
+  z-index: 2;
+}
+
+.card-fade-leave-active {
+  animation: fadeOut 0.5s linear;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.card-fade-enter-from {
+  opacity: 0;
+  transform: translateY(80px);
+}
+
+.card-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
 }
 
 .login-header {

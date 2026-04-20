@@ -1,9 +1,5 @@
 // 任务相关类型定义
-
-export interface User {
-  uuid: string;
-  username: string;
-}
+import type { PaginationParams, PaginationResponse, FormRules, UserBasic } from './common';
 
 export interface Todo {
   uuid: string;
@@ -11,7 +7,7 @@ export interface Todo {
   content: string;
   status: number;
   userUuid: string;
-  user?: User;
+  user?: UserBasic;
   createdAt: string;
   updatedAt: string;
 }
@@ -22,35 +18,8 @@ export interface TodoFormData {
   content: string;
 }
 
-export interface TodoListParams {
-  pageNum: number;
-  pageSize: number;
-}
+export type TodoListParams = PaginationParams;
 
-export interface TodoListResponse {
-  list: Todo[];
-  total: number;
-}
+export type TodoListResponse = PaginationResponse<Todo>;
 
-export interface ApiResponse<T = any> {
-  code: number;
-  data: T;
-  msg?: string;
-}
-
-export interface TodoRules {
-  title: Array<{
-    required?: boolean;
-    message: string;
-    trigger: string;
-    min?: number;
-    max?: number;
-  }>;
-  content: Array<{
-    required?: boolean;
-    message: string;
-    trigger: string;
-    min?: number;
-    max?: number;
-  }>;
-}
+export type TodoRules = FormRules;

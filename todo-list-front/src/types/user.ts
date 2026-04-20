@@ -1,4 +1,5 @@
 // 用户相关类型定义
+import type { PaginationParams, PaginationResponse, FormRules } from './common';
 
 export interface User {
   uuid: string;
@@ -14,35 +15,9 @@ export interface UserFormData {
   password: string;
 }
 
-export interface UserListParams {
-  pageNum: number;
-  pageSize: number;
-}
+export type UserListParams = PaginationParams;
 
-export interface UserListResponse {
-  list: User[];
-  total: number;
-}
+export type UserListResponse = PaginationResponse<User>;
 
-export interface ApiResponse<T = any> {
-  code: number;
-  data: T;
-  msg?: string;
-}
-
-export interface UserRules {
-  username: Array<{
-    required?: boolean;
-    message: string;
-    trigger: string;
-    min?: number;
-    max?: number;
-  }>;
-  password: Array<{
-    required?: boolean;
-    message: string;
-    trigger: string;
-    min?: number;
-    max?: number;
-  }>;
-}
+export type UserRules = FormRules;
+export class ApiResponse {}

@@ -1,8 +1,9 @@
 import Todo from '../models/todo.model';
 import User from '../models/user.model';
+import { BaseService } from './base.service';
 
-export class TodoService {
-  // 查询所有任务（所有人可见）
+export class TodoService extends BaseService<any> {
+  // 获取所有任务（带分页）
   static async findAllTodos(pageNum: number, pageSize: number) {
     const offset = (pageNum - 1) * pageSize;
     const limit = pageSize;
@@ -22,27 +23,23 @@ export class TodoService {
     });
   }
 
-  // 根据UUID查询单条（用于编辑/删除校验）
+  // 根据 uuid 查询单个任务
   static async findByUuid(uuid: string) {
-    return await Todo.findOne({
-      where: { uuid, isDeleted: 1 },
-    });
+    return await super.findByUuid(Todo, uuid);
   }
 
-  // 创建
+  // 创建任务
   static async create(todo: any) {
-    return await Todo.create(todo);
+    return await super.create(Todo, todo);
   }
 
-  // 更新
+  // 根据 uuid 修改任务
   static async updateByUuid(uuid: string, data: any) {
-    return await Todo.update(data, {
-      where: { uuid, isDeleted: 1 },
-    });
+    return await super.updateByUuid(Todo, uuid, data);
   }
 
-  // 删除
+  // 根据 uuid 软删除任务
   static async deleteByUuid(uuid: string) {
-    return await Todo.update({ isDeleted: 0 }, { where: { uuid, isDeleted: 1 } });
+    return await super.deleteByUuid(Todo, uuid);
   }
 }

@@ -53,7 +53,7 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
   const tableData = ref<T[]>([]);
   const total = ref(0);
   const pageNum = ref(1);
-  const pageSize = ref(5);
+  const pageSize = ref(10);
   const dialogVisible = ref(false);
   const isAdd = ref(true);
   const formRef = ref<InstanceType<typeof ElForm>>();

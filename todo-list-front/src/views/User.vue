@@ -1,6 +1,6 @@
 <template>
   <div class="user-page">
-    <el-card>
+    <el-card v-if="hasUserManagementPermission()">
       <!-- 顶部操作栏 -->
       <div class="header-bar">
         <h3>用户管理</h3>
@@ -58,6 +58,7 @@
         />
       </div>
     </el-card>
+    <el-empty v-else description="无权限访问此页面" />
 
     <!-- 新增/编辑弹窗 -->
     <el-dialog v-model="dialogVisible" title="用户信息" append-to-body>
@@ -98,6 +99,7 @@ const {
   handleDelete,
   handleStatusChange,
   handleSubmit,
+  hasUserManagementPermission,
 } = useUser();
 </script>
 

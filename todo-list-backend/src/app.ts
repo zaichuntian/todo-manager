@@ -8,9 +8,8 @@ import userRoutes from './routes/user.route';
 import categoryRoutes from './routes/category.route';
 import cors from 'cors';
 
-import './models/user.model';
-import './models/todo.model';
-import './models/category.model';
+// 导入模型关联文件
+import './models/index';
 
 const app = express();
 

@@ -3,16 +3,22 @@ import { getTodosApi, addTodoApi, updateTodoApi, deleteTodoApi, updateTodoStatus
 import { useCrud } from './useCrud';
 import { formatTime } from '../utils/format';
 import type { Todo, TodoFormData } from '../types/todo';
+import type { UserInfo } from '../types/user';
 
 /**
  * 任务管理自定义 Hook
  */
 export function useTodo() {
-  const loginUserUuid = ref('');
+  const loginUser = ref<UserInfo>({
+    userUuid: '',
+    username: '',
+    role: 0,
+    token: '',
+  });
 
   // 使用通用 CRUD Hook
   const crud = useCrud<Todo, TodoFormData>({
-    getListApi: getTodosApi,
+    getListApi: params => getTodosApi(params),
     addApi: addTodoApi,
     updateApi: updateTodoApi,
     deleteApi: deleteTodoApi,
@@ -34,15 +40,23 @@ export function useTodo() {
     },
   });
 
-  // 判断是否是自己的任务
+  // 判断是否是自己的任务或有权限操作
   const isMyTask = (row: Todo) => {
-    return row.userUuid === loginUserUuid.value;
+    // 超级管理员(2)和管理员(1)可以操作所有任务
+    if (loginUser.value.role === 2 || loginUser.value.role === 1) {
+      return true;
+    }
+    // 普通用户只能操作自己的任务
+    return row.userUuid === loginUser.value.userUuid;
   };
 
   // 初始化数据
   onMounted(() => {
-    // 从本地获取当前用户uuid
-    loginUserUuid.value = localStorage.getItem('userUuid') || '';
+    // 从本地获取当前用户信息
+    const userInfoStr = localStorage.getItem('userInfo');
+    if (userInfoStr) {
+      loginUser.value = JSON.parse(userInfoStr);
+    }
     crud.getList();
   });
 
@@ -50,7 +64,7 @@ export function useTodo() {
     // 从 CRUD Hook 中解构出需要的状态和方法
     ...crud,
     // 额外的状态和方法
-    loginUserUuid,
+    loginUser,
     formatTime,
     isMyTask,
   };

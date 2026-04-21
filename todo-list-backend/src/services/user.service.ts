@@ -1,21 +1,16 @@
+// src/services/user.service.ts
 import User from '../models/user.model';
+import { BaseService } from './base.service';
 
-export class UserService {
+export class UserService extends BaseService<any> {
   // 查询用户列表（分页）
   static async findAll(pageNum: number, pageSize: number) {
-    return await User.findAndCountAll({
-      where: { isDeleted: 1 },
-      offset: (pageNum - 1) * pageSize,
-      limit: pageSize,
-      order: [['id', 'DESC']],
-    });
+    return await super.findAll(User, pageNum, pageSize);
   }
 
   // 根据 uuid 查询单个用户
   static async findByUuid(uuid: string) {
-    return await User.findOne({
-      where: { uuid, isDeleted: 1 },
-    });
+    return await super.findByUuid(User, uuid);
   }
 
   // 根据用户名查询（登录/注册用）
@@ -27,18 +22,16 @@ export class UserService {
 
   // 创建用户
   static async create(user: any) {
-    return await User.create(user);
+    return await super.create(User, user);
   }
 
   // 根据 uuid 修改用户
   static async updateByUuid(uuid: string, data: any) {
-    return await User.update(data, {
-      where: { uuid, isDeleted: 1 },
-    });
+    return await super.updateByUuid(User, uuid, data);
   }
 
   // 根据 uuid 软删除用户
   static async deleteByUuid(uuid: string) {
-    return await User.update({ isDeleted: 0 }, { where: { uuid, isDeleted: 1 } });
+    return await super.deleteByUuid(User, uuid);
   }
 }

@@ -1,15 +1,23 @@
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getUserListApi, deleteUserApi, updateUserApi, registerApi, updateUserStatusApi } from '../api/user';
 import { encrypt } from '../utils/crypto';
 import { useCrud } from './useCrud';
 import { formatDateTime } from '../utils/format';
 import type { User, UserFormData } from '../types/user';
+import type { UserInfo } from '../types/user';
 
 /**
  * 用户管理自定义 Hook
  */
 export function useUser() {
+  const loginUser = ref<UserInfo>({
+    userUuid: '',
+    username: '',
+    role: 0,
+    token: '',
+  });
+
   // 使用通用 CRUD Hook
   const crud = useCrud<User, UserFormData>({
     getListApi: getUserListApi,
@@ -62,8 +70,19 @@ export function useUser() {
     }
   };
 
+  // 检查是否有权限管理用户
+  const hasUserManagementPermission = () => {
+    // 只有超级管理员(2)和管理员(1)可以管理用户
+    return loginUser.value.role === 2 || loginUser.value.role === 1;
+  };
+
   // 初始化数据
   onMounted(() => {
+    // 从本地获取当前用户信息
+    const userInfoStr = localStorage.getItem('userInfo');
+    if (userInfoStr) {
+      loginUser.value = JSON.parse(userInfoStr);
+    }
     crud.getList();
   });
 
@@ -76,5 +95,8 @@ export function useUser() {
     getUserList: crud.getList,
     // 使用格式化工具函数
     formatTime: formatDateTime,
+    // 权限检查方法
+    hasUserManagementPermission,
+    loginUser,
   };
 }

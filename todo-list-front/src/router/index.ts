@@ -5,6 +5,7 @@ import User from '../views/User.vue';
 import Todo from '../views/Todo.vue';
 import Layout from '../layouts/Layout.vue';
 import Category from '../views/Category.vue';
+import { UserInfo } from '@/types/user.ts';
 
 const routes = [
   { path: '/login', component: Login },
@@ -26,9 +27,11 @@ const router = createRouter({
 });
 
 router.beforeEach(to => {
-  const token = localStorage.getItem('token');
-  if (to.path !== '/login' && !token) return '/login';
-  if (to.path === '/login' && token) return '/';
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}') as UserInfo;
+  // 如果用户未登录，且尝试访问需要登录的路由，重定向到登录页
+  if (to.path !== '/login' && !userInfo.token && !userInfo.userUuid) return '/login';
+  // 如果用户已登录，且尝试访问登录页，重定向到首页
+  if (to.path === '/login' && userInfo.token && userInfo.userUuid) return '/';
 });
 
 export default router;

@@ -18,8 +18,9 @@ export interface UserFormData {
   password: string;
 }
 
-export interface UserInfo extends UserFormData {
+export interface UserInfo {
   userUuid: string;
+  username: string;
   role: number;
   token: string;
 }

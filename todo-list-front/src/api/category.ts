@@ -1,8 +1,8 @@
 import request from '../utils/request';
 
 // 获取分类列表
-export function getCategoriesApi() {
-  return request.get('/categories');
+export function getCategoriesApi(params: { pageNum: number; pageSize: number }) {
+  return request.get('/categories', { params });
 }
 
 // 添加分类

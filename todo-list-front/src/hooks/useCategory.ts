@@ -18,7 +18,7 @@ export function useCategory() {
 
   // 使用通用 CRUD Hook
   const crud = useCrud<Category, CategoryFormData>({
-    getListApi: getCategoriesApi,
+    getListApi: params => getCategoriesApi(params),
     addApi: addCategoryApi,
     updateApi: updateCategoryApi,
     deleteApi: deleteCategoryApi,

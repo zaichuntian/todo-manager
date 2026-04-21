@@ -1,17 +1,18 @@
 import { defineStore } from 'pinia';
+import type { UserInfo } from '@/types/user';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: localStorage.getItem('token') || '',
+    userInfo: JSON.parse(localStorage.getItem('userInfo') || '{}') as UserInfo,
   }),
   actions: {
-    setToken(token: string) {
-      this.token = token;
-      localStorage.setItem('token', token);
+    setUserInfo(userInfo: UserInfo) {
+      this.userInfo = userInfo;
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
     },
-    clearToken() {
-      this.token = '';
-      localStorage.removeItem('token');
+    clearUserInfo() {
+      this.userInfo = {} as UserInfo;
+      localStorage.removeItem('userInfo');
     },
   },
 });

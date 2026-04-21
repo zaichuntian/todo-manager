@@ -69,6 +69,22 @@
         <el-form-item v-if="isAdd" label="密码" prop="password">
           <el-input v-model="form.password" type="password" placeholder="请输入密码" />
         </el-form-item>
+        <el-form-item v-if="isAdd" label="确认密码" prop="confirmPassword">
+          <el-input v-model="form.confirmPassword" type="password" placeholder="请确认密码" />
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="form.email" placeholder="请输入邮箱" />
+        </el-form-item>
+        <el-form-item label="角色" prop="role">
+          <el-select v-model="form.role" placeholder="请选择角色">
+            <el-option label="超级管理员" :value="2"></el-option>
+            <el-option label="管理员" :value="1"></el-option>
+            <el-option label="普通用户" :value="0"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-switch v-model="form.status" :active-value="1" :inactive-value="0"></el-switch>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>

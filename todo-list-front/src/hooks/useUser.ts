@@ -26,13 +26,19 @@ export function useUser() {
       return await registerApi({
         username: data.username,
         password: encrypt(data.password),
-      });
+        email: data.email,
+        role: data.role,
+        status: data.status,
+      } as any);
     },
-    // 自定义更新 API 调用，只更新用户名
+    // 自定义更新 API 调用，更新用户信息
     updateApi: async (id, data) => {
       return await updateUserApi(id, {
         username: data.username,
-      });
+        email: data.email,
+        role: data.role,
+        status: data.status,
+      } as any);
     },
     deleteApi: deleteUserApi,
     updateStatusApi: updateUserStatusApi,
@@ -45,11 +51,34 @@ export function useUser() {
         { required: true, message: '请输入密码', trigger: 'blur' },
         { min: 6, max: 20, message: '密码长度需在 6-20 个字符之间', trigger: 'blur' },
       ],
+      confirmPassword: [
+        { required: true, message: '请确认密码', trigger: 'blur' },
+        {
+          message: '两次输入密码不一致',
+          validator: (_rule, value, callback) => {
+            if (value !== crud.form.value.password) {
+              callback(new Error('两次输入密码不一致'));
+            } else {
+              callback();
+            }
+          },
+          trigger: 'blur',
+        },
+      ],
+      email: [
+        { required: true, message: '请输入邮箱', trigger: 'blur' },
+        { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
+      ],
+      role: [{ required: true, message: '请选择角色', trigger: 'change' }],
     },
     initialForm: {
       uuid: '',
       username: '',
       password: '',
+      confirmPassword: '',
+      email: '',
+      role: 0, // 默认普通用户
+      status: 1, // 默认启用
     },
   });
 

@@ -32,6 +32,17 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 添加分页组件 -->
+      <div class="pagination-wrapper">
+        <el-pagination
+          v-model:current-page="pageNum"
+          v-model:page-size="pageSize"
+          :total="total"
+          layout="total, prev, pager, next, sizes"
+          @current-change="getList"
+          @size-change="getList"
+        />
+      </div>
     </el-card>
 
     <!-- 分类任务弹窗 -->
@@ -87,6 +98,9 @@ import type { Todo } from '../types/todo';
 // 使用分类管理自定义 Hook
 const {
   tableData,
+  total,
+  pageNum,
+  pageSize,
   dialogVisible,
   formRef,
   form,
@@ -136,5 +150,11 @@ const handleViewTasks = async (row: Category) => {
 .empty-tasks {
   margin: 40px 0;
   text-align: center;
+}
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
 }
 </style>

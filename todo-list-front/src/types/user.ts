@@ -7,6 +7,7 @@ export interface User {
   nickname?: string; // 新增
   phone?: string; // 新增
   email?: string; // 新增
+  role: number; // 新增
   status: number;
   createdAt: string;
   updatedAt: string;
@@ -16,6 +17,10 @@ export interface UserFormData {
   uuid: string;
   username: string;
   password: string;
+  confirmPassword?: string;
+  email: string;
+  role: number;
+  status: number;
 }
 
 export interface UserInfo {

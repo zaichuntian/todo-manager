@@ -1,6 +1,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
+import { ElMessage } from 'element-plus';
 
 export function useLayout() {
   const authStore = useAuthStore();
@@ -24,7 +25,9 @@ export function useLayout() {
   });
 
   const handleLogout = () => {
-    authStore.clearToken();
+    // 修复：将 clearToken 改为 clearUserInfo
+    authStore.clearUserInfo();
+    ElMessage.success('退出登录成功');
     router.push('/login');
   };
 

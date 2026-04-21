@@ -1,17 +1,45 @@
-import Todo from './todo.model';
+// 模型关联文件，避免循环依赖
 import User from './user.model';
+import Todo from './todo.model';
 import Category from './category.model';
 
-// 用户与任务的关联
-User.hasMany(Todo, { foreignKey: 'userUuid', sourceKey: 'uuid', as: 'todos' });
-Todo.belongsTo(User, { foreignKey: 'userUuid', targetKey: 'uuid', as: 'user' });
+// User 关联
+User.hasMany(Todo, {
+  foreignKey: 'userUuid',
+  as: 'todos',
+  sourceKey: 'uuid',
+});
 
-// 用户与分类的关联
-User.hasMany(Category, { foreignKey: 'userUuid', sourceKey: 'uuid', as: 'categories' });
-Category.belongsTo(User, { foreignKey: 'userUuid', targetKey: 'uuid', as: 'user' });
+User.hasMany(Category, {
+  foreignKey: 'userUuid',
+  as: 'categories',
+  sourceKey: 'uuid',
+});
 
-// 分类与任务的关联
-Category.hasMany(Todo, { foreignKey: 'categoryUuid', sourceKey: 'uuid', as: 'todos' });
-Todo.belongsTo(Category, { foreignKey: 'categoryUuid', targetKey: 'uuid', as: 'category' });
+// Todo 关联
+Todo.belongsTo(User, {
+  foreignKey: 'userUuid',
+  as: 'user',
+  targetKey: 'uuid',
+});
+
+Todo.belongsTo(Category, {
+  foreignKey: 'categoryUuid',
+  as: 'category',
+  targetKey: 'uuid',
+});
+
+// Category 关联
+Category.belongsTo(User, {
+  foreignKey: 'userUuid',
+  as: 'user',
+  targetKey: 'uuid',
+});
+
+Category.hasMany(Todo, {
+  foreignKey: 'categoryUuid',
+  as: 'todos',
+  sourceKey: 'uuid',
+});
 
 export { User, Todo, Category };

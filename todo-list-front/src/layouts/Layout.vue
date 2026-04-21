@@ -3,7 +3,7 @@
     <!-- 关键：el-aside 的 width 改为动态绑定 -->
     <el-aside :width="isCollapsed ? '64px' : '200px'" style="background-color: #304156">
       <!-- 折叠时隐藏logo文字，避免溢出 -->
-      <div class="logo" @click="refreshPage" :class="{ collapsed: isCollapsed }">
+      <div class="logo" @click="goHomePage" :class="{ collapsed: isCollapsed }">
         <h3>Todo List</h3>
       </div>
       <el-menu
@@ -73,11 +73,13 @@
 import { User, ArrowDown, UserFilled, HomeFilled } from '@element-plus/icons-vue';
 import { useRoute } from 'vue-router';
 import { useLayout } from '../hooks/useLayout';
-import { useAnimation } from '../hooks/useAnimation';
+import { useAnimation } from '@/hooks/useAnimation';
+import { useCommon } from '@/hooks/useCommon.ts';
 
 const route = useRoute();
-const { isCollapsed, activeMenu, handleLogout, refreshPage } = useLayout();
+const { isCollapsed, activeMenu, handleLogout } = useLayout();
 const { enterAnimation, leaveAnimation } = useAnimation();
+const { goHomePage } = useCommon();
 </script>
 
 <style scoped lang="less">
@@ -90,6 +92,7 @@ const { enterAnimation, leaveAnimation } = useAnimation();
   border-bottom: 1px solid #2b2f3a;
   cursor: pointer;
   transition: all 0.3s ease;
+  cursor: pointer;
 
   // 折叠时隐藏文字，防止溢出
   &.collapsed {

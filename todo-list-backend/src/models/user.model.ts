@@ -8,6 +8,10 @@ class User extends Model {
   public uuid!: string;
   public username!: string;
   public password!: string;
+  public role!: number;
+  public nickname!: string;
+  public phone!: string;
+  public email!: string;
   public isDeleted!: number;
 }
 
@@ -17,17 +21,34 @@ User.init(
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
-      unique: true, // 添加唯一索引
+      unique: true,
     },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
       // unique: true,
     },
-    // 关键：把 password 改成 TEXT 或 VARCHAR(500)
     password: {
-      type: DataTypes.STRING(255), // bcrypt 只有 60 位左右，完全存得下
+      type: DataTypes.STRING(255),
       allowNull: false,
+    },
+    role: {
+      // 新增：角色字段
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+    },
+    nickname: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+    },
+    phone: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
+    email: {
+      type: DataTypes.STRING(100),
+      allowNull: true,
+      unique: true, // 邮箱唯一
     },
     status: {
       type: DataTypes.TINYINT,

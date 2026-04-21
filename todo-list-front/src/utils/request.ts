@@ -9,9 +9,9 @@ const request = axios.create({
 
 // 直接从 localStorage 拿 token，不依赖 Pinia
 request.interceptors.request.use(config => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}');
+  if (userInfo.token && userInfo.userUuid) {
+    config.headers.Authorization = `Bearer ${userInfo.token}`;
   }
   return config;
 });
@@ -20,7 +20,7 @@ request.interceptors.response.use(
   res => res.data,
   err => {
     if (err.response?.status === 401) {
-      localStorage.removeItem('token');
+      localStorage.removeItem('userInfo');
       ElMessage.error('登录已过期，请重新登录');
       router.push('/login');
     }

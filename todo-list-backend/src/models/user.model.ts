@@ -1,17 +1,16 @@
-// src/models/user.model.ts
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
-import { v4 as uuidv4 } from 'uuid';
 
 class User extends Model {
   public id!: number;
   public uuid!: string;
   public username!: string;
   public password!: string;
-  public role!: number;
   public nickname!: string;
   public phone!: string;
   public email!: string;
+  public role!: number;
+  public status!: number;
   public isDeleted!: number;
 }
 
@@ -21,21 +20,15 @@ User.init(
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
-      unique: true,
+      // 移除 unique: true
     },
     username: {
       type: DataTypes.STRING,
       allowNull: false,
-      // unique: true,
     },
     password: {
       type: DataTypes.STRING(255),
       allowNull: false,
-    },
-    role: {
-      // 新增：角色字段
-      type: DataTypes.TINYINT,
-      defaultValue: 0,
     },
     nickname: {
       type: DataTypes.STRING(50),
@@ -48,7 +41,11 @@ User.init(
     email: {
       type: DataTypes.STRING(100),
       allowNull: true,
-      unique: true, // 邮箱唯一
+      // 移除 unique: true，避免索引过多
+    },
+    role: {
+      type: DataTypes.TINYINT,
+      defaultValue: 0, // 0 普通用户，1 管理员，2 超级管理员
     },
     status: {
       type: DataTypes.TINYINT,

@@ -4,6 +4,9 @@ import type { PaginationParams, PaginationResponse, FormRules } from './common';
 export interface User {
   uuid: string;
   username: string;
+  nickname?: string; // 新增
+  phone?: string; // 新增
+  email?: string; // 新增
   status: number;
   createdAt: string;
   updatedAt: string;

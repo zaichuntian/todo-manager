@@ -1,32 +1,27 @@
+// src/controllers/category.controller.ts
 import { Request, Response } from 'express';
 import { CategoryService } from '../services/category.service';
 import { success, fail } from '../utils/response';
+import { BaseController } from './base.controller';
+import { CONSTANTS } from '../config/constants';
 
-export class CategoryController {
-  // 获取用户的所有分类（带分页）
+export class CategoryController extends BaseController {
   static async getUserCategories(req: Request, res: Response) {
     try {
       const userUuid = req.user!.uuid;
-      const pageNum = Number(req.query.pageNum) || 1;
-      const pageSize = Number(req.query.pageSize) || 10;
+      const pageNum = Number(req.query.pageNum) || CONSTANTS.DEFAULT_PAGE_NUM;
+      const pageSize = Number(req.query.pageSize) || CONSTANTS.DEFAULT_PAGE_SIZE;
 
       const data = await CategoryService.findUserCategories(userUuid, pageNum, pageSize);
 
-      res.json(
-        success({
-          list: data.rows,
-          total: data.count,
-          pageNum,
-          pageSize,
-        })
-      );
+      // 修复：使用 BaseController.handlePaginationResponse
+      BaseController.handlePaginationResponse(res, data, pageNum, pageSize);
     } catch (err) {
-      console.error('❌ 获取分类列表失败：', err);
-      res.json(fail('获取分类列表失败'));
+      // 修复：使用 BaseController.handleError
+      BaseController.handleError(res, err, '获取分类列表失败');
     }
   }
 
-  // 创建分类
   static async create(req: Request, res: Response) {
     try {
       const { name } = req.body;
@@ -43,12 +38,11 @@ export class CategoryController {
 
       return res.json(success(null, '创建成功'));
     } catch (err) {
-      console.error('❌ 创建分类失败：', err);
-      return res.json(fail('创建失败'));
+      // 修复：使用 BaseController.handleError
+      BaseController.handleError(res, err, '创建失败');
     }
   }
 
-  // 编辑分类
   static async update(req: Request, res: Response) {
     try {
       const categoryUuid = req.params.uuid as string;
@@ -66,11 +60,11 @@ export class CategoryController {
 
       res.json(success(null, '修改成功'));
     } catch (err) {
-      res.json(fail('修改失败'));
+      // 修复：使用 BaseController.handleError
+      BaseController.handleError(res, err, '修改失败');
     }
   }
 
-  // 删除分类
   static async delete(req: Request, res: Response) {
     try {
       const categoryUuid = req.params.uuid as string;
@@ -88,11 +82,11 @@ export class CategoryController {
 
       res.json(success(null, '删除成功'));
     } catch (err) {
-      res.json(fail('删除失败'));
+      // 修复：使用 BaseController.handleError
+      BaseController.handleError(res, err, '删除失败');
     }
   }
 
-  // 获取分类及其任务
   static async getCategoryWithTodos(req: Request, res: Response) {
     try {
       const categoryUuid = req.params.uuid as string;
@@ -109,8 +103,8 @@ export class CategoryController {
 
       res.json(success(categoryWithTodos));
     } catch (err) {
-      console.error('❌ 获取分类任务失败：', err);
-      res.json(fail('获取分类任务失败'));
+      // 修复：使用 BaseController.handleError
+      BaseController.handleError(res, err, '获取分类任务失败');
     }
   }
 }

@@ -1,31 +1,26 @@
+// src/controllers/todo.controller.ts
 import { Request, Response } from 'express';
 import { TodoService } from '../services/todo.service';
 import { success, fail } from '../utils/response';
+import { BaseController } from './base.controller';
+import { CONSTANTS } from '../config/constants';
 
-export class TodoController {
-  // 获取所有任务（所有人可见）
+export class TodoController extends BaseController {
   static async getMyList(req: Request, res: Response) {
     try {
-      const pageNum = Number(req.query.pageNum) || 1;
-      const pageSize = Number(req.query.pageSize) || 10;
+      const pageNum = Number(req.query.pageNum) || CONSTANTS.DEFAULT_PAGE_NUM;
+      const pageSize = Number(req.query.pageSize) || CONSTANTS.DEFAULT_PAGE_SIZE;
 
       const data = await TodoService.findAllTodos(pageNum, pageSize);
 
-      res.json(
-        success({
-          list: data.rows,
-          total: data.count,
-          pageNum,
-          pageSize,
-        })
-      );
+      // 修复：使用 BaseController.handlePaginationResponse
+      BaseController.handlePaginationResponse(res, data, pageNum, pageSize);
     } catch (err) {
-      console.error('❌ 获取列表失败：', err);
-      res.json(fail('获取列表失败'));
+      // 修复：使用 BaseController.handleError
+      BaseController.handleError(res, err, '获取列表失败');
     }
   }
 
-  // 创建任务
   static async create(req: Request, res: Response) {
     try {
       const { title, content } = req.body;
@@ -43,15 +38,14 @@ export class TodoController {
 
       return res.json(success(null, '创建成功'));
     } catch (err) {
-      console.error('❌ 创建失败：', err);
-      return res.json(fail('创建失败'));
+      // 修复：使用 BaseController.handleError
+      BaseController.handleError(res, err, '创建失败');
     }
   }
 
-  // 编辑任务（仅自己可编辑）
   static async update(req: Request, res: Response) {
     try {
-      const todoUuid = req.params.uuid as string; // 👈 修复
+      const todoUuid = req.params.uuid as string;
       const userUuid = req.user!.uuid;
 
       const todo = await TodoService.findByUuid(todoUuid);
@@ -66,14 +60,14 @@ export class TodoController {
 
       res.json(success(null, '修改成功'));
     } catch (err) {
-      res.json(fail('修改失败'));
+      // 修复：使用 BaseController.handleError
+      BaseController.handleError(res, err, '修改失败');
     }
   }
 
-  // 删除任务（仅自己可删除）
   static async delete(req: Request, res: Response) {
     try {
-      const todoUuid = req.params.uuid as string; // 👈 修复
+      const todoUuid = req.params.uuid as string;
       const userUuid = req.user!.uuid;
 
       const todo = await TodoService.findByUuid(todoUuid);
@@ -88,11 +82,11 @@ export class TodoController {
 
       res.json(success(null, '删除成功'));
     } catch (err) {
-      res.json(fail('删除失败'));
+      // 修复：使用 BaseController.handleError
+      BaseController.handleError(res, err, '删除失败');
     }
   }
 
-  // 切换完成状态
   static async updateStatus(req: Request, res: Response) {
     try {
       const todoUuid = req.params.uuid as string;
@@ -119,8 +113,8 @@ export class TodoController {
 
       res.json(success(null, '状态更新成功'));
     } catch (err) {
-      console.error('❌ 更新状态失败：', err);
-      res.json(fail('状态更新失败'));
+      // 修复：使用 BaseController.handleError
+      BaseController.handleError(res, err, '状态更新失败');
     }
   }
 }

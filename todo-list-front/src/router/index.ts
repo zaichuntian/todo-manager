@@ -16,6 +16,7 @@ const routes = [
   },
   { path: '/401', component: () => import('../views/401.vue') },
   { path: '/403', component: () => import('../views/403.vue') },
+  { path: '/empty', component: () => import('../views/empty.vue') },
   { path: '/:pathMatch(.*)*', component: () => import('../views/404.vue') },
 ];
 
@@ -27,7 +28,7 @@ const router = createRouter({
 router.beforeEach(to => {
   const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}') as UserInfo;
   // 如果用户未登录，且尝试访问需要登录的路由，重定向到401页面
-  if (to.path !== '/login' && to.path !== '/401' && !userInfo.token && !userInfo.userUuid) {
+  if (to.path !== '/login' && to.path !== '/401' && to.path !== '/empty' && !userInfo.token && !userInfo.userUuid) {
     ElMessage.warning('请先登录');
     return '/401';
   }

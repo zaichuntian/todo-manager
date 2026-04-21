@@ -1,54 +1,46 @@
 import Category from '../models/category.model';
-import Todo from '../models/todo.model';
+import { BaseService } from './base.service';
 
-export class CategoryService {
-  // 查询用户的所有分类（带分页）
+export class CategoryService extends BaseService<any> {
+  // 根据用户uuid获取分类列表（带分页）
   static async findUserCategories(userUuid: string, pageNum: number, pageSize: number) {
-    const offset = (pageNum - 1) * pageSize;
-    const limit = pageSize;
-
     return await Category.findAndCountAll({
       where: { userUuid, isDeleted: 1 },
-      offset,
-      limit,
+      offset: (pageNum - 1) * pageSize,
+      limit: pageSize,
       order: [['createdAt', 'DESC']],
     });
   }
 
-  // 根据UUID查询单个分类
+  // 根据 uuid 查询单个分类
   static async findByUuid(uuid: string) {
-    return await Category.findOne({
-      where: { uuid, isDeleted: 1 },
-    });
+    return await super.findByUuid(Category, uuid);
   }
 
   // 创建分类
   static async create(category: any) {
-    return await Category.create(category);
+    return await super.create(Category, category);
   }
 
-  // 更新分类
+  // 根据 uuid 修改分类
   static async updateByUuid(uuid: string, data: any) {
-    return await Category.update(data, {
-      where: { uuid, isDeleted: 1 },
-    });
+    return await super.updateByUuid(Category, uuid, data);
   }
 
-  // 删除分类
+  // 根据 uuid 软删除分类
   static async deleteByUuid(uuid: string) {
-    return await Category.update({ isDeleted: 0 }, { where: { uuid, isDeleted: 1 } });
+    return await super.deleteByUuid(Category, uuid);
   }
 
-  // 查询分类及其任务
+  // 获取分类及其任务
   static async findCategoryWithTodos(categoryUuid: string) {
     return await Category.findOne({
       where: { uuid: categoryUuid, isDeleted: 1 },
       include: [
         {
-          model: Todo,
-          as: 'todos',
+          association: 'todos',
           where: { isDeleted: 1 },
-          order: [['createdAt', 'DESC']],
+          required: false,
         },
       ],
     });

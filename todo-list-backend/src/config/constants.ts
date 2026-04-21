@@ -1,0 +1,5 @@
+export const CONSTANTS = {
+  DEFAULT_PAGE_SIZE: 10,
+  DEFAULT_PAGE_NUM: 1,
+  JWT_EXPIRES_IN: '7d',
+};

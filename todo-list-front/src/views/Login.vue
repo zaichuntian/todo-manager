@@ -146,9 +146,7 @@ const handleLogin = async () => {
         if (res.code === 200) {
           ElMessage.success('登录成功');
           // @ts-ignore
-          auth.setToken(res.data.token);
-          // @ts-ignore
-          localStorage.setItem('userUuid', res.data.userUuid);
+          auth.setUserInfo(res.data);
           await router.push('/');
         } else {
           // @ts-ignore

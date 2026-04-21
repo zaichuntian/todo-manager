@@ -1,9 +1,7 @@
 <template>
   <div class="error-page error-403">
+    <ParticleAnimation :particle-count="2500" background-color="transparent" particle-shape="hexagon" />
     <div class="error-content">
-      <div class="error-illustration">
-        <div ref="container" class="three-container"></div>
-      </div>
       <div class="error-info">
         <h1 class="error-code">403</h1>
         <h2 class="error-title">Access Denied</h2>
@@ -17,15 +15,10 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { initThreeScene, cleanUpThree, createHexagon, startHexagonFloatAnimation } from '../utils/three-utils';
-import * as THREE from 'three';
+import ParticleAnimation from '../components/ParticleAnimation';
 
 const router = useRouter();
-const container = ref<HTMLDivElement | null>(null);
-let sceneObj: any = null;
-let hexagons: THREE.Line[] = [];
 
 const goBack = () => {
   router.go(-1);
@@ -34,34 +27,6 @@ const goBack = () => {
 const goHome = () => {
   router.push('/');
 };
-
-onMounted(() => {
-  // 初始化 Three.js
-  if (container.value) {
-    sceneObj = initThreeScene(container.value);
-
-    // 设置背景颜色
-    sceneObj.scene.background = new THREE.Color(0x303243);
-
-    // 创建六边形
-    hexagons = [
-      createHexagon(sceneObj.scene, 1.5, new THREE.Vector3(-2, 1.5, 0), 0x2196f3, 0), // 蓝色
-      createHexagon(sceneObj.scene, 1, new THREE.Vector3(-1.5, -1, 0), 0x4caf50, 1), // 绿色
-      createHexagon(sceneObj.scene, 1.2, new THREE.Vector3(0.5, 0, 0), 0xff9800, 2), // 橙色
-      createHexagon(sceneObj.scene, 0.8, new THREE.Vector3(2.5, 1.5, 0), 0x9c27b0, 3), // 紫色
-      createHexagon(sceneObj.scene, 0.7, new THREE.Vector3(0.5, -2.5, 0), 0xf44336, 4), // 红色
-    ];
-
-    // 开始六边形浮动动画
-    sceneObj.animationId = startHexagonFloatAnimation(sceneObj.scene, sceneObj.camera, sceneObj.renderer, hexagons);
-  }
-});
-
-onUnmounted(() => {
-  if (sceneObj) {
-    cleanUpThree(sceneObj.renderer, sceneObj.animationId);
-  }
-});
 </script>
 
 <style scoped lang="less">
@@ -96,18 +61,15 @@ body {
   z-index: 2;
 }
 
-.error-illustration {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-}
-
-.three-container {
+:deep(.particle-animation) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
   width: 100%;
-  height: 400px;
-  max-width: 400px;
+  height: 100%;
 }
 
 .error-info {

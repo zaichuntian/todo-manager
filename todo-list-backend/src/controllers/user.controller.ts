@@ -55,7 +55,21 @@ export class UserController {
       }
 
       const token = jwt.sign({ uuid: user.uuid }, process.env.JWT_SECRET!, { expiresIn: '7d' });
-      return res.json({ code: 200, msg: '登录成功', data: { userUuid: user.uuid, token } });
+
+      // 构建 userInfo 对象，包含所有需要的信息
+      const userInfo = {
+        userUuid: user.uuid,
+        username: user.username,
+        role: user.role || 0, // 确保 role 字段存在，默认为普通用户
+        password: user.password, // 返回加密后的密码
+        token, // 添加 token 到 userInfo 中
+      };
+
+      return res.json({
+        code: 200,
+        msg: '登录成功',
+        data: userInfo,
+      });
     } catch (error) {
       console.error('登录接口异常', error);
       return res.json({ code: 500, msg: '服务器错误' });

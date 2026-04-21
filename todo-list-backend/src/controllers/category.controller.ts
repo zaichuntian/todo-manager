@@ -3,16 +3,21 @@ import { CategoryService } from '../services/category.service';
 import { success, fail } from '../utils/response';
 
 export class CategoryController {
-  // 获取用户的所有分类
+  // 获取用户的所有分类（带分页）
   static async getUserCategories(req: Request, res: Response) {
     try {
       const userUuid = req.user!.uuid;
+      const pageNum = Number(req.query.pageNum) || 1;
+      const pageSize = Number(req.query.pageSize) || 10;
 
-      const categories = await CategoryService.findUserCategories(userUuid);
+      const data = await CategoryService.findUserCategories(userUuid, pageNum, pageSize);
 
       res.json(
         success({
-          list: categories,
+          list: data.rows,
+          total: data.count,
+          pageNum,
+          pageSize,
         })
       );
     } catch (err) {

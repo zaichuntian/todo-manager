@@ -1,12 +1,16 @@
 import Category from '../models/category.model';
-import User from '../models/user.model';
 import Todo from '../models/todo.model';
 
 export class CategoryService {
-  // 查询用户的所有分类
-  static async findUserCategories(userUuid: string) {
-    return await Category.findAll({
+  // 查询用户的所有分类（带分页）
+  static async findUserCategories(userUuid: string, pageNum: number, pageSize: number) {
+    const offset = (pageNum - 1) * pageSize;
+    const limit = pageSize;
+
+    return await Category.findAndCountAll({
       where: { userUuid, isDeleted: 1 },
+      offset,
+      limit,
       order: [['createdAt', 'DESC']],
     });
   }

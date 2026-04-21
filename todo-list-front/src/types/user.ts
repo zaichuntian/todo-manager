@@ -18,6 +18,12 @@ export interface UserFormData {
   password: string;
 }
 
+export interface UserInfo extends UserFormData {
+  userUuid: string;
+  role: number;
+  token: string;
+}
+
 export type UserListParams = PaginationParams;
 
 export type UserListResponse = PaginationResponse<User>;

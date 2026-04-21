@@ -1,15 +1,14 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
-import User from './user.model';
 
 class Todo extends Model {
   public id!: number;
   public uuid!: string;
   public userUuid!: string;
-  public categoryUuid!: string;
   public title!: string;
   public content!: string;
   public status!: number;
+  public categoryUuid!: string;
   public isDeleted!: number;
 }
 
@@ -19,14 +18,11 @@ Todo.init(
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
+      // 移除 unique: true
     },
     userUuid: {
       type: DataTypes.UUID,
       allowNull: false,
-    },
-    categoryUuid: {
-      type: DataTypes.UUID,
-      allowNull: true,
     },
     title: {
       type: DataTypes.STRING,
@@ -34,11 +30,15 @@ Todo.init(
     },
     content: {
       type: DataTypes.TEXT,
-      allowNull: true,
+      allowNull: false,
     },
     status: {
       type: DataTypes.TINYINT,
       defaultValue: 0,
+    },
+    categoryUuid: {
+      type: DataTypes.UUID,
+      allowNull: true,
     },
     isDeleted: {
       type: DataTypes.TINYINT,
@@ -50,9 +50,5 @@ Todo.init(
     tableName: 'Todos',
   }
 );
-
-// 关联：根据 userUuid 关联 User 的 uuid 字段
-Todo.belongsTo(User, { foreignKey: 'userUuid', targetKey: 'uuid', as: 'user' });
-User.hasMany(Todo, { foreignKey: 'userUuid', sourceKey: 'uuid', as: 'todos' });
 
 export default Todo;

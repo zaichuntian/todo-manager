@@ -27,6 +27,8 @@ export interface FormRules {
     trigger: string;
     min?: number;
     max?: number;
+    validator?: (_rule: any, value: any, callback: any) => void;
+    type?: string;
   }>;
 }
 

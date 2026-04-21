@@ -1,13 +1,11 @@
 import { DataTypes, Model } from 'sequelize';
 import sequelize from '../config/database';
-import User from './user.model';
-import Todo from './todo.model';
 
 class Category extends Model {
   public id!: number;
   public uuid!: string;
-  public name!: string;
   public userUuid!: string;
+  public name!: string;
   public isDeleted!: number;
 }
 
@@ -17,10 +15,10 @@ Category.init(
       type: DataTypes.UUID,
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
-      unique: true, // 添加唯一索引
+      // 移除 unique: true
     },
     userUuid: {
-      type: DataTypes.UUID, // 确保与用户表的 uuid 类型一致
+      type: DataTypes.UUID,
       allowNull: false,
     },
     name: {
@@ -37,12 +35,5 @@ Category.init(
     tableName: 'Categories',
   }
 );
-
-// 关联关系
-Category.belongsTo(User, { foreignKey: 'userUuid', targetKey: 'uuid', as: 'user' });
-User.hasMany(Category, { foreignKey: 'userUuid', sourceKey: 'uuid', as: 'categories' });
-
-Category.hasMany(Todo, { foreignKey: 'categoryUuid', sourceKey: 'uuid', as: 'todos' });
-Todo.belongsTo(Category, { foreignKey: 'categoryUuid', targetKey: 'uuid', as: 'category' });
 
 export default Category;

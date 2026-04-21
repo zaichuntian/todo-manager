@@ -107,6 +107,7 @@ config.yml
 *.key
 *.pub
 *.crt
+*.env
 secrets/
 credentials/
 

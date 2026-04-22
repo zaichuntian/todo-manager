@@ -1,49 +1,54 @@
 <template>
-  <div class="user-page">
-    <el-card v-if="hasUserManagementPermission()">
+  <div class="user-page page-container">
+    <BaseCard v-if="hasUserManagementPermission()">
       <!-- 顶部操作栏 -->
       <div class="header-bar">
         <h3>用户管理</h3>
-        <el-button type="primary" @click="handleAdd">新增用户</el-button>
+        <BaseButton type="primary" @click="handleAdd">新增用户</BaseButton>
       </div>
 
       <!-- 用户表格 -->
-      <el-table :data="tableData" border style="width: 100%">
-        <el-table-column type="index" label="序号" width="80" align="center" />
-        <el-table-column prop="username" width="120" label="用户名" align="center" />
-        <el-table-column label="创建时间" align="center">
-          <template #default="{ row }">
-            {{ formatTime(row.createdAt) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="更新时间" align="center">
-          <template #default="{ row }">
-            {{ formatTime(row.updatedAt) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="状态" width="170" align="center">
-          <template #default="{ row }">
-            <div class="status-switch-wrapper">
-              <span class="status-label disabled" :class="{ active: row.status === 0 }"> 禁用 </span>
-              <el-switch
-                v-model="row.status"
-                :active-value="1"
-                :inactive-value="0"
-                class="custom-switch"
-                @change="(val: number) => handleStatusChange?.(row, val)"
-              />
-              <span class="status-label enabled" :class="{ active: row.status === 1 }"> 启用 </span>
-            </div>
-          </template>
-        </el-table-column>
+      <div class="table-container">
+        <el-table :data="tableData" border style="width: 1565px">
+          <el-table-column type="index" label="序号" width="80" align="center" />
+          <el-table-column prop="username" width="120" label="用户名" align="center" />
+          <el-table-column prop="nickname" width="120" label="昵称" align="center" />
+          <el-table-column prop="phone" width="150" label="手机号" align="center" />
+          <el-table-column prop="email" width="200" label="邮箱" align="center" />
+          <el-table-column label="创建时间" align="center">
+            <template #default="{ row }">
+              {{ formatTime(row.createdAt) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="更新时间" align="center">
+            <template #default="{ row }">
+              {{ formatTime(row.updatedAt) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="状态" width="170" align="center">
+            <template #default="{ row }">
+              <div class="status-switch-wrapper">
+                <span class="status-label disabled" :class="{ active: row.status === 0 }"> 禁用 </span>
+                <el-switch
+                  v-model="row.status"
+                  :active-value="1"
+                  :inactive-value="0"
+                  class="custom-switch"
+                  @change="(val: number) => handleStatusChange?.(row, val)"
+                />
+                <span class="status-label enabled" :class="{ active: row.status === 1 }"> 启用 </span>
+              </div>
+            </template>
+          </el-table-column>
 
-        <el-table-column label="操作" width="130" align="center">
-          <template #default="{ row }">
-            <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
-            <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+          <el-table-column label="操作" width="130" align="center">
+            <template #default="{ row }">
+              <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
+              <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
 
       <!-- 分页组件 -->
       <div class="pagination-wrapper">
@@ -57,23 +62,29 @@
           @size-change="getUserList"
         />
       </div>
-    </el-card>
+    </BaseCard>
     <el-empty v-else description="无权限访问此页面" />
 
     <!-- 新增/编辑弹窗 -->
     <el-dialog v-model="dialogVisible" title="用户信息" append-to-body>
       <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名" />
+          <el-input v-model="form.username" placeholder="请输入用户名" class="common-input" />
+        </el-form-item>
+        <el-form-item label="昵称" prop="nickname">
+          <el-input v-model="form.nickname" placeholder="请输入昵称" class="common-input" />
         </el-form-item>
         <el-form-item v-if="isAdd" label="密码" prop="password">
-          <el-input v-model="form.password" type="password" placeholder="请输入密码" />
+          <el-input v-model="form.password" type="password" placeholder="请输入密码" class="common-input" />
         </el-form-item>
         <el-form-item v-if="isAdd" label="确认密码" prop="confirmPassword">
-          <el-input v-model="form.confirmPassword" type="password" placeholder="请确认密码" />
+          <el-input v-model="form.confirmPassword" type="password" placeholder="请确认密码" class="common-input" />
+        </el-form-item>
+        <el-form-item label="手机号" prop="phone">
+          <el-input v-model="form.phone" placeholder="请输入手机号" class="common-input" />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱" />
+          <el-input v-model="form.email" placeholder="请输入邮箱" class="common-input" />
         </el-form-item>
         <el-form-item label="角色" prop="role">
           <el-select v-model="form.role" placeholder="请选择角色">
@@ -88,14 +99,16 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <BaseButton type="primary" @click="handleSubmit">确定</BaseButton>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useUser } from '../hooks/useUser';
+import { useUser } from '@/hooks/useUser';
+import BaseCard from '@/components/common/BaseCard.vue';
+import BaseButton from '@/components/common/BaseButton.vue';
 
 // 使用用户管理自定义 Hook
 const {
@@ -120,6 +133,10 @@ const {
 </script>
 
 <style scoped lang="less">
+.user-page {
+  background-color: transparent;
+}
+
 .header-bar {
   display: flex;
   justify-content: space-between;

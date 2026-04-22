@@ -30,12 +30,12 @@ export class CategoryController extends BaseController {
         return res.json(fail('分类名称不能为空'));
       }
 
-      await CategoryService.create({
+      const category = await CategoryService.create({
         userUuid,
         name,
       });
 
-      return res.json(success(null, '创建成功'));
+      return res.json(success(category, '创建成功'));
     } catch (err) {
       // 修复：使用 BaseController.handleError
       BaseController.handleError(res, err, '创建失败');

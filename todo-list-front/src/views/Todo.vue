@@ -1,12 +1,12 @@
 <template>
-  <div class="todo-page">
-    <el-card>
+  <div class="todo-page page-container">
+    <el-card class="common-card">
       <div class="header-bar">
         <h3>代办任务</h3>
-        <el-button type="primary" @click="handleAdd">新增任务</el-button>
+        <BaseButton type="primary" @click="handleAdd">新增任务</BaseButton>
       </div>
 
-      <el-table :data="tableData" border style="width: 100%">
+      <el-table :data="tableData" border class="table-container">
         <el-table-column type="index" label="序号" width="80" align="center" />
 
         <el-table-column label="创建者" align="center">
@@ -51,8 +51,8 @@
 
         <el-table-column label="操作" width="200" align="center">
           <template #default="{ row }">
-            <el-button v-if="isMyTask(row)" type="primary" link @click="handleEdit(row)"> 编辑 </el-button>
-            <el-button v-if="isMyTask(row)" type="danger" link @click="handleDelete(row)"> 删除 </el-button>
+            <BaseButton v-if="isMyTask(row)" type="primary" link @click="handleEdit(row)"> 编辑 </BaseButton>
+            <BaseButton v-if="isMyTask(row)" type="danger" link @click="handleDelete(row)"> 删除 </BaseButton>
             <span v-else style="color: #999">无操作权限</span>
           </template>
         </el-table-column>
@@ -78,17 +78,31 @@
         <el-form-item label="内容" prop="content">
           <el-input v-model="form.content" type="textarea" :rows="3" />
         </el-form-item>
+        <el-form-item label="分类" prop="categoryUuid">
+          <el-select v-model="form.categoryUuid" placeholder="请选择分类">
+            <el-option
+              v-for="category in categories"
+              :key="category.uuid"
+              :label="category.name"
+              :value="category.uuid"
+            />
+          </el-select>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="handleSubmit">确定</el-button>
+        <BaseButton type="primary" @click="handleSubmit">确定</BaseButton>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useTodo } from '../hooks/useTodo';
+import { ref, onMounted } from 'vue';
+import { useTodo } from '@/hooks/useTodo';
+import BaseButton from '@/components/common/BaseButton.vue';
+import { getCategoriesApi } from '@/api/category';
+import type { Category } from '@/types/category';
 
 // 使用任务管理自定义 Hook
 const {
@@ -109,13 +123,38 @@ const {
   handleDelete,
   handleSubmit,
 } = useTodo();
+
+// 分类列表
+const categories = ref<Category[]>([]);
+
+// 获取分类列表
+const fetchCategories = async () => {
+  try {
+    const response = await getCategoriesApi({ pageNum: 1, pageSize: 100 });
+    if (response.code === 200 && response.data) {
+      categories.value = response.data.list || [];
+    }
+  } catch (error) {
+    console.error('获取分类列表失败:', error);
+  }
+};
+
+// 初始化
+onMounted(() => {
+  fetchCategories();
+});
 </script>
 
 <style scoped lang="less">
+.todo-page {
+  background-color: transparent;
+}
+
 .header-bar {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 15px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 .pagination-wrapper {
   display: flex;

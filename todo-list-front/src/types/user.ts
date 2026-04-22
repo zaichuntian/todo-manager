@@ -14,6 +14,8 @@ export interface User {
 }
 
 export interface UserFormData {
+  phone: string;
+  nickname: string;
   uuid: string;
   username: string;
   password: string;

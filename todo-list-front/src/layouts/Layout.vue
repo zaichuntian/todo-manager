@@ -11,7 +11,7 @@
         :collapse="isCollapsed"
         class="sidebar-menu"
         router
-        background-color="#304156"
+        background-color="rgba(0, 0, 0, .1)"
         text-color="#bfcbd9"
         active-text-color="#409EFF"
       >
@@ -36,27 +36,46 @@
 
     <el-container>
       <el-header class="header">
+        <div class="breadcrumb-wrapper">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item v-if="route.path === '/todo'">代办任务</el-breadcrumb-item>
+            <el-breadcrumb-item v-if="route.path === '/user'">用户管理</el-breadcrumb-item>
+            <el-breadcrumb-item v-if="route.path === '/category'">分类管理</el-breadcrumb-item>
+          </el-breadcrumb>
+        </div>
         <div class="header-right">
-          <el-dropdown>
-            <span class="el-dropdown-link">
-              <el-icon><User /></el-icon>
-              欢迎回来
-              <el-icon><ArrowDown /></el-icon>
-            </span>
+          <el-dropdown trigger="click" effect="light">
+            <div class="user-info">
+              <div class="user-avatar">
+                <el-avatar :size="36" :icon="UserFilled" />
+              </div>
+              <div class="user-details">
+                <div class="user-name">{{ userInfo?.username || '用户' }}</div>
+                <div class="user-role">{{ getUserRole(userInfo?.role) }}</div>
+              </div>
+              <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
+            </div>
             <template #dropdown>
-              <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
+              <el-dropdown-menu>
+                <el-dropdown-item disabled>
+                  <div class="dropdown-user-info">
+                    <el-avatar :size="24" :icon="UserFilled" />
+                    <div class="dropdown-user-details">
+                      <div class="dropdown-user-name">{{ userInfo?.username || '用户' }}</div>
+                      <div class="dropdown-user-role">{{ getUserRole(userInfo?.role) }}</div>
+                    </div>
+                  </div>
+                </el-dropdown-item>
+                <el-dropdown-item divided @click="handleLogout">
+                  <el-icon class="dropdown-item-icon"><SwitchButton /></el-icon>
+                  <span>退出登录</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
             </template>
           </el-dropdown>
         </div>
       </el-header>
-
-      <div class="breadcrumb-wrapper">
-        <el-breadcrumb separator="/">
-          <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-          <el-breadcrumb-item v-if="route.path === '/todo'">代办任务</el-breadcrumb-item>
-          <el-breadcrumb-item v-if="route.path === '/user'">用户管理</el-breadcrumb-item>
-        </el-breadcrumb>
-      </div>
 
       <el-main class="main">
         <router-view v-slot="{ Component }">
@@ -70,16 +89,32 @@
 </template>
 
 <script setup lang="ts">
-import { User, ArrowDown, UserFilled, HomeFilled } from '@element-plus/icons-vue';
+import { ArrowDown, UserFilled, HomeFilled, SwitchButton } from '@element-plus/icons-vue';
 import { useRoute } from 'vue-router';
 import { useLayout } from '../hooks/useLayout';
 import { useAnimation } from '@/hooks/useAnimation';
 import { useCommon } from '@/hooks/useCommon.ts';
+import { useAuthStore } from '@/stores/auth';
+
+const authStore = useAuthStore();
+const userInfo = authStore.userInfo;
 
 const route = useRoute();
 const { isCollapsed, activeMenu, handleLogout } = useLayout();
 const { enterAnimation, leaveAnimation } = useAnimation();
 const { goHomePage } = useCommon();
+
+// 获取用户角色
+const getUserRole = (role: number | undefined) => {
+  switch (role) {
+    case 2:
+      return '超级管理员';
+    case 1:
+      return '管理员';
+    default:
+      return '普通用户';
+  }
+};
 </script>
 
 <style scoped lang="less">
@@ -103,30 +138,106 @@ const { goHomePage } = useCommon();
 }
 
 .header {
-  background: #fff;
-  border-bottom: 1px solid #eee;
   display: flex;
-  justify-content: flex-end;
-  padding: 0 20px;
+  justify-content: space-between;
   align-items: center;
+  background: transparent;
+  padding: 0 20px;
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
 }
 
-.el-dropdown-link {
-  cursor: pointer;
+:deep(.el-card) {
+  background-color: transparent;
+}
+
+.user-info {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f5f7fa;
+  }
+}
+
+.user-avatar {
+  transition: transform 0.3s ease;
+
+  .user-info:hover & {
+    transform: scale(1.05);
+  }
+}
+
+.user-details {
+  text-align: left;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #303133;
+  line-height: 1.2;
+}
+
+.user-role {
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.2;
+}
+
+.dropdown-icon {
+  font-size: 12px;
+  color: #909399;
+  transition: transform 0.3s ease;
+
+  .user-info:hover & {
+    transform: translateY(1px);
+  }
+}
+
+.dropdown-user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.dropdown-user-details {
+  text-align: left;
+}
+
+.dropdown-user-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #303133;
+  line-height: 1.2;
+}
+
+.dropdown-user-role {
+  font-size: 12px;
+  color: #909399;
+  line-height: 1.2;
+}
+
+.dropdown-item-icon {
+  margin-right: 8px;
+  font-size: 14px;
 }
 
 .breadcrumb-wrapper {
+  display: flex;
   padding: 12px 20px;
-  background: #fff;
-  border-bottom: 1px solid #eee;
+  background-color: transparent;
 }
 
 .main {
-  background: #f5f7fa;
+  width: 100%;
   padding: 20px;
+  background-color: transparent;
 }
 
 .sidebar-menu {

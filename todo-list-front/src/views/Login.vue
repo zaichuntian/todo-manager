@@ -16,15 +16,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import ParticleBackground from '../components/ParticleBackground.vue';
 import LoginForm from '../components/LoginForm.vue';
 import RegisterForm from '../components/RegisterForm.vue';
-import { loginRules } from '../utils/validationRules';
+import { loginRules, registerRules } from '../utils/validationRules';
 
 // 状态管理
 const isRegister = ref(false);
-const rules = loginRules;
+const rules = computed(() => (isRegister.value ? registerRules : loginRules));
 
 // 切换卡片
 const toggleCard = () => {

@@ -1,18 +1,18 @@
 import Todo from '../models/todo.model';
 import User from '../models/user.model';
 import { BaseService } from './base.service';
+import { Op } from 'sequelize';
 
 export class TodoService extends BaseService<any> {
   // 获取所有任务（带分页）
-  static async findAllTodos(pageNum: number, pageSize: number) {
-    const offset = (pageNum - 1) * pageSize;
-    const limit = pageSize;
-
+  static async findAllTodos(pageSize: number, lastId: number = 0) {
     return await Todo.findAndCountAll({
-      where: { isDeleted: 1 },
-      offset,
-      limit,
-      order: [['createdAt', 'DESC']],
+      where: {
+        isDeleted: 1,
+        id: { [Op.gt]: lastId }, // 使用ID作为游标
+      },
+      limit: pageSize,
+      order: [['id', 'ASC']],
       include: [
         {
           model: User,

@@ -1,6 +1,6 @@
 <template>
   <div class="error-page error-401">
-    <ParticleAnimation :particle-count="2500" background-color="rgba(0, 0, 0, 0.5)" particle-shape="hexagon" />
+    <ParticleAnimation />
     <div class="error-content">
       <div class="error-info">
         <h1 class="error-code">401</h1>
@@ -10,7 +10,7 @@
         </p>
         <div class="buttons">
           <el-button type="primary" @click="goBack" class="back-button">Go Back</el-button>
-          <el-button type="primary" @click="goLogin" class="login-button">Go to Login</el-button>
+          <el-button type="primary" @click="goLogin" class="home-button">Go to Login</el-button>
         </div>
       </div>
     </div>
@@ -125,24 +125,28 @@ body {
 }
 
 :deep(.back-button),
-:deep(.login-button) {
-  padding: 10px 40px;
+:deep(.home-button) {
+  width: 108px;
+  height: 32px;
+  padding: 10px 30px;
   font-size: 16px;
-  border-radius: 30px;
+  border-radius: 4px;
   transition: all 0.3s ease;
-  box-shadow: none;
-  border: 2px solid #4caf50;
-  background-color: white;
+  border: none;
+  background-color: #fff;
   color: #4caf50;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
   opacity: 1 !important;
   transform: translate(0px, 0px) !important;
   cursor: pointer;
+  font-weight: bolder;
 
   &:hover {
     transform: translate(0px, 0px) !important;
-    box-shadow: none;
-    background-color: #4caf50;
+    box-shadow: 0 2px 50px 15px #4caf50;
     color: white;
+    background-color: #4caf50;
   }
 }
 
@@ -164,12 +168,6 @@ body {
     justify-content: center;
     flex-direction: column;
     align-items: center;
-  }
-
-  :deep(.back-button),
-  :deep(.login-button) {
-    width: 100%;
-    max-width: 200px;
   }
 }
 </style>

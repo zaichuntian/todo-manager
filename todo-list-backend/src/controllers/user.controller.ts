@@ -10,7 +10,7 @@ import { CONSTANTS } from '../config/constants';
 export class UserController extends BaseController {
   static async register(req: Request, res: Response) {
     try {
-      const { username, password, nickname, phone, email } = req.body;
+      const { username, password, nickname, phone, email, role, status } = req.body;
       const realPassword = decrypt(password);
 
       if (!username || !realPassword) {
@@ -23,15 +23,20 @@ export class UserController extends BaseController {
       }
 
       const hashedPwd = await bcrypt.hash(realPassword, 10);
-      await UserService.create({
+      const user = await UserService.create({
         username,
         password: hashedPwd,
         nickname,
         phone,
         email,
+        role: role || 0, // 确保role参数被正确传递
+        status: status || 1, // 确保status参数被正确传递
       });
 
-      return res.json(success(null, '注册成功'));
+      // 移除敏感信息
+      const { password: _, ...userInfo } = user.dataValues;
+
+      return res.json(success(userInfo, '注册成功'));
     } catch (err) {
       BaseController.handleError(res, err, '注册失败');
     }

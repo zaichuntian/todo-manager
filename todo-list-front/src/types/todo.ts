@@ -7,6 +7,7 @@ export interface Todo {
   content: string;
   status: number;
   userUuid: string;
+  categoryUuid: string;
   user?: UserBasic;
   createdAt: string;
   updatedAt: string;
@@ -16,6 +17,7 @@ export interface TodoFormData {
   uuid: string;
   title: string;
   content: string;
+  categoryUuid: string;
 }
 
 export type TodoListParams = PaginationParams;

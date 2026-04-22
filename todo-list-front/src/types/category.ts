@@ -5,6 +5,10 @@ import type { Todo } from './todo';
 export interface Category {
   uuid: string;
   name: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+  parentUuid?: string;
   userUuid: string;
   user?: UserBasic;
   todos?: Todo[];
@@ -13,8 +17,11 @@ export interface Category {
 }
 
 export interface CategoryFormData {
-  uuid: string;
   name: string;
+  description?: string;
+  color?: string;
+  icon?: string;
+  parentUuid?: string;
 }
 
 export type CategoryRules = FormRules;

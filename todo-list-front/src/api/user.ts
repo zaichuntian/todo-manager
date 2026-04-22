@@ -1,9 +1,10 @@
 import request from '../utils/request';
-import type { ApiResponse } from '../types/user';
+import type { User, UserFormData, UserInfo } from '../types/user';
+import type { ApiResponse } from '../types/common';
 
 // 登录
-export function loginApi(data: { username: string; password: string }) {
-  return request.post<ApiResponse>('/login', data);
+export function loginApi(data: { username: string; password: string }): Promise<UserInfo> {
+  return request.post('/login', data);
 }
 
 // 注册（新增用户复用这个）
@@ -13,26 +14,29 @@ export function registerApi(data: {
   nickname?: string;
   phone?: string;
   email?: string;
-}) {
-  return request.post<ApiResponse>('/register', data);
+}): Promise<ApiResponse<void>> {
+  return request.post('/register', data);
 }
 
 // 获取用户列表
-export function getUserListApi(params: { pageNum: number; pageSize: number }) {
-  return request.get<ApiResponse>('/users', { params });
+export function getUserListApi(params: {
+  pageNum: number;
+  pageSize: number;
+}): Promise<ApiResponse<{ list: User[]; total: number }>> {
+  return request.get('/users', { params });
 }
 
 // 修改用户
-export function updateUserApi(uuid: string, data: any) {
-  return request.put<ApiResponse>(`/users/${uuid}`, data);
+export function updateUserApi(uuid: string, data: Partial<UserFormData>): Promise<ApiResponse<User>> {
+  return request.put(`/users/${uuid}`, data);
 }
 
 // 删除用户
-export function deleteUserApi(uuid: string) {
-  return request.delete<ApiResponse>(`/users/${uuid}`);
+export function deleteUserApi(uuid: string): Promise<ApiResponse<void>> {
+  return request.delete(`/users/${uuid}`);
 }
 
 // 切换用户状态
-export function updateUserStatusApi(uuid: string, status: number) {
-  return request.put<ApiResponse>(`/users/${uuid}/status`, { status });
+export function updateUserStatusApi(uuid: string, status: number): Promise<ApiResponse<void>> {
+  return request.put(`/users/${uuid}/status`, { status });
 }

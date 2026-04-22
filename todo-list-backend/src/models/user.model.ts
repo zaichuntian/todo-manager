@@ -59,6 +59,17 @@ User.init(
   {
     sequelize,
     tableName: 'Users',
+    indexes: [
+      {
+        fields: ['uuid'],
+      },
+      {
+        fields: ['username'],
+      },
+      {
+        fields: ['role'],
+      },
+    ],
   }
 );
 

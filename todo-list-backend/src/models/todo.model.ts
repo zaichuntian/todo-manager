@@ -48,6 +48,20 @@ Todo.init(
   {
     sequelize,
     tableName: 'Todos',
+    indexes: [
+      {
+        fields: ['uuid'],
+      },
+      {
+        fields: ['userUuid'],
+      },
+      {
+        fields: ['categoryUuid'],
+      },
+      {
+        fields: ['status'],
+      },
+    ],
   }
 );
 

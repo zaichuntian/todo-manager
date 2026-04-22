@@ -1,4 +1,3 @@
-// src/controllers/user.controller.ts
 import { Request, Response } from 'express';
 import { UserService } from '../services/user.service';
 import { success, fail } from '../utils/response';
@@ -11,7 +10,7 @@ import { CONSTANTS } from '../config/constants';
 export class UserController extends BaseController {
   static async register(req: Request, res: Response) {
     try {
-      const { username, password } = req.body;
+      const { username, password, nickname, phone, email } = req.body;
       const realPassword = decrypt(password);
 
       if (!username || !realPassword) {
@@ -24,11 +23,16 @@ export class UserController extends BaseController {
       }
 
       const hashedPwd = await bcrypt.hash(realPassword, 10);
-      await UserService.create({ username, password: hashedPwd });
+      await UserService.create({
+        username,
+        password: hashedPwd,
+        nickname,
+        phone,
+        email,
+      });
 
       return res.json(success(null, '注册成功'));
     } catch (err) {
-      // 修复：使用 BaseController.handleError
       BaseController.handleError(res, err, '注册失败');
     }
   }
@@ -61,6 +65,9 @@ export class UserController extends BaseController {
       const userInfo = {
         userUuid: user.uuid,
         username: user.username,
+        nickname: user.nickname,
+        phone: user.phone,
+        email: user.email,
         role: user.role || 0,
         token,
       };

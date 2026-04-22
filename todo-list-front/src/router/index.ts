@@ -3,21 +3,25 @@ import { ElMessage } from 'element-plus';
 import { UserInfo } from '@/types/user.ts';
 
 const routes = [
-  { path: '/login', component: () => import('../views/Login.vue') },
+  {
+    path: '/login',
+    component: () => import('../views/Login.vue'),
+    meta: { title: '登录页' },
+  },
   {
     path: '/',
     component: () => import('../layouts/Layout.vue'),
     children: [
-      { path: '', component: () => import('../views/Home.vue') },
-      { path: '/user', component: () => import('../views/User.vue') },
-      { path: '/todo', component: () => import('../views/Todo.vue') },
-      { path: '/category', component: () => import('../views/Category.vue') },
+      { path: '', component: () => import('../views/Home.vue'), meta: { title: '首页' } },
+      { path: '/user', component: () => import('../views/User.vue'), meta: { title: '用户管理' } },
+      { path: '/todo', component: () => import('../views/Todo.vue'), meta: { title: '任务管理' } },
+      { path: '/category', component: () => import('../views/Category.vue'), meta: { title: '分类管理' } },
     ],
   },
-  { path: '/401', component: () => import('../views/401.vue') },
-  { path: '/403', component: () => import('../views/403.vue') },
-  { path: '/empty', component: () => import('../views/empty.vue') },
-  { path: '/:pathMatch(.*)*', component: () => import('../views/404.vue') },
+  { path: '/401', component: () => import('../views/401.vue'), meta: { title: '401' } },
+  { path: '/403', component: () => import('../views/403.vue'), meta: { title: '403' } },
+  { path: '/empty', component: () => import('../views/empty.vue'), meta: { title: '空页面' } },
+  { path: '/:pathMatch(.*)*', component: () => import('../views/404.vue'), meta: { title: '404' } },
 ];
 
 const router = createRouter({
@@ -39,6 +43,10 @@ router.beforeEach(to => {
     ElMessage.warning('普通用户无权访问用户管理页面');
     return '/403';
   }
+});
+
+router.afterEach(to => {
+  document.title = (to.meta.title as string) || 'vue3-admin';
 });
 
 export default router;

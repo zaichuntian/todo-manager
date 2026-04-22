@@ -8,7 +8,14 @@
       <h2 class="login-title">欢迎回来</h2>
       <p class="login-subtitle">请输入您的账号和密码</p>
     </div>
-    <el-form @submit.prevent="handleSubmit" :rules="rules" :model="form" ref="formRef" class="login-form">
+    <el-form
+      @submit.prevent="handleSubmit"
+      :show-message="false"
+      :rules="rules"
+      :model="form"
+      ref="formRef"
+      class="login-form"
+    >
       <el-form-item prop="username" class="form-item">
         <div class="input-wrapper">
           <el-input v-model="form.username" placeholder="请输入用户名" class="modern-input">
@@ -52,7 +59,7 @@ import { useRouter } from 'vue-router';
 import { loginApi } from '../api/user';
 import { encrypt } from '../utils/crypto';
 
-const props = defineProps<{
+defineProps<{
   rules: any;
 }>();
 
@@ -74,7 +81,7 @@ const handleSubmit = async () => {
   // 表单验证
   if (!formRef.value) return;
 
-  formRef.value.validate(async (valid: boolean) => {
+  formRef.value.validate(async (valid: boolean, invalidFields: any) => {
     if (valid) {
       loading.value = true;
       try {
@@ -82,25 +89,26 @@ const handleSubmit = async () => {
         const encryptedPwd = encrypt(form.password);
 
         // 请求后端
-        const res = await loginApi({
+        const userInfo = await loginApi({
           username: form.username,
           password: encryptedPwd,
         });
 
-        // @ts-ignore
-        if (res.code === 200) {
-          ElMessage.success('登录成功');
-          // @ts-ignore
-          auth.setUserInfo(res.data);
-          await router.push('/');
-        } else {
-          // @ts-ignore
-          ElMessage.error(res.msg);
-        }
-      } catch (err) {
-        console.log(err);
+        ElMessage.success('登录成功');
+        auth.setUserInfo(userInfo);
+        await router.push('/');
+      } catch (err: any) {
+        ElMessage.error(err.message || '登录失败');
       } finally {
         loading.value = false;
+      }
+    } else {
+      // 遍历invalidFields对象，获取第一个错误信息
+      for (const field in invalidFields) {
+        if (invalidFields[field] && invalidFields[field].length > 0) {
+          ElMessage.error(invalidFields[field][0].message);
+          break;
+        }
       }
     }
   });
@@ -266,6 +274,8 @@ const onRegisterClick = () => {
   background: rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
   width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 .input-wrapper:hover {
@@ -280,6 +290,8 @@ const onRegisterClick = () => {
   background: transparent;
   transition: all 0.3s ease;
   width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 :deep(.modern-input) .el-input__wrapper {
@@ -289,19 +301,15 @@ const onRegisterClick = () => {
 }
 
 :deep(.modern-input) .el-input__inner {
+  width: 100%;
   font-size: 16px;
   color: #303133;
   background: transparent;
+  text-align: center;
 }
 
 .input-icon {
-  width: 40px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #409eff;
-  font-size: 18px;
+  display: none;
 }
 
 .modern-button {

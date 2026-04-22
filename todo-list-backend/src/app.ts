@@ -7,11 +7,14 @@ import todoRoutes from './routes/todo.route';
 import userRoutes from './routes/user.route';
 import categoryRoutes from './routes/category.route';
 import cors from 'cors';
+import { errorHandler, notFoundHandler } from './middleware/error.middleware';
 
 // 导入模型关联文件
 import './models/index';
 
 const app = express();
+const port = parseInt(process.env.DEV_API_PORT || '3001');
+const isProd = process.env.NODE_ENV === 'production';
 
 // 全局请求日志中间件 —— 必须放在 最前面！！！
 app.use((req, res, next) => {
@@ -29,7 +32,7 @@ app.use((req, res, next) => {
 // 然后是 cors、json 解析
 app.use(
   cors({
-    origin: 'http://localhost:5173', // 仅开发环境使用
+    origin: isProd ? 'https://todo-list-backend.vercel.app' : 'http://localhost:5173', // 仅开发环境使用
     credentials: true,
   })
 );
@@ -40,11 +43,17 @@ app.use('/api', userRoutes);
 app.use('/api', todoRoutes);
 app.use('/api', categoryRoutes);
 
+// 404错误处理
+app.use(notFoundHandler);
+
+// 全局错误处理
+app.use(errorHandler);
+
 // 数据库同步
-sequelize.sync({ alter: true }).then(() => {
+sequelize.sync({ alter: !isProd }).then(() => {
   console.log('✅ 数据库同步完成');
 });
 
-app.listen(3001, '0.0.0.0', () => {
-  console.log('🚀 服务运行在 http://localhost:3001');
+app.listen(port, '0.0.0.0', () => {
+  console.log(`🚀 服务运行在 http://localhost:${port}`);
 });

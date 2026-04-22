@@ -7,7 +7,13 @@ export function loginApi(data: { username: string; password: string }) {
 }
 
 // 注册（新增用户复用这个）
-export function registerApi(data: { username: string; password: string }) {
+export function registerApi(data: {
+  username: string;
+  password: string;
+  nickname?: string;
+  phone?: string;
+  email?: string;
+}) {
   return request.post<ApiResponse>('/register', data);
 }
 

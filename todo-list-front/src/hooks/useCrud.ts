@@ -5,7 +5,7 @@ import type { FormRules, PaginationParams } from '../types/common';
 /**
  * CRUD 通用 Hook 配置
  */
-interface UseCrudOptions<F> {
+export interface UseCrudOptions<F> {
   // API 方法
   getListApi: (params: PaginationParams) => Promise<any>;
   addApi: (data: F) => Promise<any>;
@@ -58,7 +58,7 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
   const isAdd = ref(true);
   const formRef = ref<InstanceType<typeof ElForm>>();
 
-  const form = ref<F>({ ...options.initialForm });
+  const form = ref<F>({ ...options.initialForm } as F);
   const rules = ref<FormRules>(options.rules);
 
   // 重置表单
@@ -76,11 +76,20 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
       };
       const res = await options.getListApi(params);
 
-      if (res && res.code === 200 && res.data) {
-        tableData.value = res.data.list || [];
-        total.value = res.data.total || 0;
+      if (res) {
+        if (res.list && typeof res.total === 'number') {
+          // 格式1：直接返回分页数据
+          tableData.value = res.list || [];
+          total.value = res.total || 0;
+        } else if (res.data && res.data.list && typeof res.data.total === 'number') {
+          // 格式2：完整的响应对象
+          tableData.value = res.data.list || [];
+          total.value = res.data.total || 0;
+        } else {
+          ElMessage.error('获取列表失败：数据格式错误');
+        }
       } else {
-        ElMessage.error(res?.msg || '获取列表失败');
+        ElMessage.error('获取列表失败');
       }
     } catch (error) {
       console.error('请求错误:', error);
@@ -120,8 +129,14 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
 
   // 提交
   const handleSubmit = async () => {
-    const valid = await formRef.value?.validate().catch(() => false);
-    if (!valid) {
+    if (!formRef.value) {
+      ElMessage.warning('表单引用不存在');
+      return;
+    }
+
+    try {
+      await formRef.value.validate();
+    } catch (error) {
       ElMessage.warning('请填写完整信息');
       return;
     }
@@ -149,7 +164,9 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
   if (options.updateStatusApi) {
     handleStatusChange = async (row: T & { uuid: string; status: number }, status: number) => {
       try {
-        await options.updateStatusApi!(row.uuid, status);
+        if (options.updateStatusApi) {
+          await options.updateStatusApi(row.uuid, status);
+        }
         ElMessage.success('状态更新成功');
         await getList();
       } catch (err: any) {

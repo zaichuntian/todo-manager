@@ -1,22 +1,16 @@
-import { onMounted, ref } from 'vue';
 import { ElMessage } from 'element-plus';
 import { getUserListApi, deleteUserApi, updateUserApi, registerApi, updateUserStatusApi } from '../api/user';
 import { encrypt } from '../utils/crypto';
 import { useCrud } from './useCrud';
 import { formatDateTime } from '../utils/format';
+import { useAuth } from './useAuth';
 import type { User, UserFormData } from '../types/user';
-import type { UserInfo } from '../types/user';
 
 /**
  * 用户管理自定义 Hook
  */
 export function useUser() {
-  const loginUser = ref<UserInfo>({
-    userUuid: '',
-    username: '',
-    role: 0,
-    token: '',
-  });
+  const { loginUser, isAdmin } = useAuth();
 
   // 使用通用 CRUD Hook
   const crud = useCrud<User, UserFormData>({
@@ -37,6 +31,8 @@ export function useUser() {
         username: data.username,
         email: data.email,
         role: data.role,
+        nickname: data.nickname,
+        phone: data.phone,
         status: data.status,
       } as any);
     },
@@ -69,6 +65,10 @@ export function useUser() {
         { required: true, message: '请输入邮箱', trigger: 'blur' },
         { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
       ],
+      phone: [
+        { required: true, message: '请输入手机号', trigger: 'blur' },
+        { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' },
+      ],
       role: [{ required: true, message: '请选择角色', trigger: 'change' }],
     },
     initialForm: {
@@ -76,6 +76,8 @@ export function useUser() {
       username: '',
       password: '',
       confirmPassword: '',
+      phone: '',
+      nickname: '',
       email: '',
       role: 0, // 默认普通用户
       status: 1, // 默认启用
@@ -101,19 +103,11 @@ export function useUser() {
 
   // 检查是否有权限管理用户
   const hasUserManagementPermission = () => {
-    // 只有超级管理员(2)和管理员(1)可以管理用户
-    return loginUser.value.role === 2 || loginUser.value.role === 1;
+    return isAdmin.value;
   };
 
   // 初始化数据
-  onMounted(() => {
-    // 从本地获取当前用户信息
-    const userInfoStr = localStorage.getItem('userInfo');
-    if (userInfoStr) {
-      loginUser.value = JSON.parse(userInfoStr);
-    }
-    crud.getList();
-  });
+  crud.getList();
 
   return {
     // 从 CRUD Hook 中解构出需要的状态和方法

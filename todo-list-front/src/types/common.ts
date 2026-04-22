@@ -29,6 +29,7 @@ export interface FormRules {
     max?: number;
     validator?: (_rule: any, value: any, callback: any) => void;
     type?: string;
+    pattern?: RegExp;
   }>;
 }
 

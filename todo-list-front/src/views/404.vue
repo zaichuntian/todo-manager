@@ -1,6 +1,6 @@
 <template>
   <div class="error-page error-404">
-    <ParticleAnimation :particle-count="2500" background-color="transparent" particle-shape="hexagon" />
+    <ParticleAnimation :particle-count="2500" background-color="rgba(0, 0, 0, 0.5)" particle-shape="hexagon" />
     <div class="error-content">
       <div class="error-info">
         <h1 class="error-code">404</h1>

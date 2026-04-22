@@ -19,6 +19,13 @@
   text-rendering: optimizeLegibility;
 }
 
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 15px;
+  min-width: 1290px;
+}
+
 /* 针对 Element Plus 组件强制继承字体 */
 .el-button,
 .el-input,

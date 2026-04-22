@@ -1,12 +1,12 @@
 <template>
-  <div class="home-page">
+  <div class="home-page page-container">
     <div class="page-header">
       <h2>我的任务概览</h2>
       <el-tag type="info">共 {{ total }} 条任务</el-tag>
     </div>
 
     <div class="task-card-list">
-      <el-card v-for="task in tableData" :key="task.uuid" shadow="hover" class="task-card">
+      <BaseCard v-for="task in tableData" :key="task.uuid" shadow="hover" class="task-card">
         <!-- 上部分：标题（header 插槽，占 20%） -->
         <template #header>
           <div class="card-header">
@@ -34,19 +34,19 @@
               <span>{{ formatTime(task.createdAt) }}</span>
             </div>
             <div class="footer-right">
-              <el-button
+              <BaseButton
                 v-if="task.status === 0 && isMyTask(task)"
                 type="primary"
                 size="small"
                 @click="handleComplete(task)"
               >
                 完成任务
-              </el-button>
+              </BaseButton>
               <el-tag v-else type="success" size="small">已完成</el-tag>
             </div>
           </div>
         </template>
-      </el-card>
+      </BaseCard>
 
       <el-empty v-if="tableData.length === 0" description="暂无任务" style="grid-column: 1 / -1; margin-top: 50px" />
     </div>
@@ -55,10 +55,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { ElMessage, ElMessageBox } from 'element-plus';
+import { ElMessageBox } from 'element-plus';
 import { Clock } from '@element-plus/icons-vue';
 import dayjs from 'dayjs';
-import { getTodosApi, updateTodoStatusApi } from '../api/todo';
+import { api } from '@/api';
+import { showSuccessMessage, showInfoMessage } from '@/utils/common';
+import BaseCard from '@/components/common/BaseCard.vue';
+import BaseButton from '@/components/common/BaseButton.vue';
 
 const tableData = ref<any[]>([]);
 const total = ref(0);
@@ -75,7 +78,7 @@ const isMyTask = (row: any) => {
 // 获取任务列表
 const getList = async () => {
   try {
-    const res: any = await getTodosApi({ pageNum: 1, pageSize: 100 });
+    const res: any = await api.todo.getList({ pageNum: 1, pageSize: 100 });
     if (res.code === 200) {
       tableData.value = res.data.list.filter((item: any) => item.status === 0);
       total.value = res.data.total;
@@ -93,11 +96,11 @@ const handleComplete = async (task: any) => {
       cancelButtonText: '取消',
       type: 'success',
     });
-    await updateTodoStatusApi(task.uuid, 1);
-    ElMessage.success('任务已完成！');
+    await api.todo.updateStatus(task.uuid, 1);
+    showSuccessMessage('任务已完成！');
     getList();
   } catch {
-    ElMessage.info('已取消操作');
+    showInfoMessage('已取消操作');
   }
 };
 
@@ -109,22 +112,14 @@ onMounted(() => {
 
 <style scoped lang="less">
 .home-page {
-  padding: 20px;
-  background-color: #f5f7fa;
-  min-height: calc(100vh - 60px);
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.2),
+    0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 24px;
-
   h2 {
-    margin: 0;
     font-size: 20px;
-    font-weight: 600;
-    color: #303133;
   }
 }
 

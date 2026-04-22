@@ -10,5 +10,5 @@ export const ERROR_MESSAGES = {
 export const DEFAULT_VALUES = {
   PARTICLE_COUNT: 2000,
   PARTICLE_SHAPE: 'hexagon' as const,
-  BACKGROUND_COLOR: 'transparent',
+  BACKGROUND_COLOR: 'rgba(0, 0, 0, 0.5)',
 };

@@ -8,7 +8,14 @@
       <h2 class="login-title">创建账号</h2>
       <p class="login-subtitle">请设置您的账号和密码</p>
     </div>
-    <el-form @submit.prevent="handleSubmit" :rules="rules" :model="form" ref="formRef" class="login-form">
+    <el-form
+      @submit.prevent="handleSubmit"
+      :show-message="false"
+      :rules="rules"
+      :model="form"
+      ref="formRef"
+      class="login-form"
+    >
       <el-form-item prop="username" class="form-item">
         <div class="input-wrapper">
           <el-input v-model="form.username" placeholder="请输入用户名" class="modern-input">
@@ -31,39 +38,18 @@
           </el-input>
         </div>
       </el-form-item>
-      <el-form-item prop="nickname" class="form-item">
+      <el-form-item prop="confirmPassword" class="form-item">
         <div class="input-wrapper">
-          <el-input v-model="form.nickname" placeholder="请输入昵称" class="modern-input">
+          <el-input v-model="form.confirmPassword" type="password" placeholder="请确认密码" class="modern-input">
             <template #prefix>
               <div class="input-icon">
-                <i class="el-icon-user-solid"></i>
+                <i class="el-icon-lock"></i>
               </div>
             </template>
           </el-input>
         </div>
       </el-form-item>
-      <el-form-item prop="phone" class="form-item">
-        <div class="input-wrapper">
-          <el-input v-model="form.phone" placeholder="请输入手机号" class="modern-input">
-            <template #prefix>
-              <div class="input-icon">
-                <i class="el-icon-phone"></i>
-              </div>
-            </template>
-          </el-input>
-        </div>
-      </el-form-item>
-      <el-form-item prop="email" class="form-item">
-        <div class="input-wrapper">
-          <el-input v-model="form.email" placeholder="请输入邮箱" class="modern-input">
-            <template #prefix>
-              <div class="input-icon">
-                <i class="el-icon-message"></i>
-              </div>
-            </template>
-          </el-input>
-        </div>
-      </el-form-item>
+
       <el-form-item class="form-item">
         <el-button type="primary" class="modern-button" native-type="submit" :loading="loading">
           <span class="button-text">注册</span>
@@ -83,7 +69,7 @@ import { ElMessage } from 'element-plus';
 import { registerApi } from '../api/user';
 import { encrypt } from '../utils/crypto';
 
-const props = defineProps<{
+defineProps<{
   rules: any;
 }>();
 
@@ -94,9 +80,7 @@ const emit = defineEmits<{
 const form = reactive({
   username: '',
   password: '',
-  nickname: '',
-  phone: '',
-  email: '',
+  confirmPassword: '',
 });
 const loading = ref(false);
 const formRef = ref();
@@ -105,35 +89,40 @@ const handleSubmit = async () => {
   // 表单验证
   if (!formRef.value) return;
 
-  formRef.value.validate(async (valid: boolean) => {
+  formRef.value.validate(async (valid: boolean, invalidFields: any) => {
     if (valid) {
+      // 手动验证确认密码
+      if (form.password !== form.confirmPassword) {
+        ElMessage.error('两次输入密码不一致');
+        return;
+      }
+
       loading.value = true;
       try {
         // 前端加密密码
         const encryptedPwd = encrypt(form.password);
 
         // 请求后端
-        const res = await registerApi({
+        await registerApi({
           username: form.username,
           password: encryptedPwd,
-          nickname: form.nickname,
-          phone: form.phone,
-          email: form.email,
         });
 
-        // @ts-ignore
-        if (res.code === 200) {
-          ElMessage.success('注册成功');
-          // 注册成功后切换到登录页面
-          emit('login');
-        } else {
-          // @ts-ignore
-          ElMessage.error(res.msg);
-        }
-      } catch (err) {
-        console.log(err);
+        ElMessage.success('注册成功');
+        // 注册成功后切换到登录页面
+        emit('login');
+      } catch (err: any) {
+        ElMessage.error(err.message || '注册失败');
       } finally {
         loading.value = false;
+      }
+    } else {
+      // 遍历invalidFields对象，获取第一个错误信息
+      for (const field in invalidFields) {
+        if (invalidFields[field] && invalidFields[field].length > 0) {
+          ElMessage.error(invalidFields[field][0].message);
+          break;
+        }
       }
     }
   });
@@ -300,8 +289,8 @@ const onLoginClick = () => {
   animation-delay: 0.4s;
 }
 
-.form-item:nth-child(5) {
-  animation-delay: 0.5s;
+.form-item:nth-child(3) {
+  animation-delay: 0.3s;
 }
 
 .input-wrapper {
@@ -311,6 +300,8 @@ const onLoginClick = () => {
   background: rgba(255, 255, 255, 0.8);
   transition: all 0.3s ease;
   width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
 }
 
 .input-wrapper:hover {
@@ -325,6 +316,8 @@ const onLoginClick = () => {
   background: transparent;
   transition: all 0.3s ease;
   width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
 :deep(.modern-input) .el-input__wrapper {
@@ -334,19 +327,15 @@ const onLoginClick = () => {
 }
 
 :deep(.modern-input) .el-input__inner {
+  width: 100%;
   font-size: 16px;
   color: #303133;
   background: transparent;
+  text-align: center;
 }
 
 .input-icon {
-  width: 40px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #409eff;
-  font-size: 18px;
+  display: none;
 }
 
 .modern-button {

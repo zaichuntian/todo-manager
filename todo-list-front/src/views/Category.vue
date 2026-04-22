@@ -1,6 +1,6 @@
 <template>
-  <div class="category-page">
-    <el-card>
+  <div class="category-page page-container">
+    <el-card class="common-card">
       <div class="header-bar">
         <h3>分类管理</h3>
         <el-button type="primary" @click="handleAdd">新增分类</el-button>
@@ -80,6 +80,26 @@
         <el-form-item label="分类名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入分类名称" />
         </el-form-item>
+        <el-form-item label="分类描述" prop="description">
+          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入分类描述" />
+        </el-form-item>
+        <el-form-item label="分类颜色" prop="color">
+          <el-color-picker v-model="form.color" show-alpha />
+        </el-form-item>
+        <el-form-item label="分类图标" prop="icon">
+          <el-input v-model="form.icon" placeholder="请输入图标名称，如：Folder" />
+        </el-form-item>
+        <el-form-item label="父分类" prop="parentUuid">
+          <el-select v-model="form.parentUuid" placeholder="请选择父分类">
+            <el-option label="无" value="" />
+            <el-option
+              v-for="category in availableParentCategories"
+              :key="category.uuid"
+              :label="category.name"
+              :value="category.uuid"
+            />
+          </el-select>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
@@ -113,6 +133,7 @@ const {
   handleDelete,
   handleSubmit,
   getCategoryWithTodos,
+  availableParentCategories,
 } = useCategory();
 
 // 分类任务相关
@@ -132,6 +153,10 @@ const handleViewTasks = async (row: Category) => {
 </script>
 
 <style scoped lang="less">
+.category-page {
+  background-color: transparent;
+}
+
 .header-bar {
   display: flex;
   justify-content: space-between;

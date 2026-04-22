@@ -20,6 +20,9 @@ const sequelize = new Sequelize(
       acquire: 30000, // 连接超时时间
       idle: 10000, // 空闲连接超时时间
     },
+    dialectOptions: {
+      charset: 'utf8',
+    },
   }
 );
 

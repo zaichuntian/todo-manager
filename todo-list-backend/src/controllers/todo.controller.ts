@@ -1,4 +1,3 @@
-// src/controllers/todo.controller.ts
 import { Request, Response } from 'express';
 import { TodoService } from '../services/todo.service';
 import { success, fail } from '../utils/response';

@@ -14,6 +14,12 @@ const sequelize = new Sequelize(
     dialect: (process.env.DB_DIALECT || 'mysql') as any,
     logging: false,
     port: parseInt(process.env.DB_PORT || '3300'),
+    pool: {
+      max: 10, // 最大连接数
+      min: 0, // 最小连接数
+      acquire: 30000, // 连接超时时间
+      idle: 10000, // 空闲连接超时时间
+    },
   }
 );
 

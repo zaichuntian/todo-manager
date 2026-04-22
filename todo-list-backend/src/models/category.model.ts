@@ -6,6 +6,10 @@ class Category extends Model {
   public uuid!: string;
   public userUuid!: string;
   public name!: string;
+  public description?: string;
+  public color?: string;
+  public icon?: string;
+  public parentUuid?: string;
   public isDeleted!: number;
 }
 
@@ -24,6 +28,24 @@ Category.init(
     name: {
       type: DataTypes.STRING(50),
       allowNull: false,
+    },
+    description: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    color: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      defaultValue: '#409EFF', // 默认蓝色
+    },
+    icon: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+      defaultValue: 'Folder', // 默认文件夹图标
+    },
+    parentUuid: {
+      type: DataTypes.UUID,
+      allowNull: true,
     },
     isDeleted: {
       type: DataTypes.TINYINT,

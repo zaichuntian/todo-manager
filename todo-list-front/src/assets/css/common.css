@@ -1,0 +1,84 @@
+/* 公共样式 */
+
+:deep(.el-card) {
+  background: transparent;
+}
+
+/* 卡片样式 */
+.common-card {
+  background: transparent;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.common-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(64, 158, 255, 0.15);
+}
+
+/* 按钮样式 */
+.common-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.common-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+}
+
+/* 输入框样式 */
+.common-input {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.common-input:focus {
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+}
+
+/* 页面容器 */
+.page-container {
+  padding: 20px;
+  min-height: calc(100vh - 60px);
+}
+
+/* 页面头部 */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(230, 230, 230, 0.5);
+}
+
+.page-header h2,
+.page-header h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #303133;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 分页容器 */
+.pagination-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 15px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .page-container {
+    padding: 16px;
+  }
+
+  .page-header h2,
+  .page-header h3 {
+    font-size: 20px;
+  }
+}

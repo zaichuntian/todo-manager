@@ -38,8 +38,13 @@ router.beforeEach(to => {
   }
   // 如果用户已登录，且尝试访问登录页，重定向到首页
   if (to.path === '/login' && userInfo.token && userInfo.userUuid) return '/';
+  // 检查用户状态：如果账户已被禁用，提示用户
+  if (userInfo.token && userInfo.userUuid && userInfo.status === 0) {
+    ElMessage.error('您的账户已被禁用，请联系管理员开通权限');
+    return '/401';
+  }
   // 权限检查：只有超级管理员和管理员可以访问用户管理页面
-  if (to.path === '/user' && userInfo.role !== 1 && userInfo.role !== 2) {
+  if (to.path === '/user' && !(userInfo.role === 1 || userInfo.role === 2)) {
     ElMessage.warning('普通用户无权访问用户管理页面');
     return '/403';
   }

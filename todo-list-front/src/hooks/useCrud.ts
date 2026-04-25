@@ -5,24 +5,28 @@ import type { FormRules, PaginationParams } from '../types/common';
 /**
  * CRUD 通用 Hook 配置
  */
-export interface UseCrudOptions<F> {
+export interface UseCrudOptions<F, S = any> {
   // API 方法
-  getListApi: (params: PaginationParams) => Promise<any>;
+  getListApi: (params: PaginationParams & S) => Promise<any>;
   addApi: (data: F) => Promise<any>;
   updateApi: (id: string, data: F) => Promise<any>;
   deleteApi: (id: string) => Promise<any>;
+  // 可选的批量删除 API
+  batchDeleteApi?: (ids: string[]) => Promise<any>;
   // 可选的状态更新 API
   updateStatusApi?: (id: string, status: number) => Promise<any>;
   // 表单规则
   rules: FormRules;
   // 初始表单数据
   initialForm: F;
+  // 搜索表单初始数据
+  initialSearchForm?: S;
 }
 
 /**
  * CRUD 通用 Hook 返回值
  */
-interface UseCrudReturn<T, F> {
+interface UseCrudReturn<T, F, S = any> {
   // 状态数据
   tableData: Ref<T[]>;
   total: Ref<number>;
@@ -33,6 +37,7 @@ interface UseCrudReturn<T, F> {
   formRef: Ref<InstanceType<typeof ElForm> | undefined>;
   form: Ref<F>;
   rules: Ref<FormRules>;
+  searchForm: Ref<S>;
   // 方法
   getList: () => Promise<void>;
   handleAdd: () => void;
@@ -40,7 +45,10 @@ interface UseCrudReturn<T, F> {
   handleDelete: (row: T & { uuid: string }) => Promise<void>;
   handleSubmit: () => Promise<void>;
   handleStatusChange?: (row: T & { uuid: string; status: number }, status: number) => Promise<void>;
+  handleBatchDelete: (ids: string[]) => Promise<void>;
   resetForm: () => void;
+  handleSearch: () => Promise<void>;
+  resetSearch: () => void;
 }
 
 /**
@@ -48,7 +56,7 @@ interface UseCrudReturn<T, F> {
  * @param options 配置选项
  * @returns CRUD 相关状态和方法
  */
-export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
+export function useCrud<T, F, S = any>(options: UseCrudOptions<F, S>): UseCrudReturn<T, F, S> {
   // 响应式数据
   const tableData = ref<T[]>([]);
   const total = ref(0);
@@ -57,6 +65,7 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
   const dialogVisible = ref(false);
   const isAdd = ref(true);
   const formRef = ref<InstanceType<typeof ElForm>>();
+  const searchForm = ref<S>(options.initialSearchForm || ({} as S));
 
   const form = ref<F>({ ...options.initialForm } as F);
   const rules = ref<FormRules>(options.rules);
@@ -70,11 +79,24 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
   // 获取列表
   const getList = async () => {
     try {
-      const params: PaginationParams = {
+      // 只传递非空的搜索参数
+      const params: any = {
         pageNum: pageNum.value,
         pageSize: pageSize.value,
       };
-      const res = await options.getListApi(params);
+
+      // 过滤掉空值的搜索参数
+      console.log('搜索表单值:', searchForm.value);
+      // 直接传递搜索表单值，不进行过滤
+      Object.entries({ ...searchForm.value }).forEach(([key, value]) => {
+        if (value) {
+          params[key] = value;
+          console.log('添加搜索参数:', key, value);
+        }
+      });
+      console.log('最终参数:', params);
+
+      const res = await options.getListApi(params as PaginationParams & S);
 
       if (res) {
         if (res.list && typeof res.total === 'number') {
@@ -135,7 +157,13 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
     }
 
     try {
-      await formRef.value.validate();
+      // 检查formRef.value是否有validate方法
+      if (formRef.value.validate) {
+        await formRef.value.validate();
+      } else {
+        ElMessage.warning('表单验证方法不存在');
+        return;
+      }
     } catch (error) {
       ElMessage.warning('请填写完整信息');
       return;
@@ -158,6 +186,33 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
     }
   };
 
+  // 优化：添加批量操作方法
+  const handleBatchDelete = async (ids: string[]) => {
+    if (ids.length === 0) {
+      ElMessage.warning('请选择要删除的记录');
+      return;
+    }
+
+    try {
+      await ElMessageBox.confirm('确定删除选中的记录？', '提示');
+      if (options.batchDeleteApi) {
+        // 使用批量删除 API
+        await options.batchDeleteApi(ids);
+      } else {
+        // 回退到逐个删除
+        for (const id of ids) {
+          await options.deleteApi(id);
+        }
+      }
+      ElMessage.success('删除成功');
+      await getList();
+    } catch (error) {
+      if (error !== 'cancel') {
+        ElMessage.error('删除失败，请稍后重试');
+      }
+    }
+  };
+
   // 状态切换
   let handleStatusChange: ((row: T & { uuid: string; status: number }, status: number) => Promise<void>) | undefined;
 
@@ -177,6 +232,19 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
     };
   }
 
+  // 搜索
+  const handleSearch = async () => {
+    pageNum.value = 1; // 搜索时重置到第一页
+    await getList();
+  };
+
+  // 重置搜索
+  const resetSearch = () => {
+    searchForm.value = options.initialSearchForm || ({} as S);
+    pageNum.value = 1;
+    getList();
+  };
+
   return {
     // 状态数据
     tableData: tableData as Ref<T[]>,
@@ -188,6 +256,7 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
     formRef,
     form: form as Ref<F>,
     rules,
+    searchForm,
     // 方法
     getList,
     handleAdd,
@@ -195,6 +264,9 @@ export function useCrud<T, F>(options: UseCrudOptions<F>): UseCrudReturn<T, F> {
     handleDelete,
     handleSubmit,
     handleStatusChange,
+    handleBatchDelete,
     resetForm,
-  } as UseCrudReturn<T, F>;
+    handleSearch,
+    resetSearch,
+  } as UseCrudReturn<T, F, S>;
 }

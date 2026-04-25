@@ -14,6 +14,8 @@ export function registerApi(data: {
   nickname?: string;
   phone?: string;
   email?: string;
+  role?: number;
+  status?: number;
 }): Promise<ApiResponse<void>> {
   return request.post('/register', data);
 }
@@ -22,6 +24,8 @@ export function registerApi(data: {
 export function getUserListApi(params: {
   pageNum: number;
   pageSize: number;
+  username?: string;
+  phone?: string;
 }): Promise<ApiResponse<{ list: User[]; total: number }>> {
   return request.get('/users', { params });
 }
@@ -39,4 +43,9 @@ export function deleteUserApi(uuid: string): Promise<ApiResponse<void>> {
 // 切换用户状态
 export function updateUserStatusApi(uuid: string, status: number): Promise<ApiResponse<void>> {
   return request.put(`/users/${uuid}/status`, { status });
+}
+
+// 批量删除用户
+export function batchDeleteUserApi(uuids: string[]): Promise<ApiResponse<void>> {
+  return request.delete('/users/batch', { data: { uuids } });
 }

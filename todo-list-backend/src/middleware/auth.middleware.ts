@@ -25,7 +25,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
 
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
     const user = await User.findOne({
-      where: { uuid: decoded.uuid, isDeleted: 1 },
+      where: { uuid: decoded.uuid },
     });
 
     if (!user) {

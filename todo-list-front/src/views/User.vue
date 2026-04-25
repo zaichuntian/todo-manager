@@ -4,14 +4,58 @@
       <!-- 顶部操作栏 -->
       <div class="header-bar">
         <h3>用户管理</h3>
-        <BaseButton type="primary" @click="handleAdd">新增用户</BaseButton>
+        <SearchBar>
+          <div style="display: flex; align-items: center">
+            <el-input
+              v-model="searchForm.username"
+              placeholder="搜索用户名"
+              clearable
+              style="width: 180px"
+              @keyup.enter="handleSearch"
+              @input="handleInputChange"
+            />
+            <el-button @click="handleSearch" style="margin-left: -1px; border-radius: 0 4px 4px 0" tabindex="-1"
+              ><el-icon><Search /></el-icon
+            ></el-button>
+          </div>
+          <div style="display: flex; align-items: center; margin-left: 10px">
+            <el-input
+              v-model="searchForm.phone"
+              placeholder="搜索手机号"
+              clearable
+              style="width: 180px"
+              @keyup.enter="handleSearch"
+              @input="handleInputChange"
+            />
+            <el-button @click="handleSearch" style="margin-left: -1px; border-radius: 0 4px 4px 0" tabindex="-1"
+              ><el-icon><Search /></el-icon
+            ></el-button>
+          </div>
+          <el-button type="info" @click="resetSearch" style="margin-left: 10px"
+            ><el-icon><Refresh /></el-icon> 重置</el-button
+          >
+          <el-button type="danger" @click="handleBatchDeleteClick" style="margin-left: 10px"
+            ><el-icon><Delete /></el-icon> 批量删除</el-button
+          >
+          <BaseButton type="primary" @click="handleAdd" style="margin-left: 10px">新增用户</BaseButton>
+        </SearchBar>
       </div>
 
       <!-- 用户表格 -->
       <div class="table-container">
-        <el-table :data="tableData" border style="width: 1565px">
-          <el-table-column type="index" label="序号" width="80" align="center" />
+        <el-table :data="tableData" border style="width: 1565px" @selection-change="handleSelectionChange">
+          <el-table-column type="selection" width="55" align="center" />
           <el-table-column prop="username" width="120" label="用户名" align="center" />
+          <el-table-column label="角色" width="120" align="center">
+            <template #default="{ row }">
+              <el-tag
+                :type="row.role === 2 ? 'danger' : row.role === 1 ? 'success' : 'primary'"
+                style="width: 80px; text-align: center"
+              >
+                {{ row.role === 2 ? '超级管理员' : row.role === 1 ? '管理员' : '普通用户' }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="nickname" width="120" label="昵称" align="center" />
           <el-table-column prop="phone" width="150" label="手机号" align="center" />
           <el-table-column prop="email" width="200" label="邮箱" align="center" />
@@ -27,17 +71,12 @@
           </el-table-column>
           <el-table-column label="状态" width="170" align="center">
             <template #default="{ row }">
-              <div class="status-switch-wrapper">
-                <span class="status-label disabled" :class="{ active: row.status === 0 }"> 禁用 </span>
-                <el-switch
-                  v-model="row.status"
-                  :active-value="1"
-                  :inactive-value="0"
-                  class="custom-switch"
-                  @change="(val: number) => handleStatusChange?.(row, val)"
-                />
-                <span class="status-label enabled" :class="{ active: row.status === 1 }"> 启用 </span>
-              </div>
+              <StatusSwitch
+                :value="row.status"
+                active-text="启用"
+                inactive-text="禁用"
+                @change="(val: number) => handleStatusChange?.(row, val)"
+              />
             </template>
           </el-table-column>
 
@@ -51,52 +90,19 @@
       </div>
 
       <!-- 分页组件 -->
-      <div class="pagination-wrapper">
-        <el-pagination
-          v-model:current-page="pageNum"
-          v-model:page-size="pageSize"
-          :total="total"
-          :page-sizes="[5, 10, 15]"
-          layout="total, prev, pager, next, sizes"
-          @current-change="getUserList"
-          @size-change="getUserList"
-        />
-      </div>
+      <Pagination
+        :page-num="pageNum"
+        :page-size="pageSize"
+        :total="total"
+        @current-change="getUserList"
+        @size-change="getUserList"
+      />
     </BaseCard>
     <el-empty v-else description="无权限访问此页面" />
 
     <!-- 新增/编辑弹窗 -->
     <el-dialog v-model="dialogVisible" title="用户信息" append-to-body>
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名" class="common-input" />
-        </el-form-item>
-        <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="form.nickname" placeholder="请输入昵称" class="common-input" />
-        </el-form-item>
-        <el-form-item v-if="isAdd" label="密码" prop="password">
-          <el-input v-model="form.password" type="password" placeholder="请输入密码" class="common-input" />
-        </el-form-item>
-        <el-form-item v-if="isAdd" label="确认密码" prop="confirmPassword">
-          <el-input v-model="form.confirmPassword" type="password" placeholder="请确认密码" class="common-input" />
-        </el-form-item>
-        <el-form-item label="手机号" prop="phone">
-          <el-input v-model="form.phone" placeholder="请输入手机号" class="common-input" />
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱" class="common-input" />
-        </el-form-item>
-        <el-form-item label="角色" prop="role">
-          <el-select v-model="form.role" placeholder="请选择角色">
-            <el-option label="超级管理员" :value="2"></el-option>
-            <el-option label="管理员" :value="1"></el-option>
-            <el-option label="普通用户" :value="0"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-switch v-model="form.status" :active-value="1" :inactive-value="0"></el-switch>
-        </el-form-item>
-      </el-form>
+      <UserForm v-model:form="form" :rules="rules" :is-add="isAdd" ref="formRef" />
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
         <BaseButton type="primary" @click="handleSubmit">确定</BaseButton>
@@ -106,9 +112,16 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue';
 import { useUser } from '@/hooks/useUser';
 import BaseCard from '@/components/common/BaseCard.vue';
 import BaseButton from '@/components/common/BaseButton.vue';
+import SearchBar from '@/components/common/SearchBar.vue';
+import Pagination from '@/components/common/Pagination.vue';
+import StatusSwitch from '@/components/common/StatusSwitch.vue';
+import UserForm from '@/components/user/UserForm.vue';
+import { ElMessage } from 'element-plus';
+import { Search, Refresh, Delete } from '@element-plus/icons-vue';
 
 // 使用用户管理自定义 Hook
 const {
@@ -121,15 +134,57 @@ const {
   formRef,
   form,
   rules,
+  searchForm,
   formatTime,
   getUserList,
   handleAdd,
   handleEdit,
   handleDelete,
+  handleBatchDelete,
   handleStatusChange,
   handleSubmit,
   hasUserManagementPermission,
 } = useUser();
+
+// 批量选择的用户
+const selectedRows = ref<any[]>([]);
+
+// 处理选择变化
+const handleSelectionChange = (val: any[]) => {
+  selectedRows.value = val;
+};
+
+// 自定义搜索方法
+const handleSearch = async () => {
+  // 检查是否输入了搜索内容
+  if (!searchForm.value.username && !searchForm.value.phone) {
+    ElMessage.warning('请输入搜索内容');
+    return;
+  }
+
+  pageNum.value = 1;
+  await getUserList();
+};
+
+// 自定义重置搜索方法
+const resetSearch = () => {
+  searchForm.value.username = '';
+  searchForm.value.phone = '';
+  pageNum.value = 1;
+  getUserList();
+};
+
+// 输入框内容变化时触发实时搜索
+const handleInputChange = async () => {
+  pageNum.value = 1;
+  await getUserList();
+};
+
+// 处理批量删除
+const handleBatchDeleteClick = async () => {
+  const selectedUuids = selectedRows.value.map((row: any) => row.uuid);
+  await handleBatchDelete(selectedUuids);
+};
 </script>
 
 <style scoped lang="less">
@@ -142,43 +197,5 @@ const {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 15px;
-}
-
-.pagination-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 15px;
-}
-
-.status-switch-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.status-label {
-  font-size: 12px;
-  color: #999; /* 默认灰色 */
-  transition: color 0.2s;
-}
-
-/* 激活时高亮 */
-.status-label.disabled.active {
-  color: #ff4949;
-}
-
-.status-label.enabled.active {
-  color: #13ce66;
-}
-
-:deep(.custom-switch) .el-switch__core {
-  border-color: #ff4949;
-  background-color: #ff4d4f !important;
-}
-
-:deep(.custom-switch.is-checked) .el-switch__core {
-  border-color: #13ce66;
-  background-color: #13ce66 !important;
 }
 </style>

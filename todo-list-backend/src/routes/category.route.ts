@@ -9,6 +9,7 @@ router.get('/categories', authMiddleware, CategoryController.getUserCategories);
 router.post('/categories', authMiddleware, categoryValidationRules.create, validate, CategoryController.create);
 router.put('/categories/:uuid', authMiddleware, categoryValidationRules.update, validate, CategoryController.update);
 router.delete('/categories/:uuid', authMiddleware, CategoryController.delete);
+router.delete('/categories/batch', authMiddleware, CategoryController.batchDelete);
 router.get('/categories/:uuid/todos', authMiddleware, CategoryController.getCategoryWithTodos);
 
 export default router;

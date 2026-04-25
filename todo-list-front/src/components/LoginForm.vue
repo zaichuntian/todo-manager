@@ -58,6 +58,7 @@ import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
 import { loginApi } from '../api/user';
 import { encrypt } from '../utils/crypto';
+import { updateUserInfoCache } from '../utils/request';
 
 defineProps<{
   rules: any;
@@ -96,6 +97,7 @@ const handleSubmit = async () => {
 
         ElMessage.success('登录成功');
         auth.setUserInfo(userInfo);
+        updateUserInfoCache(userInfo); // 更新内存缓存
         await router.push('/');
       } catch (err: any) {
         ElMessage.error(err.message || '登录失败');

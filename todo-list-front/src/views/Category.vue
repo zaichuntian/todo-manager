@@ -3,7 +3,25 @@
     <el-card class="common-card">
       <div class="header-bar">
         <h3>分类管理</h3>
-        <el-button type="primary" @click="handleAdd">新增分类</el-button>
+        <SearchBar>
+          <div style="display: flex; align-items: center">
+            <el-input
+              v-model="searchForm.name"
+              placeholder="搜索分类名称"
+              clearable
+              style="width: 180px"
+              @keyup.enter="handleSearch"
+              @input="handleInputChange"
+            />
+            <el-button @click="handleSearch" style="margin-left: -1px; border-radius: 0 4px 4px 0" tabindex="-1"
+              ><el-icon><Search /></el-icon
+            ></el-button>
+          </div>
+          <el-button type="info" @click="resetSearch" style="margin-left: 10px"
+            ><el-icon><Refresh /></el-icon> 重置</el-button
+          >
+          <el-button type="primary" @click="handleAdd" style="margin-left: 10px">新增分类</el-button>
+        </SearchBar>
       </div>
 
       <el-table :data="tableData" border style="width: 100%">
@@ -33,74 +51,30 @@
         </el-table-column>
       </el-table>
       <!-- 添加分页组件 -->
-      <div class="pagination-wrapper">
-        <el-pagination
-          v-model:current-page="pageNum"
-          v-model:page-size="pageSize"
-          :total="total"
-          layout="total, prev, pager, next, sizes"
-          @current-change="getList"
-          @size-change="getList"
-        />
-      </div>
+      <Pagination
+        :page-num="pageNum"
+        :page-size="pageSize"
+        :total="total"
+        @current-change="getList"
+        @size-change="getList"
+      />
     </el-card>
 
     <!-- 分类任务弹窗 -->
     <el-dialog v-model="taskDialogVisible" title="分类任务" width="80%" append-to-body>
-      <div v-if="currentCategory" class="category-tasks">
-        <h4>{{ currentCategory.name }} - 任务列表</h4>
-        <el-table :data="categoryTasks" border style="width: 100%" v-if="categoryTasks.length > 0">
-          <el-table-column type="index" label="序号" width="80" align="center" />
-          <el-table-column prop="title" label="标题" align="center" />
-          <el-table-column prop="content" label="内容" align="center" />
-          <el-table-column label="状态" align="center">
-            <template #default="{ row }">
-              <el-tag :type="row.status === 1 ? 'success' : 'warning'">
-                {{ row.status === 1 ? '已完成' : '未完成' }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="创建时间" align="center">
-            <template #default="{ row }">
-              {{ formatTime(row.createdAt) }}
-            </template>
-          </el-table-column>
-        </el-table>
-        <div v-else class="empty-tasks">
-          <el-empty description="该分类下暂无任务" />
-        </div>
-      </div>
+      <CategoryTasks :category="currentCategory" :tasks="categoryTasks" />
       <template #footer>
         <el-button @click="taskDialogVisible = false">关闭</el-button>
       </template>
     </el-dialog>
 
     <el-dialog v-model="dialogVisible" title="分类信息" @keyup.enter="handleSubmit" append-to-body>
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
-        <el-form-item label="分类名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入分类名称" />
-        </el-form-item>
-        <el-form-item label="分类描述" prop="description">
-          <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入分类描述" />
-        </el-form-item>
-        <el-form-item label="分类颜色" prop="color">
-          <el-color-picker v-model="form.color" show-alpha />
-        </el-form-item>
-        <el-form-item label="分类图标" prop="icon">
-          <el-input v-model="form.icon" placeholder="请输入图标名称，如：Folder" />
-        </el-form-item>
-        <el-form-item label="父分类" prop="parentUuid">
-          <el-select v-model="form.parentUuid" placeholder="请选择父分类">
-            <el-option label="无" value="" />
-            <el-option
-              v-for="category in availableParentCategories"
-              :key="category.uuid"
-              :label="category.name"
-              :value="category.uuid"
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
+      <CategoryForm
+        v-model:form="form"
+        :rules="rules"
+        :available-parent-categories="availableParentCategories"
+        ref="formRef"
+      />
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
         <el-button type="primary" @click="handleSubmit">确定</el-button>
@@ -112,6 +86,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useCategory } from '../hooks/useCategory';
+import SearchBar from '@/components/common/SearchBar.vue';
+import Pagination from '@/components/common/Pagination.vue';
+import CategoryForm from '@/components/category/CategoryForm.vue';
+import CategoryTasks from '@/components/category/CategoryTasks.vue';
+import { ElMessage } from 'element-plus';
+import { Search, Refresh } from '@element-plus/icons-vue';
 import type { Category } from '../types/category';
 import type { Todo } from '../types/todo';
 
@@ -125,6 +105,7 @@ const {
   formRef,
   form,
   rules,
+  searchForm,
   formatTime,
   isMyCategory,
   getList,
@@ -135,6 +116,33 @@ const {
   getCategoryWithTodos,
   availableParentCategories,
 } = useCategory();
+
+// 自定义搜索方法
+const handleSearch = async () => {
+  // 检查是否输入了搜索内容
+  if (!searchForm.value.name) {
+    ElMessage.warning('请输入搜索内容');
+    return;
+  }
+
+  pageNum.value = 1;
+  await getList();
+};
+
+// 自定义重置搜索方法
+const resetSearch = () => {
+  searchForm.value = {
+    name: '',
+  };
+  pageNum.value = 1;
+  getList();
+};
+
+// 输入框内容变化时触发实时搜索
+const handleInputChange = async () => {
+  pageNum.value = 1;
+  await getList();
+};
 
 // 分类任务相关
 const taskDialogVisible = ref(false);
@@ -160,26 +168,7 @@ const handleViewTasks = async (row: Category) => {
 .header-bar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 15px;
-}
-
-.category-tasks {
-  margin-top: 20px;
-
-  h4 {
-    margin-bottom: 15px;
-    color: #333;
-  }
-}
-
-.empty-tasks {
-  margin: 40px 0;
-  text-align: center;
-}
-
-.pagination-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 15px;
 }
 </style>

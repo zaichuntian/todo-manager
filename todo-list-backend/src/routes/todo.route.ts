@@ -9,6 +9,7 @@ router.get('/todos', authMiddleware, TodoController.getMyList);
 router.post('/todos', authMiddleware, todoValidationRules.create, validate, TodoController.create);
 router.put('/todos/:uuid', authMiddleware, todoValidationRules.update, validate, TodoController.update);
 router.delete('/todos/:uuid', authMiddleware, TodoController.delete);
+router.delete('/todos/batch', authMiddleware, TodoController.batchDelete);
 router.put('/todos/:uuid/status', authMiddleware, TodoController.updateStatus);
 
 export default router;

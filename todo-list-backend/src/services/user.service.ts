@@ -2,83 +2,210 @@
 import User from '../models/user.model';
 import { BaseService } from './base.service';
 import { RedisUtil } from '../utils/redis';
+import { logger } from '../utils/logger';
+import { Op } from 'sequelize';
 
 export class UserService extends BaseService<any> {
-  // 查询用户列表（分页）
-  static async findAll(pageNum: number, pageSize: number) {
-    const cacheKey = `users:all:${pageNum}:${pageSize}`;
-    const cachedData = await RedisUtil.get(cacheKey);
-    if (cachedData) {
-      return cachedData;
-    }
+  // 查询用户列表（分页，支持搜索）
+  static async findAll(pageNum: number, pageSize: number, searchParams?: any) {
+    try {
+      // 生成缓存键，包含搜索参数
+      const searchKey = searchParams ? JSON.stringify(searchParams) : 'empty';
+      const cacheKey = `users:all:${pageNum}:${pageSize}:${searchKey}`;
+      const cachedData = await RedisUtil.get(cacheKey);
+      if (cachedData) {
+        logger.debug('从缓存获取用户列表');
+        console.log('从缓存获取用户列表:', cachedData);
+        return cachedData;
+      }
 
-    const data = await super.findAll(User, pageNum, pageSize);
-    await RedisUtil.set(cacheKey, data, 300);
-    return data;
+      // 直接调用BaseService的findAll方法，只传递isDeleted=0的条件
+      const data = await BaseService.findAll(User, pageNum, pageSize, searchParams, {
+        where: {
+          isDeleted: 0,
+        },
+      });
+      console.log('查询用户列表结果:', data);
+      await RedisUtil.set(cacheKey, data, 300);
+      logger.debug('从数据库获取用户列表并缓存');
+      return data;
+    } catch (error) {
+      logger.error('查询用户列表失败:', error);
+      console.error('查询用户列表失败:', error);
+      throw error;
+    }
   }
 
   // 根据 uuid 查询单个用户
   static async findByUuid(uuid: string) {
-    const cacheKey = `user:uuid:${uuid}`;
-    const cachedData = await RedisUtil.get(cacheKey);
-    if (cachedData) {
-      return cachedData;
-    }
+    try {
+      const cacheKey = `user:uuid:${uuid}`;
+      const cachedData = await RedisUtil.get(cacheKey);
+      if (cachedData) {
+        logger.debug('从缓存获取用户信息');
+        return cachedData;
+      }
 
-    const data = await super.findByUuid(User, uuid);
-    if (data) {
-      await RedisUtil.set(cacheKey, data, 3600);
+      // 构建查询条件，只添加isDeleted=0的条件，不过滤status
+      const options = {
+        where: {
+          isDeleted: 0,
+        },
+      };
+
+      const data = await super.findByUuid(User, uuid, options);
+      if (data) {
+        await RedisUtil.set(cacheKey, data, 3600);
+      }
+      logger.debug('从数据库获取用户信息并缓存');
+      return data;
+    } catch (error) {
+      logger.error('查询用户信息失败:', error);
+      throw error;
     }
-    return data;
   }
 
   // 根据用户名查询（登录/注册用）
   static async findByUsername(username: string) {
-    const cacheKey = `user:username:${username}`;
-    const cachedData = await RedisUtil.get(cacheKey);
-    if (cachedData) {
-      return cachedData;
-    }
+    try {
+      const cacheKey = `user:username:${username}`;
+      const cachedData = await RedisUtil.get(cacheKey);
+      if (cachedData) {
+        logger.debug('从缓存获取用户信息');
+        return cachedData;
+      }
 
-    const data = await User.findOne({
-      where: { username, isDeleted: 1 },
-    });
-    if (data) {
-      await RedisUtil.set(cacheKey, data, 3600);
+      const data = await super.findByCondition(User, { username });
+      if (data) {
+        await RedisUtil.set(cacheKey, data, 3600);
+      }
+      logger.debug('从数据库获取用户信息并缓存');
+      return data;
+    } catch (error) {
+      logger.error('根据用户名查询用户失败:', error);
+      throw error;
     }
-    return data;
   }
 
   // 创建用户
   static async create(user: any) {
-    const result = await super.create(User, user);
-    // 清除相关缓存
-    await RedisUtil.delByPattern('users:all:*');
-    return result;
+    try {
+      const result = await super.create(User, user);
+      // 清除相关缓存
+      await RedisUtil.delByPattern('users:all:*');
+      logger.info('创建用户成功:', result.username);
+      return result;
+    } catch (error) {
+      logger.error('创建用户失败:', error);
+      throw error;
+    }
   }
 
   // 根据 uuid 修改用户
   static async updateByUuid(uuid: string, data: any) {
-    const result = await super.updateByUuid(User, uuid, data);
-    // 清除相关缓存
-    await RedisUtil.delByPattern('users:all:*');
-    await RedisUtil.del(`user:uuid:${uuid}`);
-    if (data.username) {
-      await RedisUtil.del(`user:username:${data.username}`);
+    try {
+      // 构建查询条件，只添加isDeleted=0的条件，不过滤status
+      const where = {
+        uuid,
+        isDeleted: 0,
+      };
+
+      // 移除可能的敏感字段
+      delete data.uuid;
+      delete data.createdAt;
+
+      const result = await User.update(data, { where });
+      // 清除相关缓存
+      await RedisUtil.delByPattern('users:all:*');
+      await RedisUtil.del(`user:uuid:${uuid}`);
+      if (data.username) {
+        await RedisUtil.del(`user:username:${data.username}`);
+      }
+      logger.info('更新用户成功:', uuid);
+      return result;
+    } catch (error) {
+      logger.error('更新用户失败:', error);
+      throw error;
     }
-    return result;
   }
 
   // 根据 uuid 软删除用户
   static async deleteByUuid(uuid: string) {
-    const user = await this.findByUuid(uuid);
-    const result = await super.deleteByUuid(User, uuid);
-    // 清除相关缓存
-    await RedisUtil.delByPattern('users:all:*');
-    await RedisUtil.del(`user:uuid:${uuid}`);
-    if (user) {
-      await RedisUtil.del(`user:username:${user.username}`);
+    try {
+      const user = await this.findByUuid(uuid);
+      // 构建查询条件，只添加isDeleted=0的条件，不过滤status
+      const where = {
+        uuid,
+        isDeleted: 0,
+      };
+
+      const result = await User.update({ isDeleted: 1 }, { where });
+      // 清除相关缓存
+      await RedisUtil.delByPattern('users:all:*');
+      await RedisUtil.del(`user:uuid:${uuid}`);
+      if (user) {
+        await RedisUtil.del(`user:username:${user.username}`);
+      }
+      logger.info('删除用户成功:', uuid);
+      return result;
+    } catch (error) {
+      logger.error('删除用户失败:', error);
+      throw error;
     }
-    return result;
+  }
+
+  // 批量删除用户
+  static async batchDeleteByUuids(uuids: string[]) {
+    try {
+      console.log('批量删除用户UUIDs:', uuids);
+
+      // 先查询这些UUID对应的用户是否存在，不考虑isDeleted和status
+      const users = await User.findAll({
+        where: {
+          uuid: {
+            [Op.in]: uuids,
+          },
+        },
+        attributes: ['uuid', 'username', 'isDeleted', 'status'],
+      });
+      console.log('找到的用户数量:', users.length);
+      console.log('找到的用户:', users);
+
+      // 构建查询条件，只添加isDeleted=0的条件，不过滤status
+      const where = {
+        uuid: {
+          [Op.in]: uuids,
+        },
+        isDeleted: 0,
+      };
+      console.log('批量删除查询条件:', where);
+
+      const result = await User.update({ isDeleted: 1 }, { where });
+      console.log('批量删除结果:', result);
+      // 清除相关缓存
+      await RedisUtil.delByPattern('users:all:*');
+      for (const uuid of uuids) {
+        await RedisUtil.del(`user:uuid:${uuid}`);
+      }
+      logger.info('批量删除用户成功:', uuids.length);
+      return result;
+    } catch (error) {
+      console.error('批量删除用户失败:', error);
+      logger.error('批量删除用户失败:', error);
+      throw error;
+    }
+  }
+
+  // 根据条件查询用户列表
+  static async findByConditions(conditions: any, options?: any) {
+    try {
+      return await User.findAll({
+        where: { ...conditions, isDeleted: 0 },
+        ...options,
+      });
+    } catch (error) {
+      logger.error('根据条件查询用户失败:', error);
+      throw error;
+    }
   }
 }

@@ -6,32 +6,44 @@ class User extends Model {
   public uuid!: string;
   public username!: string;
   public password!: string;
+  public status!: number;
+  public role!: number;
   public nickname!: string;
   public phone!: string;
   public email!: string;
-  public role!: number;
-  public status!: number;
   public isDeleted!: number;
 }
 
 User.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     uuid: {
-      type: DataTypes.UUID,
+      type: DataTypes.CHAR(36),
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
-      // 移除 unique: true
     },
     username: {
-      type: DataTypes.STRING,
+      type: DataTypes.STRING(255),
       allowNull: false,
     },
     password: {
       type: DataTypes.STRING(255),
       allowNull: false,
     },
+    status: {
+      type: DataTypes.TINYINT,
+      defaultValue: 1,
+    },
+    role: {
+      type: DataTypes.TINYINT,
+      defaultValue: 0,
+    },
     nickname: {
-      type: DataTypes.STRING(50),
+      type: DataTypes.STRING(255),
       allowNull: true,
     },
     phone: {
@@ -39,26 +51,18 @@ User.init(
       allowNull: true,
     },
     email: {
-      type: DataTypes.STRING(100),
+      type: DataTypes.STRING(255),
       allowNull: true,
-      // 移除 unique: true，避免索引过多
-    },
-    role: {
-      type: DataTypes.TINYINT,
-      defaultValue: 0, // 0 普通用户，1 管理员，2 超级管理员
-    },
-    status: {
-      type: DataTypes.TINYINT,
-      defaultValue: 1, // 1 启用，0 禁用
     },
     isDeleted: {
       type: DataTypes.TINYINT,
-      defaultValue: 1,
+      defaultValue: 0,
     },
   },
   {
     sequelize,
-    tableName: 'Users',
+    tableName: 'users',
+    timestamps: false,
   }
 );
 

@@ -11,6 +11,7 @@ router.get('/users', authMiddleware, UserController.getList);
 router.get('/users/:uuid', authMiddleware, UserController.getOne);
 router.put('/users/:uuid', authMiddleware, userValidationRules.update, validate, UserController.update);
 router.delete('/users/:uuid', authMiddleware, UserController.delete);
+router.delete('/users/batch', authMiddleware, UserController.batchDelete);
 router.put('/users/:uuid/status', authMiddleware, UserController.updateStatus);
 
 export default router;

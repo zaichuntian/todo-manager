@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineExpose, ref, watch, defineEmits } from 'vue';
+import { defineProps, defineExpose, ref, watch, defineEmits, computed } from 'vue';
 import type { TodoFormData } from '@/types/todo';
 import type { Category } from '@/types/category';
 

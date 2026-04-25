@@ -6,23 +6,27 @@ class Category extends Model {
   public uuid!: string;
   public userUuid!: string;
   public name!: string;
-  public description?: string;
-  public color?: string;
-  public icon?: string;
-  public parentUuid?: string;
+  public description!: string;
+  public color!: string;
+  public icon!: string;
+  public parentUuid!: string;
   public isDeleted!: number;
 }
 
 Category.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     uuid: {
-      type: DataTypes.UUID,
+      type: DataTypes.CHAR(36),
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
-      // 移除 unique: true
     },
     userUuid: {
-      type: DataTypes.UUID,
+      type: DataTypes.CHAR(36),
       allowNull: false,
     },
     name: {
@@ -44,17 +48,18 @@ Category.init(
       defaultValue: 'Folder', // 默认文件夹图标
     },
     parentUuid: {
-      type: DataTypes.UUID,
+      type: DataTypes.CHAR(36),
       allowNull: true,
     },
     isDeleted: {
       type: DataTypes.TINYINT,
-      defaultValue: 1,
+      defaultValue: 0,
     },
   },
   {
     sequelize,
-    tableName: 'Categories',
+    tableName: 'categories',
+    timestamps: false,
   }
 );
 

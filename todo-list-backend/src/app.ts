@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import express from 'express';
-import sequelize from './config/database';
+import { sequelize, syncModels } from './config/database';
 import todoRoutes from './routes/todo.route';
 import userRoutes from './routes/user.route';
 import categoryRoutes from './routes/category.route';
@@ -49,8 +49,7 @@ app.use(notFoundHandler);
 // 全局错误处理
 app.use(errorHandler);
 
-// 数据库同步
-sequelize.sync({ alter: !isProd }).then(() => {
+syncModels().then(() => {
   console.log('✅ 数据库同步完成');
 });
 

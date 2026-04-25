@@ -6,6 +6,8 @@ import type { ApiResponse } from '../types/common';
 export function getTodosApi(params: {
   pageNum: number;
   pageSize: number;
+  title?: string;
+  content?: string;
 }): Promise<ApiResponse<{ list: Todo[]; total: number }>> {
   return request.get('/todos', { params });
 }
@@ -28,4 +30,9 @@ export function deleteTodoApi(uuid: string): Promise<ApiResponse<void>> {
 // 新增：更新todo状态
 export function updateTodoStatusApi(uuid: string, status: number): Promise<ApiResponse<void>> {
   return request.put(`/todos/${uuid}/status`, { status });
+}
+
+// 批量删除任务
+export function batchDeleteTodoApi(uuids: string[]): Promise<ApiResponse<void>> {
+  return request.delete('/todos/batch', { data: { uuids } });
 }

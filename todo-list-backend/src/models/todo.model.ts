@@ -14,14 +14,18 @@ class Todo extends Model {
 
 Todo.init(
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
     uuid: {
-      type: DataTypes.UUID,
+      type: DataTypes.CHAR(36),
       allowNull: false,
       defaultValue: DataTypes.UUIDV4,
-      // 移除 unique: true
     },
     userUuid: {
-      type: DataTypes.UUID,
+      type: DataTypes.CHAR(36),
       allowNull: false,
     },
     title: {
@@ -32,22 +36,23 @@ Todo.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
+    categoryUuid: {
+      type: DataTypes.CHAR(36),
+      allowNull: true,
+    },
     status: {
       type: DataTypes.TINYINT,
       defaultValue: 0,
     },
-    categoryUuid: {
-      type: DataTypes.UUID,
-      allowNull: true,
-    },
     isDeleted: {
       type: DataTypes.TINYINT,
-      defaultValue: 1,
+      defaultValue: 0,
     },
   },
   {
     sequelize,
-    tableName: 'Todos',
+    tableName: 'todos',
+    timestamps: false,
   }
 );
 

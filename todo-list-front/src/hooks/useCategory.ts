@@ -18,8 +18,13 @@ export function useCategory() {
   const { loginUser, hasPermission } = useAuth();
   const categories = ref<Category[]>([]);
 
+  // 搜索表单类型
+  interface SearchForm {
+    name?: string;
+  }
+
   // 使用通用 CRUD Hook
-  const crud = useCrud<Category, CategoryFormData>({
+  const crud = useCrud<Category, CategoryFormData, SearchForm>({
     getListApi: async params => {
       const res = await getCategoriesApi(params);
       if (res && res.data && res.data.list) {
@@ -45,6 +50,10 @@ export function useCategory() {
       color: '#409EFF',
       icon: 'Folder',
       parentUuid: '',
+    },
+    // 搜索表单初始数据
+    initialSearchForm: {
+      name: '',
     },
   });
 

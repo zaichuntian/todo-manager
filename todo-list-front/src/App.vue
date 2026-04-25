@@ -7,16 +7,32 @@
 
     <!-- 路由视图 -->
     <div class="content-container">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
     </div>
+
+    <!-- 全局错误提示 -->
+    <el-notification
+      v-if="errorMessage"
+      :title="'错误'"
+      :message="errorMessage"
+      type="error"
+      :duration="3000"
+      @close="errorMessage = ''"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, onErrorCaptured } from 'vue';
 import * as THREE from 'three';
+import { ElNotification } from 'element-plus';
 
 const bgCanvas = ref<HTMLCanvasElement>();
+const errorMessage = ref('');
 
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
@@ -24,35 +40,63 @@ let renderer: THREE.WebGLRenderer;
 let particles: THREE.Group;
 let animationId: number;
 
+// 全局错误捕获
+const handleError = (err: Error, instance: any, info: string) => {
+  console.error('全局错误:', err);
+  console.error('错误信息:', info);
+  errorMessage.value = `发生错误: ${err.message}`;
+  return true; // 阻止错误继续传播
+};
+
+// 注册全局错误捕获
+onErrorCaptured(handleError);
+
+// 全局未捕获错误处理
+window.addEventListener('error', event => {
+  console.error('未捕获的错误:', event.error);
+  errorMessage.value = `发生未捕获的错误: ${event.error?.message || '未知错误'}`;
+});
+
+// 全局未处理的Promise拒绝处理
+window.addEventListener('unhandledrejection', event => {
+  console.error('未处理的Promise拒绝:', event.reason);
+  errorMessage.value = `发生Promise错误: ${event.reason?.message || '未知错误'}`;
+});
+
 // 初始化Three.js场景
 const initThree = () => {
   if (!bgCanvas.value) return;
 
-  // 创建场景
-  scene = new THREE.Scene();
+  try {
+    // 创建场景
+    scene = new THREE.Scene();
 
-  // 创建相机
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.z = 3; // 调整相机位置，使三角形更大
+    // 创建相机
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.z = 3; // 调整相机位置，使三角形更大
 
-  // 创建渲染器
-  renderer = new THREE.WebGLRenderer({
-    canvas: bgCanvas.value,
-    alpha: true,
-    antialias: true,
-  });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setClearColor(0x000000, 0); // 确保背景完全透明
+    // 创建渲染器
+    renderer = new THREE.WebGLRenderer({
+      canvas: bgCanvas.value,
+      alpha: true,
+      antialias: true,
+    });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setClearColor(0x000000, 0); // 确保背景完全透明
 
-  // 创建粒子
-  createParticles();
+    // 创建粒子
+    createParticles();
 
-  // 开始动画
-  animate();
+    // 开始动画
+    animate();
 
-  // 监听窗口大小变化
-  window.addEventListener('resize', handleResize);
+    // 监听窗口大小变化
+    window.addEventListener('resize', handleResize);
+  } catch (error) {
+    console.error('Three.js初始化失败:', error);
+    errorMessage.value = '背景动画初始化失败';
+  }
 };
 
 // 创建粒子
@@ -124,25 +168,37 @@ const createParticles = () => {
 
 // 动画循环
 const animate = () => {
-  animationId = requestAnimationFrame(animate);
+  try {
+    animationId = requestAnimationFrame(animate);
 
-  // 整体缓慢旋转
-  particles.rotation.y += 0.0005;
-  particles.rotation.x += 0.0002;
+    // 整体缓慢旋转
+    if (particles) {
+      particles.rotation.y += 0.0005;
+      particles.rotation.x += 0.0002;
 
-  // 为每个线条添加独立的旋转
-  if (particles instanceof THREE.Group) {
-    particles.children.forEach((child, index) => {
-      if (child instanceof THREE.Line) {
-        // 每个线条独立旋转
-        child.rotation.x += 0.0003 + (index % 5) * 0.0001;
-        child.rotation.y += 0.0003 + (index % 7) * 0.0001;
-        child.rotation.z += 0.0003 + (index % 9) * 0.0001;
+      // 为每个线条添加独立的旋转
+      if (particles instanceof THREE.Group) {
+        particles.children.forEach((child, index) => {
+          if (child instanceof THREE.Line) {
+            // 每个线条独立旋转
+            child.rotation.x += 0.0003 + (index % 5) * 0.0001;
+            child.rotation.y += 0.0003 + (index % 7) * 0.0001;
+            child.rotation.z += 0.0003 + (index % 9) * 0.0001;
+          }
+        });
       }
-    });
-  }
+    }
 
-  renderer.render(scene, camera);
+    if (renderer && scene && camera) {
+      renderer.render(scene, camera);
+    }
+  } catch (error) {
+    console.error('动画循环错误:', error);
+    // 停止动画以避免持续错误
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+    }
+  }
 };
 
 // 处理窗口大小变化
@@ -189,5 +245,16 @@ onUnmounted(() => {
 .content-container {
   position: relative;
   z-index: 1;
+}
+
+/* 页面切换动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

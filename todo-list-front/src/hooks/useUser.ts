@@ -1,5 +1,12 @@
 import { ElMessage } from 'element-plus';
-import { getUserListApi, deleteUserApi, updateUserApi, registerApi, updateUserStatusApi } from '../api/user';
+import {
+  getUserListApi,
+  deleteUserApi,
+  updateUserApi,
+  registerApi,
+  updateUserStatusApi,
+  batchDeleteUserApi,
+} from '../api/user';
 import { encrypt } from '../utils/crypto';
 import { useCrud } from './useCrud';
 import { formatDateTime } from '../utils/format';
@@ -12,8 +19,14 @@ import type { User, UserFormData } from '../types/user';
 export function useUser() {
   const { loginUser, isAdmin } = useAuth();
 
+  // 搜索表单类型
+  interface SearchForm {
+    username?: string;
+    phone?: string;
+  }
+
   // 使用通用 CRUD Hook
-  const crud = useCrud<User, UserFormData>({
+  const crud = useCrud<User, UserFormData, SearchForm>({
     getListApi: getUserListApi,
     // 自定义新增 API 调用，需要加密密码
     addApi: async data => {
@@ -23,6 +36,8 @@ export function useUser() {
         email: data.email,
         role: data.role,
         status: data.status,
+        nickname: data.nickname,
+        phone: data.phone,
       } as any);
     },
     // 自定义更新 API 调用，更新用户信息
@@ -37,6 +52,7 @@ export function useUser() {
       } as any);
     },
     deleteApi: deleteUserApi,
+    batchDeleteApi: batchDeleteUserApi,
     updateStatusApi: updateUserStatusApi,
     rules: {
       username: [
@@ -81,6 +97,11 @@ export function useUser() {
       email: '',
       role: 0, // 默认普通用户
       status: 1, // 默认启用
+    },
+    // 搜索表单初始数据
+    initialSearchForm: {
+      username: '',
+      phone: '',
     },
   });
 

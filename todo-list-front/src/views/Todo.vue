@@ -3,7 +3,38 @@
     <el-card class="common-card">
       <div class="header-bar">
         <h3>任务管理</h3>
-        <BaseButton type="primary" @click="handleAdd">新增任务</BaseButton>
+        <SearchBar>
+          <div style="display: flex; align-items: center">
+            <el-input
+              v-model="searchForm.title"
+              placeholder="搜索任务标题"
+              clearable
+              style="width: 180px"
+              @keyup.enter="handleSearch"
+              @input="handleInputChange"
+            />
+            <el-button @click="handleSearch" style="margin-left: -1px; border-radius: 0 4px 4px 0" tabindex="-1"
+              ><el-icon><Search /></el-icon
+            ></el-button>
+          </div>
+          <div style="display: flex; align-items: center; margin-left: 10px">
+            <el-input
+              v-model="searchForm.content"
+              placeholder="搜索任务内容"
+              clearable
+              style="width: 180px"
+              @keyup.enter="handleSearch"
+              @input="handleInputChange"
+            />
+            <el-button @click="handleSearch" style="margin-left: -1px; border-radius: 0 4px 4px 0" tabindex="-1"
+              ><el-icon><Search /></el-icon
+            ></el-button>
+          </div>
+          <el-button type="info" @click="resetSearch" style="margin-left: 10px"
+            ><el-icon><Refresh /></el-icon> 重置</el-button
+          >
+          <BaseButton type="primary" @click="handleAdd" style="margin-left: 10px">新增任务</BaseButton>
+        </SearchBar>
       </div>
 
       <el-table :data="tableData" border class="table-container">
@@ -34,18 +65,13 @@
         <el-table-column label="完成状态" width="180" align="center">
           <template #default="{ row }">
             <!-- 仅自己的任务可切换状态 -->
-            <div class="status-switch-wrapper">
-              <span class="status-label disabled" :class="{ active: row.status === 0 }"> 未完成 </span>
-              <el-switch
-                v-model="row.status"
-                :active-value="1"
-                :inactive-value="0"
-                :disabled="!isMyTask(row)"
-                class="custom-switch"
-                @change="(val: number) => handleStatusChange?.(row, val)"
-              />
-              <span class="status-label enabled" :class="{ active: row.status === 1 }"> 已完成 </span>
-            </div>
+            <StatusSwitch
+              :value="row.status"
+              :disabled="!isMyTask(row)"
+              active-text="已完成"
+              inactive-text="未完成"
+              @change="(val: number) => handleStatusChange?.(row, val)"
+            />
           </template>
         </el-table-column>
 
@@ -58,37 +84,17 @@
         </el-table-column>
       </el-table>
 
-      <div class="pagination-wrapper">
-        <el-pagination
-          v-model:current-page="pageNum"
-          v-model:page-size="pageSize"
-          :total="total"
-          layout="total, prev, pager, next, sizes"
-          @current-change="getList"
-          @size-change="getList"
-        />
-      </div>
+      <Pagination
+        :page-num="pageNum"
+        :page-size="pageSize"
+        :total="total"
+        @current-change="getList"
+        @size-change="getList"
+      />
     </el-card>
 
     <el-dialog v-model="dialogVisible" title="任务信息" @keyup.enter="handleSubmit" append-to-body>
-      <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
-        <el-form-item label="标题" prop="title">
-          <el-input v-model="form.title" placeholder="请输入标题" />
-        </el-form-item>
-        <el-form-item label="内容" prop="content">
-          <el-input v-model="form.content" type="textarea" :rows="3" />
-        </el-form-item>
-        <el-form-item label="分类" prop="categoryUuid">
-          <el-select v-model="form.categoryUuid" placeholder="请选择分类">
-            <el-option
-              v-for="category in categories"
-              :key="category.uuid"
-              :label="category.name"
-              :value="category.uuid"
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
+      <TodoForm v-model:form="form" :rules="rules" :categories="categories" ref="formRef" />
       <template #footer>
         <el-button @click="dialogVisible = false">取消</el-button>
         <BaseButton type="primary" @click="handleSubmit">确定</BaseButton>
@@ -101,11 +107,17 @@
 import { ref, onMounted } from 'vue';
 import { useTodo } from '@/hooks/useTodo';
 import BaseButton from '@/components/common/BaseButton.vue';
+import SearchBar from '@/components/common/SearchBar.vue';
+import Pagination from '@/components/common/Pagination.vue';
+import StatusSwitch from '@/components/common/StatusSwitch.vue';
+import TodoForm from '@/components/todo/TodoForm.vue';
 import { getCategoriesApi } from '@/api/category';
+import { ElMessage } from 'element-plus';
+import { Search, Refresh } from '@element-plus/icons-vue';
 import type { Category } from '@/types/category';
 
 // 使用任务管理自定义 Hook
-const {
+let {
   tableData,
   total,
   pageNum,
@@ -114,6 +126,7 @@ const {
   formRef,
   form,
   rules,
+  searchForm,
   formatTime,
   isMyTask,
   getList,
@@ -124,6 +137,34 @@ const {
   handleSubmit,
 } = useTodo();
 
+// 自定义搜索方法
+const handleSearch = async () => {
+  // 检查是否输入了搜索内容
+  if (!searchForm.value.title && !searchForm.value.content) {
+    ElMessage.warning('请输入搜索内容');
+    return;
+  }
+
+  pageNum.value = 1;
+  await getList();
+};
+
+// 自定义重置搜索方法
+const resetSearch = () => {
+  searchForm.value = {
+    title: '',
+    content: '',
+  };
+  pageNum.value = 1;
+  getList();
+};
+
+// 输入框内容变化时触发实时搜索
+const handleInputChange = async () => {
+  pageNum.value = 1;
+  await getList();
+};
+
 // 分类列表
 const categories = ref<Category[]>([]);
 
@@ -131,18 +172,37 @@ const categories = ref<Category[]>([]);
 const fetchCategories = async () => {
   try {
     const response = await getCategoriesApi({ pageNum: 1, pageSize: 100 });
-    if (response.code === 200 && response.data) {
+    // 检查响应格式
+    if (response && response.list) {
+      // 直接使用response.list
+      categories.value = response.list || [];
+    } else if (response && response.data && response.data.list) {
+      // 使用response.data.list
       categories.value = response.data.list || [];
+    } else {
+      categories.value = [];
     }
   } catch (error) {
-    console.error('获取分类列表失败:', error);
+    categories.value = [];
   }
 };
 
 // 初始化
-onMounted(() => {
-  fetchCategories();
+onMounted(async () => {
+  await fetchCategories();
 });
+
+// 重写handleEdit方法，确保分类列表已加载
+const originalHandleEdit = handleEdit;
+handleEdit = async (row: any) => {
+  // 确保分类列表已加载
+  if (categories.value.length === 0) {
+    await fetchCategories();
+  }
+  // 等待分类列表加载完成后再打开编辑弹框
+  await new Promise(resolve => setTimeout(resolve, 100));
+  originalHandleEdit(row);
+};
 </script>
 
 <style scoped lang="less">
@@ -155,40 +215,5 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
-}
-.pagination-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 15px;
-}
-.status-switch-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.status-label {
-  font-size: 12px;
-  color: #999; /* 默认灰色 */
-  transition: color 0.2s;
-}
-
-/* 激活时高亮 */
-.status-label.disabled.active {
-  color: #e6a23c;
-}
-
-.status-label.enabled.active {
-  color: #13ce66;
-}
-
-:deep(.custom-switch) .el-switch__core {
-  border-color: #e6a23c;
-  background-color: #e6a23c !important;
-}
-
-:deep(.custom-switch.is-checked) .el-switch__core {
-  border-color: #13ce66;
-  background-color: #13ce66 !important;
 }
 </style>

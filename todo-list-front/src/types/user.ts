@@ -28,7 +28,8 @@ export interface UserFormData {
 export interface UserInfo {
   userUuid: string;
   username: string;
-  role: number;
+  role?: number;
+  status?: number;
   token: string;
 }
 

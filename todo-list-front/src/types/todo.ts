@@ -1,5 +1,6 @@
 // 任务相关类型定义
 import type { PaginationParams, PaginationResponse, FormRules, UserBasic } from './common';
+import type { Category } from './category';
 
 export interface Todo {
   uuid: string;
@@ -9,6 +10,7 @@ export interface Todo {
   userUuid: string;
   categoryUuid: string;
   user?: UserBasic;
+  category?: Category;
   createdAt: string;
   updatedAt: string;
 }

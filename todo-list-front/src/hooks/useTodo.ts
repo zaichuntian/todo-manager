@@ -10,8 +10,14 @@ import type { Todo, TodoFormData } from '../types/todo';
 export function useTodo() {
   const { loginUser, hasPermission } = useAuth();
 
+  // 搜索表单类型
+  interface SearchForm {
+    title?: string;
+    content?: string;
+  }
+
   // 使用通用 CRUD Hook
-  const crud = useCrud<Todo, TodoFormData>({
+  const crud = useCrud<Todo, TodoFormData, SearchForm>({
     getListApi: params => getTodosApi(params),
     addApi: addTodoApi,
     updateApi: updateTodoApi,
@@ -33,6 +39,11 @@ export function useTodo() {
       title: '',
       content: '',
       categoryUuid: '',
+    },
+    // 搜索表单初始数据
+    initialSearchForm: {
+      title: '',
+      content: '',
     },
   });
 

@@ -21,7 +21,7 @@ const bgCanvas = ref<HTMLCanvasElement>();
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let renderer: THREE.WebGLRenderer;
-let particles: THREE.Points;
+let particles: THREE.Group;
 let animationId: number;
 
 // 初始化Three.js场景
@@ -33,7 +33,7 @@ const initThree = () => {
 
   // 创建相机
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.z = 5;
+  camera.position.z = 3; // 调整相机位置，使三角形更大
 
   // 创建渲染器
   renderer = new THREE.WebGLRenderer({
@@ -43,6 +43,7 @@ const initThree = () => {
   });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setClearColor(0x000000, 0); // 确保背景完全透明
 
   // 创建粒子
   createParticles();
@@ -56,26 +57,68 @@ const initThree = () => {
 
 // 创建粒子
 const createParticles = () => {
-  const particlesGeometry = new THREE.BufferGeometry();
-  const particlesCount = 1500;
+  const particlesCount = 300;
 
-  const posArray = new Float32Array(particlesCount * 3);
+  // 创建一个包含所有三角形的组
+  const particlesGroup = new THREE.Group();
 
-  for (let i = 0; i < particlesCount * 3; i++) {
-    posArray[i] = (Math.random() - 0.5) * 10;
+  // 为每个粒子创建一个独立的线条
+  for (let i = 0; i < particlesCount; i++) {
+    // 等边三角形顶点
+    const triangleGeometry = new THREE.BufferGeometry();
+    const triangleVertices = new Float32Array([
+      0,
+      0.1732,
+      0, // 顶部
+      -0.1,
+      -0.0866,
+      0, // 左下角
+      0.1,
+      -0.0866,
+      0, // 右下角
+      0,
+      0.1732,
+      0, // 回到顶部，形成闭合
+    ]);
+    triangleGeometry.setAttribute('position', new THREE.BufferAttribute(triangleVertices, 3));
+
+    // 生成随机颜色
+    const r = 0.5 + Math.random() * 0.5; // 0.5-1.0
+    const g = 0.5 + Math.random() * 0.5; // 0.5-1.0
+    const b = 0.7 + Math.random() * 0.3; // 0.7-1.0
+
+    // 三角形材质 - 使用线条，加粗线条宽度
+    const particlesMaterial = new THREE.LineBasicMaterial({
+      color: new THREE.Color(r, g, b),
+      transparent: true,
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending,
+      linewidth: 2, // 加粗线条
+    });
+
+    // 创建线条
+    const line = new THREE.Line(triangleGeometry, particlesMaterial);
+
+    // 随机位置
+    const x = (Math.random() - 0.5) * 20;
+    const y = (Math.random() - 0.5) * 20;
+    const z = (Math.random() - 0.5) * 10;
+    line.position.set(x, y, z);
+
+    // 随机旋转
+    line.rotation.x = Math.random() * Math.PI * 2;
+    line.rotation.y = Math.random() * Math.PI * 2;
+    line.rotation.z = Math.random() * Math.PI * 2;
+
+    // 随机缩放 - 不同大小的三角形
+    const scale = 0.3 + Math.random() * 1.2; // 更大的缩放范围
+    line.scale.set(scale, scale, scale);
+
+    // 添加到组中
+    particlesGroup.add(line);
   }
 
-  particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-
-  const particlesMaterial = new THREE.PointsMaterial({
-    size: 0.02,
-    color: 0x409eff,
-    transparent: true,
-    opacity: 0.8,
-    blending: THREE.AdditiveBlending,
-  });
-
-  particles = new THREE.Points(particlesGeometry, particlesMaterial);
+  particles = particlesGroup;
   scene.add(particles);
 };
 
@@ -83,7 +126,21 @@ const createParticles = () => {
 const animate = () => {
   animationId = requestAnimationFrame(animate);
 
-  particles.rotation.y += 0.001;
+  // 整体缓慢旋转
+  particles.rotation.y += 0.0005;
+  particles.rotation.x += 0.0002;
+
+  // 为每个线条添加独立的旋转
+  if (particles instanceof THREE.Group) {
+    particles.children.forEach((child, index) => {
+      if (child instanceof THREE.Line) {
+        // 每个线条独立旋转
+        child.rotation.x += 0.0003 + (index % 5) * 0.0001;
+        child.rotation.y += 0.0003 + (index % 7) * 0.0001;
+        child.rotation.z += 0.0003 + (index % 9) * 0.0001;
+      }
+    });
+  }
 
   renderer.render(scene, camera);
 };
@@ -120,7 +177,8 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .bg-canvas {

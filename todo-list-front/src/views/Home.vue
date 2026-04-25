@@ -1,55 +1,56 @@
 <template>
   <div class="home-page page-container">
-    <div class="page-header">
-      <h2>我的任务概览</h2>
-      <el-tag type="info">共 {{ total }} 条任务</el-tag>
-    </div>
-
-    <div class="task-card-list">
-      <BaseCard v-for="task in tableData" :key="task.uuid" shadow="hover" class="task-card">
-        <!-- 上部分：标题（header 插槽，占 20%） -->
-        <template #header>
-          <div class="card-header">
-            <el-tag :type="task.status === 1 ? 'success' : 'warning'" size="small">
-              {{ task.status === 1 ? '已完成' : '未完成' }}
-            </el-tag>
-            <span class="task-title">{{ task.title }}</span>
-          </div>
-        </template>
-
-        <!-- 中间部分：内容（默认插槽，占 60%） -->
-        <div class="card-body">
-          <p class="task-content">{{ task.content || '暂无描述' }}</p>
-        </div>
-
-        <!-- 下部分：底部信息（footer 插槽，占 20%） -->
-        <template #footer>
-          <div class="card-footer">
-            <div class="footer-left">
-              <!-- 新增：创建人 -->
-              <span class="creator">{{ task.user?.username || '未知用户' }}</span>
-              <span class="divider">|</span>
-              <!-- 原创建时间 -->
-              <el-icon><Clock /></el-icon>
-              <span>{{ formatTime(task.createdAt) }}</span>
+    <el-card class="common-card">
+      <div class="page-header">
+        <h2>我的任务概览</h2>
+        <el-tag type="info">共 {{ total }} 条任务</el-tag>
+      </div>
+      <div class="task-card-list">
+        <BaseCard v-for="task in tableData" :key="task.uuid" shadow="hover" class="task-card">
+          <!-- 上部分：标题（header 插槽，占 20%） -->
+          <template #header>
+            <div class="card-header">
+              <el-tag :type="task.status === 1 ? 'success' : 'warning'" size="small">
+                {{ task.status === 1 ? '已完成' : '未完成' }}
+              </el-tag>
+              <span class="task-title">{{ task.title }}</span>
             </div>
-            <div class="footer-right">
-              <BaseButton
-                v-if="task.status === 0 && isMyTask(task)"
-                type="primary"
-                size="small"
-                @click="handleComplete(task)"
-              >
-                完成任务
-              </BaseButton>
-              <el-tag v-else type="success" size="small">已完成</el-tag>
-            </div>
-          </div>
-        </template>
-      </BaseCard>
+          </template>
 
-      <el-empty v-if="tableData.length === 0" description="暂无任务" style="grid-column: 1 / -1; margin-top: 50px" />
-    </div>
+          <!-- 中间部分：内容（默认插槽，占 60%） -->
+          <div class="card-body">
+            <p class="task-content">{{ task.content || '暂无描述' }}</p>
+          </div>
+
+          <!-- 下部分：底部信息（footer 插槽，占 20%） -->
+          <template #footer>
+            <div class="card-footer">
+              <div class="footer-left">
+                <!-- 新增：创建人 -->
+                <span class="creator">{{ task.user?.username || '未知用户' }}</span>
+                <span class="divider">|</span>
+                <!-- 原创建时间 -->
+                <el-icon><Clock /></el-icon>
+                <span>{{ formatTime(task.createdAt) }}</span>
+              </div>
+              <div class="footer-right">
+                <BaseButton
+                  v-if="task.status === 0 && isMyTask(task)"
+                  type="primary"
+                  size="small"
+                  @click="handleComplete(task)"
+                >
+                  完成任务
+                </BaseButton>
+                <el-tag v-else type="success" size="small">已完成</el-tag>
+              </div>
+            </div>
+          </template>
+        </BaseCard>
+
+        <el-empty v-if="tableData.length === 0" description="暂无任务" style="grid-column: 1 / -1; margin-top: 50px" />
+      </div>
+    </el-card>
   </div>
 </template>
 
@@ -111,12 +112,6 @@ onMounted(() => {
 </script>
 
 <style scoped lang="less">
-.home-page {
-  box-shadow:
-    0 4px 8px 0 rgba(0, 0, 0, 0.2),
-    0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-
 .page-header {
   h2 {
     font-size: 20px;

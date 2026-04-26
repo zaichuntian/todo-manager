@@ -5,7 +5,7 @@ import { todoValidationRules, validate } from '../middleware/validation.middlewa
 
 const router = Router();
 
-router.get('/todos', authMiddleware, TodoController.getMyList);
+router.get('/todos', authMiddleware, TodoController.getUserTodos);
 router.post('/todos', authMiddleware, todoValidationRules.create, validate, TodoController.create);
 router.put('/todos/:uuid', authMiddleware, todoValidationRules.update, validate, TodoController.update);
 router.delete('/todos/:uuid', authMiddleware, TodoController.delete);

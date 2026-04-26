@@ -6,8 +6,11 @@
     <el-card class="common-card">
       <div class="page-header">
         <h2>我的任务概览</h2>
-        <el-tag type="info">共 {{ total }} 条任务</el-tag>
-        <el-tag type="warning" style="margin-left: 10px">{{ tableData.length }} 条显示</el-tag>
+        <div class="task-stats">
+          <el-tag type="info">共 {{ total }} 条任务</el-tag>
+          <el-tag type="success" style="margin-left: 10px">已完成 {{ completedTasks }} 条</el-tag>
+          <el-tag type="warning" style="margin-left: 10px">未完成 {{ pendingTasks }} 条</el-tag>
+        </div>
       </div>
       <div class="task-card-list">
         <div v-for="task in tableData" :key="task.uuid" class="task-card-wrapper" :data-task-id="task.uuid">
@@ -62,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { ElMessageBox } from 'element-plus';
 import { Clock } from '@element-plus/icons-vue';
 import dayjs from 'dayjs';
@@ -76,6 +79,16 @@ const tableData = ref<any[]>([]);
 const total = ref(0);
 const loginUserUuid = ref(localStorage.getItem('userUuid') || '');
 const threeBg = ref<HTMLElement | null>(null);
+
+// 计算完成的任务数
+const completedTasks = computed(() => {
+  return tableData.value.filter(task => task.status === 1).length;
+});
+
+// 计算未完成的任务数
+const pendingTasks = computed(() => {
+  return tableData.value.filter(task => task.status === 0).length;
+});
 
 // Three.js 相关
 let scene: THREE.Scene | null = null;
@@ -201,6 +214,13 @@ const getList = async () => {
       console.log('tableData 值:', tableData.value);
       console.log('tableData 长度:', tableData.value.length);
 
+      // 打印第一个任务的详细信息，特别是 category 字段
+      if (tableData.value.length > 0) {
+        console.log('第一个任务的详细信息:', tableData.value[0]);
+        console.log('第一个任务的 category 信息:', tableData.value[0].category);
+        console.log('第一个任务的 category.color:', tableData.value[0].category?.color);
+      }
+
       // 等待 DOM 更新后执行动画
       setTimeout(animateTaskCards, 100);
     } else {
@@ -315,21 +335,27 @@ onUnmounted(() => {
     font-size: 24px;
     font-weight: 700;
     color: #303133;
+    margin: 0;
   }
 
-  .el-tag {
-    font-size: 14px;
-    padding: 4px 12px;
+  .task-stats {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .el-tag {
+      font-size: 14px;
+      padding: 4px 12px;
+    }
   }
 }
 
 .task-card-list {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 30px;
   width: 100%;
-  padding-left: 20px;
-  padding-top: 20px;
+  padding: 20px;
   box-sizing: border-box;
   max-height: calc(100vh - 200px);
   overflow-y: auto;
@@ -339,10 +365,21 @@ onUnmounted(() => {
   &::-webkit-scrollbar {
     display: none; /* Chrome, Safari and Opera */
   }
+
+  /* 响应式调整 */
+  @media (max-width: 768px) {
+    gap: 12px;
+    padding: 16px 12px;
+  }
+
+  @media (max-width: 480px) {
+    gap: 10px;
+    padding: 12px 10px;
+  }
 }
 
 /* 响应式适配：不同屏幕自动减少列数 */
-@media (max-width: 1500px) {
+@media (max-width: 1539px) {
   .task-card-list {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -366,7 +403,7 @@ onUnmounted(() => {
 }
 
 .todo-card {
-  width: 300px;
+  width: 100%;
   height: 220px;
   display: flex;
   flex-direction: column;
@@ -377,11 +414,10 @@ onUnmounted(() => {
   border: none;
   opacity: 1 !important;
   z-index: 1;
-  flex-shrink: 0;
   vertical-align: top;
 
   &:hover {
-    transform: translateY(-8px) scale(1.02);
+    transform: translateY(-2px) scale(1.02);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   }
 
@@ -419,6 +455,15 @@ onUnmounted(() => {
     border-radius: 0 0 16px 16px;
     margin: 0;
   }
+
+  /* 响应式调整 */
+  @media (max-width: 768px) {
+    height: 200px;
+  }
+
+  @media (max-width: 480px) {
+    height: 180px;
+  }
 }
 
 .todo-card .card-header {
@@ -443,9 +488,9 @@ onUnmounted(() => {
   }
 
   .task-category {
+    color: #f0f0f0;
     font-size: 11px;
     font-weight: 500;
-    color: #aaa;
     padding: 2px 8px;
     border-radius: 10px;
     backdrop-filter: blur(10px);

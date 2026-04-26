@@ -7,7 +7,7 @@
       <el-input v-model="localForm.description" type="textarea" :rows="3" placeholder="请输入分类描述" />
     </el-form-item>
     <el-form-item label="分类颜色" prop="color">
-      <el-color-picker v-model="localForm.color" show-alpha />
+      <el-color-picker v-model="localForm.color" value-format="hex" />
     </el-form-item>
     <el-form-item label="分类图标" prop="icon">
       <el-input v-model="localForm.icon" placeholder="请输入图标名称，如：Folder" />

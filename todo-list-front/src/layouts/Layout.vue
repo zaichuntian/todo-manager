@@ -169,7 +169,7 @@ const initSidebarThree = () => {
 
 // 创建左侧菜单粒子
 const createSidebarParticles = () => {
-  const particlesCount = 80;
+  const particlesCount = 120; // 增加粒子数量
 
   // 创建一个包含所有三角形的组
   const particlesGroup = new THREE.Group();
@@ -203,7 +203,7 @@ const createSidebarParticles = () => {
     const particlesMaterial = new THREE.LineBasicMaterial({
       color: new THREE.Color(r, g, b),
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.6 + Math.random() * 0.3, // 随机不透明度
       blending: THREE.AdditiveBlending,
       linewidth: 2, // 加粗线条
     });
@@ -211,19 +211,19 @@ const createSidebarParticles = () => {
     // 创建线条
     const line = new THREE.Line(triangleGeometry, particlesMaterial);
 
-    // 优化位置分布，使排列更均匀
-    const x = (Math.random() - 0.5) * 3; // 适当增大水平范围
-    const y = (Math.random() - 0.5) * 16; // 增大垂直范围，使分布更均匀
-    const z = (Math.random() - 0.5) * 1.5; // 适当增大深度范围
+    // 调整初始位置，使粒子从可见区域附近开始
+    const x = (Math.random() - 0.5) * 4; // 水平范围
+    const y = -8 + Math.random() * 16; // 从-8到8，覆盖整个可见区域
+    const z = (Math.random() - 0.5) * 2; // 深度范围
     line.position.set(x, y, z);
 
-    // 随机旋转
-    line.rotation.x = Math.random() * Math.PI * 2;
-    line.rotation.y = Math.random() * Math.PI * 2;
-    line.rotation.z = Math.random() * Math.PI * 2;
+    // 初始旋转（固定角度，不再随机旋转）
+    line.rotation.x = Math.PI / 2;
+    line.rotation.y = 0;
+    line.rotation.z = 0;
 
     // 优化缩放范围，使大小更协调
-    const scale = 0.5 + Math.random() * 0.8; // 增大缩放范围，使三角形更大
+    const scale = 0.4 + Math.random() * 1.0; // 扩大缩放范围
     line.scale.set(scale, scale, scale);
 
     // 添加到组中
@@ -238,18 +238,21 @@ const createSidebarParticles = () => {
 const animateSidebar = () => {
   sidebarAnimationId = requestAnimationFrame(animateSidebar);
 
-  // 整体缓慢旋转 - 适当增大旋转速度，使动画更明显
-  sidebarParticles.rotation.y += 0.0003;
-  sidebarParticles.rotation.x += 0.0001;
-
-  // 为每个线条添加独立的旋转
+  // 移除整体旋转，改为从下往上冒泡
   if (sidebarParticles instanceof THREE.Group) {
     sidebarParticles.children.forEach((child, index) => {
       if (child instanceof THREE.Line) {
-        // 每个线条独立旋转 - 适当增大旋转速度，使动画更流畅
-        child.rotation.x += 0.0001 + (index % 5) * 0.00005;
-        child.rotation.y += 0.0001 + (index % 7) * 0.00005;
-        child.rotation.z += 0.0001 + (index % 9) * 0.00005;
+        // 调整移动速度，使其更加适中
+        child.position.y += 0.001 + (index % 5) * 0.003; // 不同速度，更均匀
+
+        // 到达顶部后重置到底部
+        if (child.position.y > 8) {
+          child.position.y = -8 - Math.random() * 2; // 从-8到-12，更快进入可见区域
+          child.position.x = (Math.random() - 0.5) * 2; // 随机水平位置
+        }
+
+        // 轻微上下浮动，增加气泡效果
+        child.position.y += Math.sin(Date.now() * 0.001 + index) * 0.003;
       }
     });
   }
@@ -266,6 +269,19 @@ const handleSidebarResize = () => {
   sidebarCamera.aspect = width / window.innerHeight;
   sidebarCamera.updateProjectionMatrix();
 };
+
+// 监听菜单折叠变化，重新生成粒子
+watch(
+  () => isCollapsed.value,
+  () => {
+    // 清除旧粒子
+    if (sidebarParticles) {
+      sidebarScene.remove(sidebarParticles);
+    }
+    // 重新创建粒子
+    createSidebarParticles();
+  }
+);
 
 // 初始化顶部Header Three.js场景
 const initHeaderThree = () => {

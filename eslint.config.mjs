@@ -38,7 +38,7 @@ export default defineConfig([
   tseslint.configs.recommended,
 
   // Vue 推荐规则
-  pluginVue.configs['flat/essential'],
+  ...pluginVue.configs['flat/essential'],
 
   // Prettier 格式化
   {
@@ -71,6 +71,8 @@ export default defineConfig([
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-namespace': 'error',
       '@typescript-eslint/ban-ts-comment': 'warn',
+      'vue/no-param-reassign': 'off',
+      'vue/html-self-closing': 'off',
     },
   },
 ]);

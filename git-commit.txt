@@ -14,14 +14,28 @@
 8. 切换之后再次执行推送
     git push -u origin main
 9. 删除所有未跟踪的文件
-   git clean -f
+    git clean -f
 10. 删除所有未跟踪的文件和目录
-   git clean -fd
+    git clean -fd
+
+11. 如果在家写的代码没有提交，但是在公司写了新的代码提交到git，回家后要直接拉取公司写的代码
+    1. 只要公司代码：
+       1.1 丢弃家里所有未提交的修改（危险！只在你确定不要家里代码时用）
+          git reset --hard origin/main
+       1.2 拉取公司写的代码
+          git pull
+  
+    2. 你想保留家里的代码，又想用公司最新版：
+       2.1 把家里未提交的代码「暂存」起来
+          git stash
+       2.2 拉取公司最新代码
+          git pull
+       2.3 合并家里和公司的代码（可选）如果有冲突，编辑器会提示你解决，解决完就可以正常提交了。
+          git stash pop
 
 ## 提交规范
 1. 提交新功能：feat: add login page
 2. 修复 bug：fix: fix login validation
 3. 文档修改：docs: update README
 4. 格式调整（空格、分号等）：style: format code
-5. 构建 / 工具 / 配置修改：chore: add .gitignore
-                                       chore: update gitignore rules
+5. 构建 / 工具 / 配置修改：chore: add .gitignore | chore: update gitignore rules

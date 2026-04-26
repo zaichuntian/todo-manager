@@ -37,7 +37,7 @@ export class CategoryController extends BaseController {
 
   static async create(req: Request, res: Response) {
     try {
-      const { name, description } = req.body;
+      const { name, description, color, icon, parentUuid } = req.body;
       const userUuid = req.user!.uuid;
 
       // 验证参数
@@ -54,6 +54,9 @@ export class CategoryController extends BaseController {
         userUuid,
         name,
         description,
+        color,
+        icon,
+        parentUuid,
       });
 
       logger.info('创建分类成功:', name);

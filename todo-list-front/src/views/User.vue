@@ -13,6 +13,7 @@
               style="width: 180px"
               @keyup.enter="handleSearch"
               @input="handleInputChange"
+              @clear="handleClear"
             />
             <el-button @click="handleSearch" style="margin-left: -1px; border-radius: 0 4px 4px 0" tabindex="-1"
               ><el-icon><Search /></el-icon
@@ -26,13 +27,14 @@
               style="width: 180px"
               @keyup.enter="handleSearch"
               @input="handleInputChange"
+              @clear="handleClear"
             />
             <el-button @click="handleSearch" style="margin-left: -1px; border-radius: 0 4px 4px 0" tabindex="-1"
               ><el-icon><Search /></el-icon
             ></el-button>
           </div>
-          <el-button type="info" @click="resetSearch" style="margin-left: 10px"
-            ><el-icon><Refresh /></el-icon> 重置</el-button
+          <el-button type="info" @click="resetSearch" style="margin-left: 10px" :loading="resetLoading"
+            ><el-icon v-show="!resetLoading"><Refresh /></el-icon> 重置</el-button
           >
           <el-button type="danger" @click="handleBatchDeleteClick" style="margin-left: 10px"
             ><el-icon><Delete /></el-icon> 批量删除</el-button
@@ -94,8 +96,18 @@
         :page-num="pageNum"
         :page-size="pageSize"
         :total="total"
-        @current-change="(page) => { pageNum = page; getUserList() }"
-        @size-change="(size) => { pageSize = size; getUserList() }"
+        @current-change="
+          page => {
+            pageNum = page;
+            getUserList();
+          }
+        "
+        @size-change="
+          size => {
+            pageSize = size;
+            getUserList();
+          }
+        "
       />
     </BaseCard>
     <el-empty v-else description="无权限访问此页面" />
@@ -121,6 +133,7 @@ import Pagination from '@/components/common/Pagination.vue';
 import StatusSwitch from '@/components/common/StatusSwitch.vue';
 import UserForm from '@/components/user/UserForm.vue';
 import { ElMessage } from 'element-plus';
+import { debounce } from 'lodash';
 import { Search, Refresh, Delete } from '@element-plus/icons-vue';
 
 // 使用用户管理自定义 Hook
@@ -154,8 +167,17 @@ const handleSelectionChange = (val: any[]) => {
   selectedRows.value = val;
 };
 
+// 防抖搜索
+const debouncedSearch = debounce(async () => {
+  // 检查是否输入了搜索内容
+  if (!searchForm.value.username && !searchForm.value.phone) {
+    return;
+  }
+  await getUserList();
+}, 300);
+
 // 自定义搜索方法
-const handleSearch = async () => {
+const handleSearch = () => {
   // 检查是否输入了搜索内容
   if (!searchForm.value.username && !searchForm.value.phone) {
     ElMessage.warning('请输入搜索内容');
@@ -163,21 +185,37 @@ const handleSearch = async () => {
   }
 
   pageNum.value = 1;
-  await getUserList();
+  debouncedSearch();
 };
 
+// 加载状态
+const resetLoading = ref(false);
+
 // 自定义重置搜索方法
-const resetSearch = () => {
+const resetSearch = async () => {
+  resetLoading.value = true;
   searchForm.value.username = '';
   searchForm.value.phone = '';
   pageNum.value = 1;
-  getUserList();
+  try {
+    // 等待 2 秒，确保 loading 动画显示足够长的时间
+    await new Promise(resolve => setTimeout(resolve, 300));
+    await getUserList();
+  } finally {
+    resetLoading.value = false;
+  }
 };
 
 // 输入框内容变化时触发实时搜索
-const handleInputChange = async () => {
+const handleInputChange = () => {
   pageNum.value = 1;
-  await getUserList();
+  debouncedSearch();
+};
+
+// 处理输入框清空事件
+const handleClear = () => {
+  pageNum.value = 1;
+  debouncedSearch();
 };
 
 // 处理批量删除

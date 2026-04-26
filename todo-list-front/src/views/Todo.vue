@@ -12,6 +12,7 @@
               style="width: 180px"
               @keyup.enter="handleSearch"
               @input="handleInputChange"
+              @clear="handleClear"
             />
             <el-button @click="handleSearch" style="margin-left: -1px; border-radius: 0 4px 4px 0" tabindex="-1"
               ><el-icon><Search /></el-icon
@@ -25,13 +26,14 @@
               style="width: 180px"
               @keyup.enter="handleSearch"
               @input="handleInputChange"
+              @clear="handleClear"
             />
             <el-button @click="handleSearch" style="margin-left: -1px; border-radius: 0 4px 4px 0" tabindex="-1"
               ><el-icon><Search /></el-icon
             ></el-button>
           </div>
-          <el-button type="info" @click="resetSearch" style="margin-left: 10px"
-            ><el-icon><Refresh /></el-icon> 重置</el-button
+          <el-button type="info" @click="resetSearch" style="margin-left: 10px" :loading="resetLoading"
+            ><el-icon v-show="!resetLoading"><Refresh /></el-icon> 重置</el-button
           >
           <BaseButton type="primary" @click="handleAdd" style="margin-left: 10px">新增任务</BaseButton>
         </SearchBar>
@@ -106,6 +108,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useTodo } from '@/hooks/useTodo';
+import { debounce } from 'lodash';
 import BaseButton from '@/components/common/BaseButton.vue';
 import SearchBar from '@/components/common/SearchBar.vue';
 import Pagination from '@/components/common/Pagination.vue';
@@ -137,8 +140,17 @@ let {
   handleSubmit,
 } = useTodo();
 
+// 防抖搜索
+const debouncedSearch = debounce(async () => {
+  // 检查是否输入了搜索内容
+  if (!searchForm.value.title && !searchForm.value.content) {
+    return;
+  }
+  await getList();
+}, 1000);
+
 // 自定义搜索方法
-const handleSearch = async () => {
+const handleSearch = () => {
   // 检查是否输入了搜索内容
   if (!searchForm.value.title && !searchForm.value.content) {
     ElMessage.warning('请输入搜索内容');
@@ -146,23 +158,39 @@ const handleSearch = async () => {
   }
 
   pageNum.value = 1;
-  await getList();
+  debouncedSearch();
 };
 
+// 加载状态
+const resetLoading = ref(false);
+
 // 自定义重置搜索方法
-const resetSearch = () => {
+const resetSearch = async () => {
+  resetLoading.value = true;
   searchForm.value = {
     title: '',
     content: '',
   };
   pageNum.value = 1;
-  getList();
+  try {
+    // 等待 2 秒，确保 loading 动画显示足够长的时间
+    await new Promise(resolve => setTimeout(resolve, 300));
+    await getList();
+  } finally {
+    resetLoading.value = false;
+  }
 };
 
 // 输入框内容变化时触发实时搜索
-const handleInputChange = async () => {
+const handleInputChange = () => {
   pageNum.value = 1;
-  await getList();
+  debouncedSearch();
+};
+
+// 处理输入框清空事件
+const handleClear = () => {
+  pageNum.value = 1;
+  debouncedSearch();
 };
 
 // 分类列表
@@ -171,7 +199,7 @@ const categories = ref<Category[]>([]);
 // 获取分类列表
 const fetchCategories = async () => {
   try {
-    const response = await getCategoriesApi({ pageNum: 1, pageSize: 100 });
+    const response: any = await getCategoriesApi({ pageNum: 1, pageSize: 100 });
     // 检查响应格式
     if (response && response.list) {
       // 直接使用response.list

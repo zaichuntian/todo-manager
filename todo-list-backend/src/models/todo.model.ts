@@ -48,11 +48,21 @@ Todo.init(
       type: DataTypes.TINYINT,
       defaultValue: 0,
     },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW,
+    },
   },
   {
     sequelize,
     tableName: 'todos',
-    timestamps: false,
+    timestamps: true,
   }
 );
 

@@ -30,6 +30,28 @@
 
         <el-table-column prop="name" label="分类名称" align="center" />
 
+        <el-table-column prop="description" label="分类描述" align="center" width="180" />
+
+        <el-table-column label="分类颜色" align="center" width="120">
+          <template #default="{ row }">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 5px">
+              <div
+                style="width: 12px; height: 12px; border-radius: 4px; border: 1px solid #ddd"
+                :style="{ backgroundColor: row.color }"
+              ></div>
+              <span style="font-size: 12px">{{ row.color }}</span>
+            </div>
+          </template>
+        </el-table-column>
+
+        <el-table-column prop="icon" label="分类图标" align="center" width="100" />
+
+        <el-table-column label="父分类" align="center" width="120">
+          <template #default="{ row }">
+            {{ row.parentUuid ? '有父分类' : '无' }}
+          </template>
+        </el-table-column>
+
         <el-table-column label="创建时间" align="center">
           <template #default="{ row }">
             {{ formatTime(row.createdAt) }}

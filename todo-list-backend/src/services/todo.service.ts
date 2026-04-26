@@ -105,6 +105,11 @@ export class TodoService extends BaseService<any> {
         order: [['id', 'DESC']],
         include: [
           {
+            model: User,
+            as: 'user',
+            attributes: ['username'],
+          },
+          {
             model: Category,
             as: 'category',
             attributes: ['name'],

@@ -94,8 +94,8 @@
         :page-num="pageNum"
         :page-size="pageSize"
         :total="total"
-        @current-change="getUserList"
-        @size-change="getUserList"
+        @current-change="(page) => { pageNum = page; getUserList() }"
+        @size-change="(size) => { pageSize = size; getUserList() }"
       />
     </BaseCard>
     <el-empty v-else description="无权限访问此页面" />

@@ -2,6 +2,7 @@
   "name": "vue-admin",
   "type": "module",
   "private": true,
+  "author": "zaichuntian",
   "scripts": {
     "build": "vue-tsc && vite build",
     "dev": "vite",

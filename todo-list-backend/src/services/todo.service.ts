@@ -52,7 +52,7 @@ export class TodoService extends BaseService<any> {
           {
             model: Category,
             as: 'category',
-            attributes: ['name'],
+            attributes: ['name', 'color'],
           },
         ],
       });
@@ -112,7 +112,7 @@ export class TodoService extends BaseService<any> {
           {
             model: Category,
             as: 'category',
-            attributes: ['name'],
+            attributes: ['name', 'color'],
           },
         ],
       });
@@ -147,7 +147,7 @@ export class TodoService extends BaseService<any> {
           {
             model: Category,
             as: 'category',
-            attributes: ['name'],
+            attributes: ['name', 'color'],
           },
         ],
       });

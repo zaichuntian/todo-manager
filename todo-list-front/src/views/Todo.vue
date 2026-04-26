@@ -142,12 +142,8 @@ let {
 
 // 防抖搜索
 const debouncedSearch = debounce(async () => {
-  // 检查是否输入了搜索内容
-  if (!searchForm.value.title && !searchForm.value.content) {
-    return;
-  }
   await getList();
-}, 1000);
+}, 200);
 
 // 自定义搜索方法
 const handleSearch = () => {

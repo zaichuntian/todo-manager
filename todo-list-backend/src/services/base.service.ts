@@ -38,11 +38,15 @@ export class BaseService<T extends Model> {
 
     // 构建查询选项
     const queryOptions: FindOptions = {
-      where,
       offset: (pageNum - 1) * pageSize,
       limit: pageSize,
       order: [['id', 'DESC']],
       ...options,
+      // 确保 where 条件不会被 options 覆盖
+      where: {
+        ...where,
+        ...(options?.where || {}),
+      },
     };
 
     // 直接使用模型进行查询

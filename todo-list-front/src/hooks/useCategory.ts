@@ -41,7 +41,7 @@ export function useCategory() {
         { min: 1, max: 50, message: '分类名称长度需在 1-50 个字符之间', trigger: 'blur' },
       ],
       description: [{ max: 200, message: '分类描述长度不能超过 200 个字符', trigger: 'blur' }],
-      color: [{ pattern: /^#[0-9A-Fa-f]{6}$/, message: '请输入有效的十六进制颜色值', trigger: 'blur' }],
+      color: [{ required: true, message: '请选择分类颜色', trigger: 'blur' }],
       icon: [{ max: 50, message: '图标名称长度不能超过 50 个字符', trigger: 'blur' }],
     },
     initialForm: {

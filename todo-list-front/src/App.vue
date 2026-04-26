@@ -41,7 +41,7 @@ let particles: THREE.Group;
 let animationId: number;
 
 // 全局错误捕获
-const handleError = (err: Error, instance: any, info: string) => {
+const handleError = (err: Error, _instance: any, info: string) => {
   console.error('全局错误:', err);
   console.error('错误信息:', info);
   errorMessage.value = `发生错误: ${err.message}`;

@@ -1,5 +1,6 @@
-import { ref, Ref } from 'vue';
+import { ref, Ref, onUnmounted } from 'vue';
 import { ElMessage, ElMessageBox, ElForm } from 'element-plus';
+import { debounce } from 'lodash';
 import type { FormRules, PaginationParams } from '../types/common';
 
 /**
@@ -86,15 +87,11 @@ export function useCrud<T, F, S = any>(options: UseCrudOptions<F, S>): UseCrudRe
       };
 
       // 过滤掉空值的搜索参数
-      console.log('搜索表单值:', searchForm.value);
-      // 直接传递搜索表单值，不进行过滤
       Object.entries({ ...searchForm.value }).forEach(([key, value]) => {
         if (value) {
           params[key] = value;
-          console.log('添加搜索参数:', key, value);
         }
       });
-      console.log('最终参数:', params);
 
       const res = await options.getListApi(params as PaginationParams & S);
 
@@ -232,17 +229,28 @@ export function useCrud<T, F, S = any>(options: UseCrudOptions<F, S>): UseCrudRe
     };
   }
 
+  // 防抖搜索
+  const debouncedSearch = debounce(() => {
+    getList();
+  }, 1000);
+
+  // 组件卸载时清理防抖定时器
+  onUnmounted(() => {
+    // 清理防抖定时器
+    debouncedSearch.cancel();
+  });
+
   // 搜索
-  const handleSearch = async () => {
-    pageNum.value = 1; // 搜索时重置到第一页
-    await getList();
+  const handleSearch = () => {
+    pageNum.value = 1; // 搜索时重置页码
+    debouncedSearch();
   };
 
   // 重置搜索
   const resetSearch = () => {
-    searchForm.value = options.initialSearchForm || ({} as S);
-    pageNum.value = 1;
-    getList();
+    searchForm.value = { ...options.initialSearchForm };
+    pageNum.value = 1; // 重置时也重置页码
+    debouncedSearch();
   };
 
   return {

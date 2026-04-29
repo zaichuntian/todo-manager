@@ -860,6 +860,48 @@ html.light body .el-pagination .el-select .el-input__inner {
   color: #1e293b !important;
 }
 
+/* ============ 亮色模式下分页组件样式修复 ============ */
+html.light body .el-pagination {
+  background: #ffffff !important;
+}
+
+/* 更强的样式覆盖 - 确保分页按钮显示正确颜色 */
+html.light body .pagination-wrapper .el-pagination .btn-prev,
+html.light body .pagination-wrapper .el-pagination .btn-next {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+html.light body .pagination-wrapper .el-pagination .btn-prev:hover,
+html.light body .pagination-wrapper .el-pagination .btn-next:hover {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+  color: #3b82f6 !important;
+}
+
+html.light body .pagination-wrapper .el-pagination .el-pager li {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+html.light body .pagination-wrapper .el-pagination .el-pager li:hover {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+}
+
+html.light body .pagination-wrapper .el-pagination .el-pager li.active {
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+html.light body .pagination-wrapper {
+  background: #ffffff !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+
 /* 提示框样式优化 */
 html.light .el-tooltip__popper {
   background: #1e293b !important;

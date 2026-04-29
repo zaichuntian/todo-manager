@@ -42,6 +42,22 @@
   .input-dark();
 }
 
+/* 亮色主题样式 */
+:deep(html.light .el-input__inner) {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #1e293b !important;
+
+  &::placeholder {
+    color: #94a3b8 !important;
+  }
+
+  &:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
+  }
+}
+
 :deep(.el-button--primary) {
   .btn-primary();
 }

@@ -54,4 +54,19 @@ const handleChange = (value: number) => {
     font-size: @font-size-xs;
   }
 }
+
+/* 亮色主题样式 */
+:deep(html.light .el-switch__core) {
+  background-color: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+
+  &.is-checked {
+    background-color: #22c55e !important;
+    border-color: #16a34a !important;
+  }
+}
+
+:deep(html.light .el-switch__label) {
+  color: #64748b !important;
+}
 </style>

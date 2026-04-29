@@ -688,6 +688,90 @@ html.light .el-form-item__error {
   color: #dc2626 !important;
 }
 
+/* ============ 更强的亮色主题样式覆盖 ============ */
+/* 确保搜索框在亮色模式下显示白色背景 */
+html.light body .el-input__wrapper,
+html.light body .el-input__inner {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
+html.light body .el-input__inner::placeholder {
+  color: #94a3b8 !important;
+}
+
+html.light body .el-input__wrapper.is-focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
+}
+
+/* 确保开关在亮色模式下显示正确颜色 */
+html.light body .el-switch__core {
+  background: #e2e8f0 !important;
+  border-color: #cbd5e1 !important;
+}
+
+html.light body .el-switch.is-checked .el-switch__core {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+  border-color: #16a34a !important;
+}
+
+/* 确保开关标签文字颜色正确 */
+html.light body .status-switch-wrapper .status-label {
+  color: #64748b !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+html.light body .status-switch-wrapper .status-label.active {
+  color: #22c55e !important;
+  font-weight: 600 !important;
+}
+
+html.light body .status-switch-wrapper .status-label.disabled {
+  color: #94a3b8 !important;
+}
+
+/* 确保分页组件在亮色模式下显示正确 */
+html.light body .pagination-wrapper {
+  background: #ffffff !important;
+  border-top: 1px solid #e2e8f0 !important;
+}
+
+html.light body .el-pagination {
+  background: #ffffff !important;
+  color: #64748b !important;
+}
+
+html.light body .el-pagination .el-pager li {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+html.light body .el-pagination .el-pager li:hover {
+  background: #f1f5f9 !important;
+  border-color: #94a3b8 !important;
+}
+
+html.light body .el-pagination .el-pager li.active {
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+html.light body .el-pagination button:not(.is-disabled):hover {
+  background: #f1f5f9 !important;
+  color: #3b82f6 !important;
+}
+
+html.light body .el-pagination .el-select .el-input__inner {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #1e293b !important;
+}
+
 /* 提示框样式优化 */
 html.light .el-tooltip__popper {
   background: #1e293b !important;

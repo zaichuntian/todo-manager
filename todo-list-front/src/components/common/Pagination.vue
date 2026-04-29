@@ -66,6 +66,67 @@ const handleSizeChange = (size: number) => {
   padding: @spacing-md @spacing-lg;
   width: 100%;
   box-sizing: border-box;
+  background: transparent;
+}
+
+/* 亮色主题样式 */
+:deep(html.light) {
+  .pagination-wrapper {
+    background: #ffffff !important;
+    border-top: 1px solid #e2e8f0 !important;
+  }
+
+  .el-pagination {
+    color: #64748b !important;
+
+    .btn-prev,
+    .btn-next {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      color: #64748b !important;
+
+      &:hover {
+        background: #dbeafe !important;
+        border-color: #3b82f6 !important;
+        color: #3b82f6 !important;
+      }
+    }
+
+    .el-pager li {
+      background: #ffffff !important;
+      border: 1px solid #e2e8f0 !important;
+      color: #64748b !important;
+
+      &:hover {
+        background: #dbeafe !important;
+        border-color: #3b82f6 !important;
+        color: #3b82f6 !important;
+      }
+
+      &.active {
+        background: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: #ffffff !important;
+      }
+    }
+
+    .el-select {
+      :deep(.el-input__inner) {
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #1e293b !important;
+
+        &::placeholder {
+          color: #94a3b8 !important;
+        }
+
+        &:focus {
+          border-color: #3b82f6 !important;
+          box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
+        }
+      }
+    }
+  }
 }
 
 :deep(.el-pagination) {

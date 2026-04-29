@@ -64,7 +64,7 @@ html.dark .el-input__wrapper:hover {
 
 html.dark .el-input__wrapper.is-focus {
   border-color: rgba(106, 176, 255, 0.5) !important;
-  box-shadow: 0 0 0 3px rgba(106, 176, 255, 0.12) !important;
+  box-shadow: none !important;  /* 取消内阴影 */
 }
 
 html.dark .el-input__inner {
@@ -456,7 +456,7 @@ html.light .el-input__wrapper:hover {
 
 html.light .el-input__wrapper.is-focus {
   border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
+  box-shadow: none !important;  /* 取消内阴影 */
 }
 
 html.light .el-input__inner {
@@ -734,9 +734,29 @@ html.light body .el-input__inner::placeholder {
   color: #94a3b8 !important;
 }
 
+/* 取消搜索框focus效果 */
 html.light body .el-input__wrapper.is-focus {
+  border-color: inherit !important;
+  box-shadow: none !important;
+}
+
+/* 输入框focus效果 */
+html.light body .search-bar .el-input__wrapper.is-focus {
   border-color: #3b82f6 !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15) !important;
+}
+
+html.dark body .search-bar .el-input__wrapper.is-focus {
+  border-color: rgba(106, 176, 255, 0.5) !important;
+  box-shadow: 0 0 0 2px rgba(106, 176, 255, 0.15) !important;
+}
+
+/* 确保输入框内部没有边框 */
+html.light body .search-bar .el-input__wrapper .el-input__inner,
+html.dark body .search-bar .el-input__wrapper .el-input__inner {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 /* 亮色模式下开关禁用状态显示红色 */

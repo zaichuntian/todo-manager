@@ -8,10 +8,6 @@
 @import '@/assets/css/variables.less';
 @import '@/assets/css/mixins.less';
 
-:deep(.el-input .el-input__inner) {
-  border: none !important;
-}
-
 .search-bar {
   .flex-center();
   gap: @spacing-sm;

@@ -5,7 +5,8 @@
       <vue-particles id="tsparticles" @particles-loaded="particlesLoaded" :options="particlesOptions" />
     </div>
 
-    <el-card class="common-card profile-card">
+    <!-- 用户信息卡片 -->
+    <div class="profile-card">
       <div class="profile-header">
         <div class="profile-avatar">
           <el-avatar :size="120" :icon="UserFilled" />
@@ -35,128 +36,125 @@
         </div>
       </div>
 
-      <el-card class="common-card">
-        <div class="profile-content">
-          <el-tabs type="border-card">
-            <el-tab-pane label="个人信息">
-              <div class="info-section">
-                <el-form :model="form" label-width="120px" class="user-form">
-                  <el-form-item label="用户名" disabled>
-                    <el-input v-model="form.username" placeholder="用户名" />
-                  </el-form-item>
-                  <el-form-item label="角色" disabled>
-                    <el-input v-model="form.role" placeholder="角色" />
-                  </el-form-item>
-                  <el-form-item label="邮箱" prop="email">
-                    <el-input v-model="form.email" placeholder="请输入邮箱" type="email" />
-                  </el-form-item>
-                  <el-form-item label="手机" prop="phone">
-                    <el-input v-model="form.phone" placeholder="请输入手机号" />
-                  </el-form-item>
-                  <el-form-item label="创建时间" disabled>
-                    <el-input v-model="form.createdAt" placeholder="创建时间" />
-                  </el-form-item>
-                  <el-form-item label="最后登录" disabled>
-                    <el-input v-model="form.updatedAt" placeholder="最后登录" />
-                  </el-form-item>
-                  <el-form-item>
-                    <el-button type="primary" @click="handleSubmit" :loading="loading">保存修改</el-button>
-                    <el-button @click="resetForm">重置</el-button>
-                  </el-form-item>
-                </el-form>
-              </div>
-            </el-tab-pane>
+      <!-- 内容区域 -->
+      <div class="profile-content">
+        <el-tabs type="border-card">
+          <el-tab-pane label="个人信息">
+            <div class="info-section">
+              <el-form :model="form" label-width="120px" class="user-form">
+                <el-form-item label="用户名" disabled>
+                  <el-input v-model="form.username" placeholder="用户名" />
+                </el-form-item>
+                <el-form-item label="角色" disabled>
+                  <el-input v-model="form.role" placeholder="角色" />
+                </el-form-item>
+                <el-form-item label="邮箱" prop="email">
+                  <el-input v-model="form.email" placeholder="请输入邮箱" type="email" />
+                </el-form-item>
+                <el-form-item label="手机" prop="phone">
+                  <el-input v-model="form.phone" placeholder="请输入手机号" />
+                </el-form-item>
+                <el-form-item label="创建时间" disabled>
+                  <el-input v-model="form.createdAt" placeholder="创建时间" />
+                </el-form-item>
+                <el-form-item label="最后登录" disabled>
+                  <el-input v-model="form.updatedAt" placeholder="最后登录" />
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" @click="handleSubmit" :loading="loading">保存修改</el-button>
+                  <el-button @click="resetForm">重置</el-button>
+                </el-form-item>
+              </el-form>
+            </div>
+          </el-tab-pane>
 
-            <el-tab-pane label="最近任务">
-              <div class="recent-tasks">
-                <el-empty v-if="recentTasks.length === 0" description="暂无任务" />
-                <el-card v-for="task in recentTasks" :key="task.uuid" shadow="hover" class="recent-task-card">
-                  <div class="task-header">
-                    <span class="task-title">{{ task.title }}</span>
-                    <el-tag :type="task.status === 1 ? 'success' : 'warning'" size="small">
-                      {{ task.status === 1 ? '已完成' : '未完成' }}
-                    </el-tag>
-                  </div>
-                  <div class="task-body">
-                    <p class="task-content">{{ task.content || '暂无描述' }}</p>
-                  </div>
-                  <div class="task-footer">
-                    <span class="task-category">{{ task.category?.name || '未分类' }}</span>
-                    <span class="task-time">{{ formatTime(task.createdAt) }}</span>
-                  </div>
-                </el-card>
-              </div>
-            </el-tab-pane>
-
-            <el-tab-pane label="任务统计">
-              <div class="stats-section">
-                <el-row :gutter="20">
-                  <el-col :span="8">
-                    <el-card shadow="hover" class="stat-card">
-                      <div class="stat-card-content">
-                        <el-icon class="stat-icon"><Timer /></el-icon>
-                        <div class="stat-card-info">
-                          <span class="stat-card-value">{{ totalTasks }}</span>
-                          <span class="stat-card-label">总任务</span>
-                        </div>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-card shadow="hover" class="stat-card success">
-                      <div class="stat-card-content">
-                        <el-icon class="stat-icon"><Check /></el-icon>
-                        <div class="stat-card-info">
-                          <span class="stat-card-value">{{ completedTasks }}</span>
-                          <span class="stat-card-label">已完成</span>
-                        </div>
-                      </div>
-                    </el-card>
-                  </el-col>
-                  <el-col :span="8">
-                    <el-card shadow="hover" class="stat-card warning">
-                      <div class="stat-card-content">
-                        <el-icon class="stat-icon"><Close /></el-icon>
-                        <div class="stat-card-info">
-                          <span class="stat-card-value">{{ pendingTasks }}</span>
-                          <span class="stat-card-label">未完成</span>
-                        </div>
-                      </div>
-                    </el-card>
-                  </el-col>
-                </el-row>
-
-                <div class="chart-section">
-                  <el-card shadow="hover" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px)">
-                    <template #header>
-                      <div class="card-header">
-                        <span>任务完成情况</span>
-                      </div>
-                    </template>
-                    <div class="chart-container">
-                      <div class="chart-item">
-                        <div class="chart-label">已完成</div>
-                        <div class="chart-bar">
-                          <div class="chart-progress success" :style="{ width: completionRate + '%' }"></div>
-                        </div>
-                        <div class="chart-value">{{ completionRate }}%</div>
-                      </div>
-                      <div class="chart-item">
-                        <div class="chart-label">未完成</div>
-                        <div class="chart-bar">
-                          <div class="chart-progress warning" :style="{ width: 100 - completionRate + '%' }"></div>
-                        </div>
-                        <div class="chart-value">{{ 100 - completionRate }}%</div>
-                      </div>
-                    </div>
-                  </el-card>
+          <el-tab-pane label="最近任务">
+            <div class="recent-tasks">
+              <el-empty v-if="recentTasks.length === 0" description="暂无任务" />
+              <div v-for="task in recentTasks" :key="task.uuid" class="recent-task-card">
+                <div class="task-header">
+                  <span class="task-title">{{ task.title }}</span>
+                  <el-tag :type="task.status === 1 ? 'success' : 'warning'" size="small">
+                    {{ task.status === 1 ? '已完成' : '未完成' }}
+                  </el-tag>
+                </div>
+                <div class="task-body">
+                  <p class="task-content">{{ task.content || '暂无描述' }}</p>
+                </div>
+                <div class="task-footer">
+                  <span class="task-category">{{ task.category?.name || '未分类' }}</span>
+                  <span class="task-time">{{ formatTime(task.createdAt) }}</span>
                 </div>
               </div>
-            </el-tab-pane>
-          </el-tabs>
-        </div>
-      </el-card>
-    </el-card>
+            </div>
+          </el-tab-pane>
+
+          <el-tab-pane label="任务统计">
+            <div class="stats-section">
+              <el-row :gutter="20">
+                <el-col :span="8">
+                  <div class="stat-card">
+                    <div class="stat-card-content">
+                      <el-icon class="stat-icon"><Timer /></el-icon>
+                      <div class="stat-card-info">
+                        <span class="stat-card-value">{{ totalTasks }}</span>
+                        <span class="stat-card-label">总任务</span>
+                      </div>
+                    </div>
+                  </div>
+                </el-col>
+                <el-col :span="8">
+                  <div class="stat-card success">
+                    <div class="stat-card-content">
+                      <el-icon class="stat-icon"><Check /></el-icon>
+                      <div class="stat-card-info">
+                        <span class="stat-card-value">{{ completedTasks }}</span>
+                        <span class="stat-card-label">已完成</span>
+                      </div>
+                    </div>
+                  </div>
+                </el-col>
+                <el-col :span="8">
+                  <div class="stat-card warning">
+                    <div class="stat-card-content">
+                      <el-icon class="stat-icon"><Close /></el-icon>
+                      <div class="stat-card-info">
+                        <span class="stat-card-value">{{ pendingTasks }}</span>
+                        <span class="stat-card-label">未完成</span>
+                      </div>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+
+              <div class="chart-section">
+                <div class="chart-card">
+                  <div class="card-header">
+                    <span>任务完成情况</span>
+                  </div>
+                  <div class="chart-container">
+                    <div class="chart-item">
+                      <div class="chart-label">已完成</div>
+                      <div class="chart-bar">
+                        <div class="chart-progress success" :style="{ width: completionRate + '%' }"></div>
+                      </div>
+                      <div class="chart-value">{{ completionRate }}%</div>
+                    </div>
+                    <div class="chart-item">
+                      <div class="chart-label">未完成</div>
+                      <div class="chart-bar">
+                        <div class="chart-progress warning" :style="{ width: 100 - completionRate + '%' }"></div>
+                      </div>
+                      <div class="chart-value">{{ 100 - completionRate }}%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </el-tab-pane>
+        </el-tabs>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -302,7 +300,9 @@ const particlesOptions = {
     move: {
       direction: 'none',
       enable: true,
-      outModes: 'bounce',
+      outModes: {
+        default: 'bounce',
+      },
       random: false,
       speed: 1,
       straight: false,

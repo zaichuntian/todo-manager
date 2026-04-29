@@ -27,6 +27,45 @@
 import { ref, onMounted, onUnmounted, defineProps, defineEmits, withDefaults } from 'vue';
 import * as THREE from 'three';
 
+// 类型定义
+type ParticleConfig = {
+  count: number;
+  minRadius: number;
+  maxRadius: number;
+  velocity: number;
+  size: number;
+};
+
+type LineConfig = {
+  count: number;
+  maxDistance: number;
+};
+
+// 常量配置
+const PARTICLE_CONFIG: ParticleConfig = {
+  count: 300,
+  minRadius: 60,
+  maxRadius: 120,
+  velocity: 0.08,
+  size: 5,
+};
+
+const LINE_CONFIG: LineConfig = {
+  count: 800, // 增加连线数量
+  maxDistance: 80, // 减小最大距离，只连接邻近粒子
+};
+
+const COLORS = [
+  new THREE.Color(0x3b82f6), // blue
+  new THREE.Color(0x8b5cf6), // purple
+  new THREE.Color(0xec4899), // pink
+  new THREE.Color(0x10b981), // green
+  new THREE.Color(0xf59e0b), // yellow
+  new THREE.Color(0x06b6d4), // cyan
+  new THREE.Color(0xa855f7), // violet
+];
+
+// Props & Emits
 const props = withDefaults(
   defineProps<{
     visible: boolean;
@@ -41,8 +80,10 @@ const emit = defineEmits<{
   (e: 'complete'): void;
 }>();
 
+// Refs
 const canvasRef = ref<HTMLCanvasElement | null>(null);
 
+// Three.js Objects
 let scene: THREE.Scene;
 let camera: THREE.PerspectiveCamera;
 let renderer: THREE.WebGLRenderer;
@@ -52,65 +93,74 @@ let particlePositions: Float32Array;
 let particleVelocities: Float32Array;
 let lineMesh: THREE.LineSegments;
 
+/**
+ * 初始化Three.js场景
+ */
 const initScene = () => {
   if (!canvasRef.value || !props.visible) return;
 
   const container = canvasRef.value;
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+  const { width, height } = getViewportSize();
 
+  // 创建场景
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0a0a1a);
 
+  // 创建相机
   camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
   camera.position.z = 120;
 
+  // 创建渲染器
   renderer = new THREE.WebGLRenderer({ canvas: container, antialias: true });
   renderer.setSize(width, height);
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setClearColor(0x0a0a1a, 1);
 
+  // 创建粒子系统
   createParticles();
   createParticleLines();
 
+  // 开始动画
   animate();
 
+  // 设置完成回调
   setTimeout(() => {
     emit('complete');
   }, props.duration);
 };
 
+/**
+ * 获取视口尺寸
+ */
+const getViewportSize = (): { width: number; height: number } => ({
+  width: window.innerWidth,
+  height: window.innerHeight,
+});
+
+/**
+ * 创建粒子系统
+ */
 const createParticles = () => {
-  const particleCount = 300;
+  const { count, minRadius, maxRadius, velocity, size } = PARTICLE_CONFIG;
   const geometry = new THREE.BufferGeometry();
-  particlePositions = new Float32Array(particleCount * 3);
-  particleVelocities = new Float32Array(particleCount * 3);
-  const colors = new Float32Array(particleCount * 3);
+  particlePositions = new Float32Array(count * 3);
+  particleVelocities = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
 
-  const colorPalette = [
-    new THREE.Color(0x3b82f6),
-    new THREE.Color(0x8b5cf6),
-    new THREE.Color(0xec4899),
-    new THREE.Color(0x10b981),
-    new THREE.Color(0xf59e0b),
-    new THREE.Color(0x06b6d4),
-    new THREE.Color(0xa855f7),
-  ];
+  for (let i = 0; i < count; i++) {
+    // 球形分布
+    const { x, y, z } = generateSphericalPosition(minRadius, maxRadius);
+    particlePositions[i * 3] = x;
+    particlePositions[i * 3 + 1] = y;
+    particlePositions[i * 3 + 2] = z;
 
-  for (let i = 0; i < particleCount; i++) {
-    const theta = Math.random() * Math.PI * 2;
-    const phi = Math.acos(2 * Math.random() - 1);
-    const r = 60 + Math.random() * 60;
+    // 随机速度
+    particleVelocities[i * 3] = (Math.random() - 0.5) * velocity;
+    particleVelocities[i * 3 + 1] = (Math.random() - 0.5) * velocity;
+    particleVelocities[i * 3 + 2] = (Math.random() - 0.5) * velocity;
 
-    particlePositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
-    particlePositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
-    particlePositions[i * 3 + 2] = r * Math.cos(phi);
-
-    particleVelocities[i * 3] = (Math.random() - 0.5) * 0.08;
-    particleVelocities[i * 3 + 1] = (Math.random() - 0.5) * 0.08;
-    particleVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.08;
-
-    const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+    // 随机颜色
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
     colors[i * 3] = color.r;
     colors[i * 3 + 1] = color.g;
     colors[i * 3 + 2] = color.b;
@@ -120,7 +170,7 @@ const createParticles = () => {
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
   const material = new THREE.PointsMaterial({
-    size: 5,
+    size,
     vertexColors: true,
     transparent: true,
     opacity: 0.95,
@@ -133,80 +183,196 @@ const createParticles = () => {
   scene.add(particles);
 };
 
+/**
+ * 生成球形分布位置
+ */
+const generateSphericalPosition = (minRadius: number, maxRadius: number): { x: number; y: number; z: number } => {
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos(2 * Math.random() - 1);
+  const r = minRadius + Math.random() * (maxRadius - minRadius);
+
+  return {
+    x: r * Math.sin(phi) * Math.cos(theta),
+    y: r * Math.sin(phi) * Math.sin(theta),
+    z: r * Math.cos(phi),
+  };
+};
+
+/**
+ * 创建粒子连线（每个粒子连接到最近的几个粒子）
+ */
 const createParticleLines = () => {
-  const lineCount = 200;
+  const { count, maxDistance } = LINE_CONFIG;
+  const { count: particleCount } = PARTICLE_CONFIG;
   const lineGeometry = new THREE.BufferGeometry();
-  const linePositions = new Float32Array(lineCount * 6);
+  const linePositions = new Float32Array(count * 6);
 
-  for (let i = 0; i < lineCount; i++) {
-    const i1 = Math.floor(Math.random() * 300);
-    const i2 = Math.floor(Math.random() * 300);
+  // 为每个粒子寻找邻近粒子并创建连线
+  const usedPairs = new Set<string>();
+  let lineIndex = 0;
 
-    linePositions[i * 6] = particlePositions[i1 * 3];
-    linePositions[i * 6 + 1] = particlePositions[i1 * 3 + 1];
-    linePositions[i * 6 + 2] = particlePositions[i1 * 3 + 2];
-    linePositions[i * 6 + 3] = particlePositions[i2 * 3];
-    linePositions[i * 6 + 4] = particlePositions[i2 * 3 + 1];
-    linePositions[i * 6 + 5] = particlePositions[i2 * 3 + 2];
+  for (let i = 0; i < particleCount && lineIndex < count; i++) {
+    // 找到距离当前粒子最近的粒子
+    const neighbors = findNearestNeighbors(i, particleCount, maxDistance);
+
+    for (const neighborIndex of neighbors) {
+      if (lineIndex >= count) break;
+
+      // 避免重复连线
+      const pairKey = [i, neighborIndex].sort((a, b) => a - b).join('-');
+      if (usedPairs.has(pairKey)) continue;
+      usedPairs.add(pairKey);
+
+      // 设置连线位置
+      setLinePosition(linePositions, lineIndex, i, neighborIndex);
+      lineIndex++;
+    }
   }
 
   lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
 
   const lineMaterial = new THREE.LineBasicMaterial({
-    color: 0x3b82f6,
+    color: 0x4f46e5,
     transparent: true,
-    opacity: 0.2,
+    opacity: 0.25,
   });
 
   lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
   scene.add(lineMesh);
 };
 
+/**
+ * 找到距离指定粒子最近的几个粒子
+ */
+const findNearestNeighbors = (
+  index: number,
+  particleCount: number,
+  maxDistance: number
+): number[] => {
+  const neighbors: { index: number; distance: number }[] = [];
+  const x1 = particlePositions[index * 3];
+  const y1 = particlePositions[index * 3 + 1];
+  const z1 = particlePositions[index * 3 + 2];
+
+  for (let i = 0; i < particleCount; i++) {
+    if (i === index) continue;
+
+    const x2 = particlePositions[i * 3];
+    const y2 = particlePositions[i * 3 + 1];
+    const z2 = particlePositions[i * 3 + 2];
+
+    const distance = Math.sqrt(
+      Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2)
+    );
+
+    if (distance < maxDistance) {
+      neighbors.push({ index: i, distance });
+    }
+  }
+
+  // 按距离排序，取最近的5个
+  neighbors.sort((a, b) => a.distance - b.distance);
+  return neighbors.slice(0, 5).map(n => n.index);
+};
+
+/**
+ * 设置连线位置
+ */
+const setLinePosition = (
+  linePositions: Float32Array,
+  lineIndex: number,
+  p1Index: number,
+  p2Index: number
+): void => {
+  const offset = lineIndex * 6;
+  linePositions[offset] = particlePositions[p1Index * 3];
+  linePositions[offset + 1] = particlePositions[p1Index * 3 + 1];
+  linePositions[offset + 2] = particlePositions[p1Index * 3 + 2];
+  linePositions[offset + 3] = particlePositions[p2Index * 3];
+  linePositions[offset + 4] = particlePositions[p2Index * 3 + 1];
+  linePositions[offset + 5] = particlePositions[p2Index * 3 + 2];
+};
+
+/**
+ * 动画循环
+ */
 const animate = () => {
   animationId = requestAnimationFrame(animate);
 
   if (particles && particlePositions) {
-    const positions = particles.geometry.attributes.position.array as Float32Array;
-    for (let i = 0; i < 300; i++) {
-      positions[i * 3] += particleVelocities[i * 3];
-      positions[i * 3 + 1] += particleVelocities[i * 3 + 1];
-      positions[i * 3 + 2] += particleVelocities[i * 3 + 2];
-
-      const dist = Math.sqrt(positions[i * 3] ** 2 + positions[i * 3 + 1] ** 2 + positions[i * 3 + 2] ** 2);
-      if (dist > 120) {
-        particleVelocities[i * 3] *= -0.8;
-        particleVelocities[i * 3 + 1] *= -0.8;
-        particleVelocities[i * 3 + 2] *= -0.8;
-      }
-    }
-    particles.geometry.attributes.position.needsUpdate = true;
-
-    particles.rotation.x -= 0.0015;
-    particles.rotation.y -= 0.0025;
-    particles.rotation.z -= 0.001;
-
-    const scale = 1 + Math.sin(Date.now() * 0.001) * 0.03;
-    particles.scale.set(scale, scale, scale);
-
-    camera.position.x = Math.sin(Date.now() * 0.0005) * 5;
-    camera.position.y = Math.cos(Date.now() * 0.0003) * 3;
-    camera.lookAt(0, 0, 0);
+    updateParticles();
+    updateCamera();
   }
 
   if (lineMesh) {
-    lineMesh.rotation.x -= 0.0015;
-    lineMesh.rotation.y -= 0.0025;
-    lineMesh.rotation.z -= 0.001;
+    updateLines();
   }
 
   renderer.render(scene, camera);
 };
 
-const handleResize = () => {
+/**
+ * 更新粒子位置和旋转
+ */
+const updateParticles = (): void => {
+  const { count } = PARTICLE_CONFIG;
+  const { maxDistance } = LINE_CONFIG;
+  const positions = particles.geometry.attributes.position.array as Float32Array;
+
+  for (let i = 0; i < count; i++) {
+    // 更新位置
+    positions[i * 3] += particleVelocities[i * 3];
+    positions[i * 3 + 1] += particleVelocities[i * 3 + 1];
+    positions[i * 3 + 2] += particleVelocities[i * 3 + 2];
+
+    // 边界检测
+    const dist = Math.sqrt(
+      positions[i * 3] ** 2 + positions[i * 3 + 1] ** 2 + positions[i * 3 + 2] ** 2
+    );
+    if (dist > maxDistance) {
+      particleVelocities[i * 3] *= -0.8;
+      particleVelocities[i * 3 + 1] *= -0.8;
+      particleVelocities[i * 3 + 2] *= -0.8;
+    }
+  }
+
+  particles.geometry.attributes.position.needsUpdate = true;
+
+  // 顺时针旋转
+  particles.rotation.x -= 0.0015;
+  particles.rotation.y -= 0.0025;
+  particles.rotation.z -= 0.001;
+
+  // 呼吸缩放
+  const scale = 1 + Math.sin(Date.now() * 0.001) * 0.03;
+  particles.scale.set(scale, scale, scale);
+};
+
+/**
+ * 更新相机位置
+ */
+const updateCamera = (): void => {
+  camera.position.x = Math.sin(Date.now() * 0.0005) * 5;
+  camera.position.y = Math.cos(Date.now() * 0.0003) * 3;
+  camera.lookAt(0, 0, 0);
+};
+
+/**
+ * 更新连线旋转
+ */
+const updateLines = (): void => {
+  lineMesh.rotation.x -= 0.0015;
+  lineMesh.rotation.y -= 0.0025;
+  lineMesh.rotation.z -= 0.001;
+};
+
+/**
+ * 处理窗口resize
+ */
+const handleResize = (): void => {
   if (!canvasRef.value) return;
 
-  const width = window.innerWidth;
-  const height = window.innerHeight;
+  const { width, height } = getViewportSize();
 
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
@@ -218,7 +384,10 @@ onMounted(() => {
   window.addEventListener('resize', handleResize);
 });
 
-onUnmounted(() => {
+/**
+ * 清理资源
+ */
+const cleanup = (): void => {
   if (animationId) {
     cancelAnimationFrame(animationId);
   }
@@ -234,6 +403,15 @@ onUnmounted(() => {
     (lineMesh.material as THREE.Material).dispose();
   }
   window.removeEventListener('resize', handleResize);
+};
+
+onMounted(() => {
+  initScene();
+  window.addEventListener('resize', handleResize);
+});
+
+onUnmounted(() => {
+  cleanup();
 });
 </script>
 

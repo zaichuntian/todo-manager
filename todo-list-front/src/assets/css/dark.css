@@ -855,9 +855,41 @@ html.light .el-message {
   color: #334155 !important;
 }
 
-/* ============ 亮色主题 - 侧边栏和头部样式 ============ */
+/* ============ 暗色模式 - 侧边栏和菜单样式 ============ */
+html.dark .sidebar-animate {
+  background: linear-gradient(180deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
+}
+
+html.dark .logo {
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+html.dark .logo h3 {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+html.dark .sidebar-menu {
+  background-color: rgba(15, 23, 42, 0.5) !important;
+}
+
+html.dark .sidebar-menu :deep(.el-menu-item) {
+  color: rgba(255, 255, 255, 0.75) !important;
+}
+
+html.dark .sidebar-menu :deep(.el-menu-item:hover) {
+  color: rgba(255, 255, 255, 0.95) !important;
+  background-color: rgba(106, 176, 255, 0.12) !important;
+}
+
+html.dark .sidebar-menu :deep(.el-menu-item.is-active) {
+  color: #6ab0ff !important;
+  background-color: rgba(106, 176, 255, 0.18) !important;
+}
+
+/* ============ 亮色模式 - 侧边栏和菜单样式 ============ */
 html.light .sidebar-animate {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 50%, #ffffff 100%) !important;
+  background: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
 }
 
 html.light .logo {
@@ -869,16 +901,52 @@ html.light .logo h3 {
 }
 
 html.light .sidebar-menu {
-  background-color: rgba(248, 250, 252, 0.5) !important;
+  background-color: #ffffff !important;
 }
 
 html.light .sidebar-menu :deep(.el-menu-item) {
-  color: #64748b !important;
+  color: #475569 !important;
+  transition: all 0.2s ease !important;
+}
+
+html.light .sidebar-menu :deep(.el-menu-item:hover) {
+  color: #1e293b !important;
+  background-color: rgba(59, 130, 246, 0.08) !important;
 }
 
 html.light .sidebar-menu :deep(.el-menu-item.is-active) {
   color: #3b82f6 !important;
   background-color: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* 菜单图标颜色 */
+html.dark .sidebar-menu :deep(.el-icon) {
+  color: inherit !important;
+}
+
+html.light .sidebar-menu :deep(.el-icon) {
+  color: #94a3b8 !important;
+}
+
+html.light .sidebar-menu :deep(.el-menu-item:hover) :deep(.el-icon) {
+  color: #64748b !important;
+}
+
+html.light .sidebar-menu :deep(.el-menu-item.is-active) :deep(.el-icon) {
+  color: #3b82f6 !important;
+}
+
+/* ============ 覆盖Element Plus默认的菜单hover样式 ============ */
+html.light .el-menu--vertical:not(.el-menu--collapse):not(.el-menu--popup-container) .el-menu-item:hover,
+html.light .el-menu-item:hover {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+  color: #3b82f6 !important;
+}
+
+html.light .sidebar-menu :deep(.el-menu--vertical:not(.el-menu--collapse):not(.el-menu--popup-container)) :deep(.el-menu-item:hover),
+html.light .sidebar-menu :deep(.el-menu-item:hover) {
+  background-color: rgba(59, 130, 246, 0.08) !important;
+  color: #3b82f6 !important;
 }
 
 html.light .header {

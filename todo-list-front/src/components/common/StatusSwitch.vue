@@ -38,6 +38,24 @@ const handleChange = (value: number) => {
 @import '@/assets/css/variables.less';
 @import '@/assets/css/mixins.less';
 
+/* 最强选择器 - 确保优先级最高 */
+:root :deep(.status-switch-wrapper) :deep(.status-label.disabled.active) {
+  color: #dc2626 !important;
+  font-weight: 600 !important;
+  margin: 0 8px !important;
+}
+
+:root :deep(.status-switch-wrapper) :deep(.status-label.enabled.active) {
+  color: #22c55e !important;
+  font-weight: 600 !important;
+  margin: 0 8px !important;
+}
+
+:root :deep(.status-switch-wrapper) :deep(.status-label:not(.active)) {
+  color: #94a3b8 !important;
+  margin: 0 8px !important;
+}
+
 :deep(.el-switch) {
   :deep(.el-switch__core) {
     background-color: rgba(@accent-red, 0.3);
@@ -48,25 +66,5 @@ const handleChange = (value: number) => {
       border-color: rgba(@accent-green, 0.6);
     }
   }
-
-  :deep(.el-switch__label) {
-    color: @text-secondary;
-    font-size: @font-size-xs;
-  }
-}
-
-/* 亮色主题样式 */
-:deep(html.light .el-switch__core) {
-  background-color: #e2e8f0 !important;
-  border-color: #cbd5e1 !important;
-
-  &.is-checked {
-    background-color: #22c55e !important;
-    border-color: #16a34a !important;
-  }
-}
-
-:deep(html.light .el-switch__label) {
-  color: #64748b !important;
 }
 </style>

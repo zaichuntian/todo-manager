@@ -267,12 +267,92 @@ html.dark .el-checkbox.is-checked .el-checkbox__inner {
 
 /* 开关样式优化 */
 html.dark .el-switch__core {
-  background: rgba(255, 255, 255, 0.15) !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
+  background: var(--el-color-danger) !important;
+  border-color: var(--el-color-danger) !important;
 }
 
 html.dark .el-switch.is-checked .el-switch__core {
-  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  background: var(--el-color-success) !important;
+  border-color: var(--el-color-success) !important;
+}
+
+/* 暗色模式下开关标签文字颜色 */
+html.dark body .status-switch-wrapper .status-label {
+  color: var(--el-text-color-secondary) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+html.dark body .status-switch-wrapper .status-label.enabled.active {
+  color: var(--el-color-success) !important;
+  font-weight: 600 !important;
+}
+
+html.dark body .status-switch-wrapper .status-label.disabled.active {
+  color: var(--el-text-color-secondary) !important;
+  font-weight: 600 !important;
+}
+
+html.dark body .status-switch-wrapper .status-label.enabled:not(.active) {
+  color: var(--el-text-color-placeholder) !important;
+}
+
+html.dark body .status-switch-wrapper .status-label.disabled:not(.active) {
+  color: var(--el-text-color-placeholder) !important;
+}
+
+/* ============ 更强的开关标签样式覆盖 ============ */
+/* 开关标签基础样式 - 添加margin */
+html.dark .status-switch-wrapper .status-label,
+html.light .status-switch-wrapper .status-label {
+  margin: 0 8px !important;
+}
+
+/* 禁用状态 - 第一个标签显示红色 */
+html.dark .status-switch-wrapper .status-label:first-child.active,
+html.light .status-switch-wrapper .status-label:first-child.active {
+  color: var(--el-color-danger) !important;
+  font-weight: 600 !important;
+}
+
+/* 确保暗色模式下禁用标签显示红色 */
+html.dark body .status-switch-wrapper .status-label.disabled.active {
+  color: var(--el-color-danger) !important;
+  font-weight: 600 !important;
+}
+
+/* 启用状态 - 第二个标签显示绿色 */
+html.dark .status-switch-wrapper .status-label:last-child.active,
+html.light .status-switch-wrapper .status-label:last-child.active {
+  color: var(--el-color-success) !important;
+  font-weight: 600 !important;
+}
+
+/* 非激活状态标签 - 显示浅灰色 */
+html.dark .status-switch-wrapper .status-label:not(.active),
+html.light .status-switch-wrapper .status-label:not(.active) {
+  color: var(--el-text-color-placeholder) !important;
+}
+
+/* ============ 更强的开关标签样式覆盖 ============ */
+/* 禁用状态标签 - 显示灰色 */
+html.dark .status-switch-wrapper .status-label.disabled.active,
+html.light .status-switch-wrapper .status-label.disabled.active {
+  color: var(--el-text-color-secondary) !important;
+  font-weight: 600 !important;
+}
+
+/* 启用状态标签 - 显示绿色 */
+html.dark .status-switch-wrapper .status-label.enabled.active,
+html.light .status-switch-wrapper .status-label.enabled.active {
+  color: var(--el-color-success) !important;
+  font-weight: 600 !important;
+}
+
+/* 非激活状态标签 - 显示浅灰色 */
+html.dark .status-switch-wrapper .status-label:not(.active),
+html.light .status-switch-wrapper .status-label:not(.active) {
+  color: var(--el-text-color-placeholder) !important;
 }
 
 /* 进度条样式优化 */
@@ -404,8 +484,7 @@ html.light {
 
 /* 全局亮色背景 */
 html.light body {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%);
-  background-attachment: fixed;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #f8fafc 100%) fixed;
   min-height: 100vh;
 }
 
@@ -706,31 +785,40 @@ html.light body .el-input__wrapper.is-focus {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12) !important;
 }
 
-/* 确保开关在亮色模式下显示正确颜色 */
+/* 亮色模式下开关禁用状态显示红色 */
 html.light body .el-switch__core {
-  background: #e2e8f0 !important;
-  border-color: #cbd5e1 !important;
+  background: var(--el-color-danger) !important;
+  border-color: var(--el-color-danger) !important;
 }
 
 html.light body .el-switch.is-checked .el-switch__core {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
-  border-color: #16a34a !important;
+  background: var(--el-color-success) !important;
+  border-color: var(--el-color-success) !important;
 }
 
-/* 确保开关标签文字颜色正确 */
+/* 确保开关标签文字颜色正确 - 使用Element Plus颜色变量 */
 html.light body .status-switch-wrapper .status-label {
-  color: #64748b !important;
+  color: var(--el-text-color-secondary) !important;
   font-size: 14px !important;
   font-weight: 500 !important;
 }
 
-html.light body .status-switch-wrapper .status-label.active {
-  color: #22c55e !important;
+html.light body .status-switch-wrapper .status-label.enabled.active {
+  color: var(--el-color-success) !important;  /* 启用时显示Element Plus成功色（绿色） */
   font-weight: 600 !important;
 }
 
-html.light body .status-switch-wrapper .status-label.disabled {
-  color: #94a3b8 !important;
+html.light body .status-switch-wrapper .status-label.disabled.active {
+  color: var(--el-color-danger) !important;  /* 禁用时显示红色 */
+  font-weight: 600 !important;
+}
+
+html.light body .status-switch-wrapper .status-label.enabled:not(.active) {
+  color: var(--el-text-color-placeholder) !important;  /* 非激活状态显示占位符颜色 */
+}
+
+html.light body .status-switch-wrapper .status-label.disabled:not(.active) {
+  color: var(--el-text-color-placeholder) !important;  /* 非激活状态显示占位符颜色 */
 }
 
 /* 确保分页组件在亮色模式下显示正确 */

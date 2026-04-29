@@ -1,0 +1,149 @@
+/* ============ 全局主题样式 ============ */
+
+/* 暗色主题 - 基础变量 */
+:root {
+  /* 暗色主题颜色 */
+  --theme-dark-bg-primary: #0f172a;
+  --theme-dark-bg-secondary: #1e293b;
+  --theme-dark-bg-card: rgba(30, 41, 59, 0.85);
+  --theme-dark-text-primary: rgba(255, 255, 255, 0.95);
+  --theme-dark-text-secondary: rgba(255, 255, 255, 0.85);
+  --theme-dark-text-muted: rgba(255, 255, 255, 0.5);
+  --theme-dark-border: rgba(255, 255, 255, 0.1);
+  --theme-dark-accent-blue: #6ab0ff;
+  --theme-dark-accent-green: #22c55e;
+  --theme-dark-accent-yellow: #fbbf24;
+  --theme-dark-accent-purple: #a78bfa;
+
+  /* 亮色主题颜色 */
+  --theme-light-bg-primary: #ffffff;
+  --theme-light-bg-secondary: #f8fafc;
+  --theme-light-bg-card: #ffffff;
+  --theme-light-text-primary: #1e293b;
+  --theme-light-text-secondary: #334155;
+  --theme-light-text-muted: #94a3b8;
+  --theme-light-border: #e2e8f0;
+  --theme-light-accent-blue: #3b82f6;
+  --theme-light-accent-green: #16a34a;
+  --theme-light-accent-yellow: #d97706;
+  --theme-light-accent-purple: #7c3aed;
+}
+
+/* ============ 暗色主题全局样式 ============ */
+html.dark {
+  /* 页面背景 */
+  --page-bg: linear-gradient(135deg, var(--theme-dark-bg-primary) 0%, var(--theme-dark-bg-secondary) 50%, var(--theme-dark-bg-primary) 100%);
+
+  /* 卡片样式 */
+  --card-bg: var(--theme-dark-bg-card);
+  --card-border: var(--theme-dark-border);
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  --card-hover-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+
+  /* 文字颜色 */
+  --text-primary: var(--theme-dark-text-primary);
+  --text-secondary: var(--theme-dark-text-secondary);
+  --text-muted: var(--theme-dark-text-muted);
+
+  /* 边框颜色 */
+  --border-color: var(--theme-dark-border);
+
+  /* 强调色 */
+  --accent-blue: var(--theme-dark-accent-blue);
+  --accent-green: var(--theme-dark-accent-green);
+  --accent-yellow: var(--theme-dark-accent-yellow);
+  --accent-purple: var(--theme-dark-accent-purple);
+}
+
+/* ============ 亮色主题全局样式 ============ */
+html.light {
+  /* 页面背景 */
+  --page-bg: linear-gradient(135deg, var(--theme-light-bg-secondary) 0%, #f1f5f9 50%, var(--theme-light-bg-secondary) 100%);
+
+  /* 卡片样式 */
+  --card-bg: var(--theme-light-bg-card);
+  --card-border: var(--theme-light-border);
+  --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --card-hover-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+
+  /* 文字颜色 */
+  --text-primary: var(--theme-light-text-primary);
+  --text-secondary: var(--theme-light-text-secondary);
+  --text-muted: var(--theme-light-text-muted);
+
+  /* 边框颜色 */
+  --border-color: var(--theme-light-border);
+
+  /* 强调色 */
+  --accent-blue: var(--theme-light-accent-blue);
+  --accent-green: var(--theme-light-accent-green);
+  --accent-yellow: var(--theme-light-accent-yellow);
+  --accent-purple: var(--theme-light-accent-purple);
+}
+
+/* ============ 全局样式 ============ */
+.page-container {
+  padding: 20px;
+  height: 100%;
+  overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.page-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.page-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.page-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* 页面头部 */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.page-header h2,
+.page-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* 通用卡片 */
+.common-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: var(--card-hover-shadow);
+  }
+}
+
+/* 分页容器 */
+.pagination-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
+}

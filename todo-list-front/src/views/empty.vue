@@ -21,6 +21,8 @@
 import { useRouter } from 'vue-router';
 import ParticleAnimation from '../components/ParticleAnimation';
 import { DocumentRemove } from '@element-plus/icons-vue';
+import '@/assets/css/pages/empty.css';
+import '@/assets/css/pages/empty.css';
 
 const router = useRouter();
 
@@ -32,75 +34,9 @@ const goHome = () => {
   router.push('/');
 };
 </script>
-
+  }
+}
 <style scoped lang="less">
-html,
-body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
-
-.empty-page {
-  height: 100vh;
-  width: 100vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #304156;
-  position: relative;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-}
-
-.empty-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 60px;
-  max-width: 900px;
-  width: 90%;
-  position: relative;
-  z-index: 10;
-}
-
-:deep(.particle-animation) {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-}
-
-.empty-info {
-  flex: 1;
-  text-align: center;
-  padding: 20px;
-}
-
-.empty-icon {
-  margin-bottom: 30px;
-  color: white;
-  opacity: 0.8;
-  animation: float 2s ease-in-out infinite;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-15px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-
 .empty-title {
   font-size: 36px;
   font-weight: bold;

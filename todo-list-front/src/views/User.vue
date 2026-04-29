@@ -132,6 +132,7 @@ import SearchBar from '@/components/common/SearchBar.vue';
 import Pagination from '@/components/common/Pagination.vue';
 import StatusSwitch from '@/components/common/StatusSwitch.vue';
 import UserForm from '@/components/user/UserForm.vue';
+import '@/assets/css/pages/user.css';
 
 // 使用用户管理自定义 Hook
 const {
@@ -240,97 +241,3 @@ const handleBatchDeleteClick = async () => {
   await handleBatchDelete(selectedUuids);
 };
 </script>
-
-<style scoped lang="less">
-@import '@/assets/css/variables.less';
-@import '@/assets/css/mixins.less';
-
-.user-page {
-  background-color: transparent;
-}
-
-.header-bar {
-  .flex-between();
-  margin-bottom: @spacing-lg;
-
-  h3 {
-    color: @text-primary;
-    font-size: @font-size-xl;
-    font-weight: 600;
-    margin: 0;
-  }
-}
-
-/* 状态开关样式 */
-:deep(.status-switch-wrapper) {
-  display: flex;
-  align-items: center;
-  gap: @spacing-xs;
-}
-
-:deep(.status-label) {
-  font-size: @font-size-xs;
-  color: @text-muted;
-  transition: color @transition-fast;
-
-  &.disabled {
-    &.active {
-      color: @accent-red;
-    }
-  }
-
-  &.enabled {
-    &.active {
-      color: @accent-green;
-    }
-  }
-}
-
-:deep(.custom-switch) {
-  :deep(.el-switch__core) {
-    background-color: rgba(@accent-red, 0.3) !important;
-    border-color: rgba(@accent-red, 0.4) !important;
-
-    &.is-checked {
-      background-color: rgba(@accent-green, 0.5) !important;
-      border-color: rgba(@accent-green, 0.6) !important;
-    }
-  }
-
-  :deep(.el-switch__label) {
-    color: @text-secondary;
-    font-size: @font-size-xs;
-  }
-}
-
-:deep(.el-button--info) {
-  .btn-info();
-}
-
-:deep(.el-button--primary) {
-  .btn-primary();
-}
-
-:deep(.el-button--danger) {
-  .btn-danger();
-}
-
-/* 标签样式 */
-:deep(.el-tag--danger) {
-  background: rgba(@accent-red, 0.2) !important;
-  border-color: rgba(@accent-red, 0.3) !important;
-  color: rgba(@accent-red, 0.9) !important;
-}
-
-:deep(.el-tag--success) {
-  background: rgba(@accent-green, 0.2) !important;
-  border-color: rgba(@accent-green, 0.3) !important;
-  color: rgba(@accent-green, 0.9) !important;
-}
-
-:deep(.el-tag--primary) {
-  background: rgba(@accent-blue, 0.2) !important;
-  border-color: rgba(@accent-blue, 0.3) !important;
-  color: rgba(@accent-blue, 0.9) !important;
-}
-</style>

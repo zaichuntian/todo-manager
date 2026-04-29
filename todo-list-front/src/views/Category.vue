@@ -124,6 +124,7 @@ import { ElMessage } from 'element-plus';
 import { Search, Refresh } from '@element-plus/icons-vue';
 import type { Category } from '../types/category';
 import type { Todo } from '../types/todo';
+import '@/assets/css/pages/category.css';
 
 // 使用分类管理自定义 Hook
 const {
@@ -210,36 +211,3 @@ const handleViewTasks = async (row: Category) => {
   }
 };
 </script>
-
-<style scoped lang="less">
-@import '@/assets/css/variables.less';
-@import '@/assets/css/mixins.less';
-
-.category-page {
-  background-color: transparent;
-}
-
-.header-bar {
-  .flex-between();
-  margin-bottom: @spacing-lg;
-
-  h3 {
-    color: @text-primary;
-    font-size: @font-size-xl;
-    font-weight: 600;
-    margin: 0;
-  }
-}
-
-.common-card {
-  .card-dark();
-}
-
-:deep(.el-button--info) {
-  .btn-info();
-}
-
-:deep(.el-button--primary) {
-  .btn-primary();
-}
-</style>

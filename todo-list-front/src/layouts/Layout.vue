@@ -62,6 +62,16 @@
           </el-breadcrumb>
         </div>
         <div class="header-right">
+          <!-- 主题切换按钮 -->
+          <button 
+            class="theme-toggle-btn" 
+            @click="themeStore.toggleTheme"
+            title="切换主题"
+          >
+            <el-icon :size="20">
+              <component :is="themeStore.theme === 'dark' ? Sunny : Moon" />
+            </el-icon>
+          </button>
           <el-dropdown trigger="hover" effect="light">
             <div class="user-info">
               <div class="user-avatar">
@@ -107,16 +117,18 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
-import { ArrowDown, UserFilled, HomeFilled, SwitchButton } from '@element-plus/icons-vue';
+import { ArrowDown, UserFilled, HomeFilled, SwitchButton, Sunny, Moon } from '@element-plus/icons-vue';
 import { useRoute } from 'vue-router';
 import * as THREE from 'three';
 import { useLayout } from '../hooks/useLayout';
 import { useAnimation } from '@/hooks/useAnimation';
 import { useCommon } from '@/hooks/useCommon.ts';
 import { useAuthStore } from '@/stores/auth';
+import { useThemeStore } from '@/stores/theme';
 
 const authStore = useAuthStore();
 const userInfo = authStore.userInfo;
+const themeStore = useThemeStore();
 
 const route = useRoute();
 const { isCollapsed, activeMenu, handleLogout } = useLayout();
@@ -302,6 +314,8 @@ onMounted(() => {
   setTimeout(() => {
     initSidebarThree();
   }, 100);
+  // 初始化主题
+  themeStore.initTheme();
 });
 
 // 组件卸载时清理
@@ -461,6 +475,33 @@ onUnmounted(() => {
 .dropdown-icon {
   color: rgba(255, 255, 255, 0.5);
   font-size: 14px;
+}
+
+/* 主题切换按钮 */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-right: 12px;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(106, 176, 255, 0.4);
+    color: #6ab0ff;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
 }
 
 /* 下拉框用户信息 */

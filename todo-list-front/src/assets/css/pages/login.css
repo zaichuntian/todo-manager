@@ -220,3 +220,95 @@ html.light .qrcode-container {
   background: #ffffff;
   border-color: #e2e8f0;
 }
+
+/* ============ 输入框样式 ============ */
+.login-card .el-input__wrapper {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: rgba(106, 176, 255, 0.3);
+  }
+
+  &.is-focus {
+    border-color: rgba(106, 176, 255, 0.5);
+    box-shadow: 0 0 0 2px rgba(106, 176, 255, 0.15);
+  }
+}
+
+.login-card .el-input__inner {
+  color: rgba(255, 255, 255, 0.9);
+  background: transparent;
+}
+
+.login-card .el-input__placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* 按钮样式 */
+.login-card .el-button--primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-weight: 500;
+  font-size: 15px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* 链接样式 */
+.login-card .el-link {
+  color: rgba(106, 176, 255, 0.8);
+  font-size: 14px;
+
+  &:hover {
+    color: #6ab0ff;
+  }
+}
+
+/* 表单项间距 */
+.login-card .el-form-item {
+  margin-bottom: 20px;
+}
+
+/* 亮色主题输入框样式 */
+html.light .login-card .el-input__wrapper {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+
+  &:hover {
+    border-color: #94a3b8;
+  }
+
+  &.is-focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+  }
+}
+
+html.light .login-card .el-input__inner {
+  color: #1e293b;
+}
+
+html.light .login-card .el-input__placeholder {
+  color: #94a3b8;
+}
+
+html.light .login-card .el-link {
+  color: #2563eb;
+
+  &:hover {
+    color: #1d4ed8;
+  }
+}

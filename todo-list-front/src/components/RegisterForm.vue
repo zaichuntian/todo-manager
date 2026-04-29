@@ -161,10 +161,35 @@ const onLoginClick = () => {
 @import '@/assets/css/variables.less';
 @import '@/assets/css/mixins.less';
 
-.register-form {
-  .flex-wrap();
+.login-form {
+  display: flex;
   flex-direction: column;
+  align-items: center;
   gap: @spacing-md;
+  width: 100%;
+}
+
+.login-form .el-form-item {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 !important;
+}
+
+.login-form .input-wrapper {
+  width: 100%;
+}
+
+.login-form .modern-input {
+  width: 100%;
+}
+
+.login-form .el-input__wrapper {
+  width: 100% !important;
+}
+
+.login-form .el-button {
+  width: 100%;
+  max-width: 320px;
 }
 
 .form-item {
@@ -219,6 +244,50 @@ const onLoginClick = () => {
 
     &:hover {
       text-decoration: underline;
+    }
+  }
+}
+
+.login-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: @spacing-md;
+  padding-top: @spacing-md;
+  border-top: 1px solid @border-color;
+
+  span {
+    color: @text-muted;
+    font-size: @font-size-sm;
+  }
+
+  .link {
+    color: @accent-blue;
+    font-size: @font-size-sm;
+    cursor: pointer;
+
+    &:hover {
+      color: @accent-blue-light;
+    }
+  }
+}
+
+/* 亮色主题 */
+html.light {
+  .login-footer {
+    border-top-color: #e2e8f0;
+
+    span {
+      color: #64748b;
+    }
+
+    .link {
+      color: #3b82f6 !important;
+
+      &:hover {
+        color: #2563eb !important;
+      }
     }
   }
 }

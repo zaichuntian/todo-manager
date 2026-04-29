@@ -62,8 +62,9 @@
         </el-form-item>
       </el-form>
       <div class="login-footer">
-        <el-text type="success" @click="handleWechatLogin" class="link wechat-link">微信登录</el-text>
-        <el-text type="primary" @click="onRegisterClick" class="link register-link">立即注册</el-text>
+        <el-text @click="handleWechatLogin" class="link wechat-link">微信登录</el-text>
+        <span>|</span>
+        <el-text type="primary" @click="onRegisterClick" class="link">立即注册</el-text>
       </div>
     </div>
 
@@ -267,9 +268,34 @@ onUnmounted(() => {
 @import '@/assets/css/mixins.less';
 
 .login-form {
-  .flex-wrap();
+  display: flex;
   flex-direction: column;
+  align-items: center;
   gap: @spacing-md;
+  width: 100%;
+}
+
+.login-form .el-form-item {
+  width: 100%;
+  max-width: 320px;
+  margin: 0 !important;
+}
+
+.login-form .input-wrapper {
+  width: 100%;
+}
+
+.login-form .modern-input {
+  width: 100%;
+}
+
+.login-form .el-input__wrapper {
+  width: 100% !important;
+}
+
+.login-form .el-button {
+  width: 100%;
+  max-width: 320px;
 }
 
 .form-item {
@@ -338,6 +364,196 @@ onUnmounted(() => {
   }
   100% {
     box-shadow: 0 0 0 10px rgba(@accent-blue, 0);
+  }
+}
+
+/* 底部链接区域 */
+.login-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: @spacing-md;
+  padding-top: @spacing-md;
+  border-top: 1px solid @border-color;
+
+  .link {
+    font-size: @font-size-sm;
+    cursor: pointer;
+    transition: color @transition-fast;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .wechat-link {
+    color: @accent-green !important;
+  }
+
+  span {
+    color: @text-muted;
+  }
+}
+
+/* 微信登录弹窗 */
+:deep(.wechat-dialog) {
+  .el-dialog__header {
+    display: none;
+  }
+
+  .el-dialog__body {
+    padding: 0;
+    background: rgba(30, 41, 59, 0.95) !important;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  .el-dialog__close {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 18px;
+
+    &:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+}
+
+.wechat-qr-code-container {
+  padding: 24px;
+  text-align: center;
+}
+
+.wechat-icon-wrapper {
+  margin-bottom: 16px;
+
+  .wechat-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto;
+    background: linear-gradient(135deg, #07c160 0%, #06ad56 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(7, 193, 96, 0.3);
+    position: relative;
+
+    /* 微信图标形状 */
+    &::before {
+      content: '';
+      width: 20px;
+      height: 20px;
+      border: 3px solid #fff;
+      border-radius: 50%;
+      position: relative;
+      box-sizing: border-box;
+    }
+
+    /* 微信图标内部图案 */
+    &::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 14px solid #fff;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%) rotate(-45deg);
+    }
+  }
+
+  .wechat-logo-text {
+    display: block;
+    margin-top: 12px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.qr-code-wrapper {
+  background: #fff;
+  padding: 16px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.qr-code-status {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 8px;
+
+  &.status-success {
+    color: #22c55e;
+  }
+
+  &.status-failed {
+    color: #ef4444;
+  }
+}
+
+/* 亮色主题 */
+html.light {
+  :deep(.wechat-dialog) {
+    .el-dialog__body {
+      background: #ffffff !important;
+      border-color: #e2e8f0;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .el-dialog__close {
+      color: #64748b;
+
+      &:hover {
+        color: #1e293b;
+      }
+    }
+  }
+
+  .wechat-logo-text {
+    color: #1e293b;
+  }
+
+  .qr-code-status {
+    color: #64748b;
+
+    &.status-success {
+      color: #16a34a;
+    }
+
+    &.status-failed {
+      color: #dc2626;
+    }
+  }
+
+  .login-footer {
+    border-top-color: #e2e8f0;
+
+    span {
+      color: #64748b;
+    }
+
+    .link {
+      color: #3b82f6 !important;
+
+      &:hover {
+        color: #2563eb !important;
+      }
+    }
+
+    .wechat-link {
+      color: #16a34a !important;
+
+      &:hover {
+        color: #15803d !important;
+      }
+    }
   }
 }
 </style>

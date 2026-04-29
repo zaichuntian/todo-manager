@@ -267,13 +267,13 @@ html.dark .el-checkbox.is-checked .el-checkbox__inner {
 
 /* 开关样式优化 */
 html.dark .el-switch__core {
-  background: var(--el-color-danger) !important;
-  border-color: var(--el-color-danger) !important;
+  background: #f23838 !important;  /* 禁用 - 红色 */
+  border-color: #f23838 !important;
 }
 
 html.dark .el-switch.is-checked .el-switch__core {
-  background: var(--el-color-success) !important;
-  border-color: var(--el-color-success) !important;
+  background: #06bd4b !important;  /* 启用 - 绿色 */
+  border-color: #06bd4b !important;
 }
 
 /* ============ 开关标签样式 ============ */
@@ -290,7 +290,7 @@ html.dark .status-switch-wrapper .status-label.disabled.active,
 html.light .status-switch-wrapper .status-label.disabled.active,
 html.dark .status-switch-wrapper .status-label:first-child.active,
 html.light .status-switch-wrapper .status-label:first-child.active {
-  color: var(--el-color-danger) !important;
+  color: #f23838 !important;  /* 禁用文字 - 红色 */
   font-weight: 500 !important;  /* 适中的字体粗细 */
 }
 
@@ -299,7 +299,7 @@ html.dark .status-switch-wrapper .status-label.enabled.active,
 html.light .status-switch-wrapper .status-label.enabled.active,
 html.dark .status-switch-wrapper .status-label:last-child.active,
 html.light .status-switch-wrapper .status-label:last-child.active {
-  color: var(--el-color-success) !important;
+  color: #06bd4b !important;  /* 启用文字 - 绿色 */
   font-weight: 500 !important;  /* 适中的字体粗细 */
 }
 
@@ -741,13 +741,13 @@ html.light body .el-input__wrapper.is-focus {
 
 /* 亮色模式下开关禁用状态显示红色 */
 html.light body .el-switch__core {
-  background: var(--el-color-danger) !important;
-  border-color: var(--el-color-danger) !important;
+  background: #f23838 !important;  /* 禁用 - 红色 */
+  border-color: #f23838 !important;
 }
 
 html.light body .el-switch.is-checked .el-switch__core {
-  background: var(--el-color-success) !important;
-  border-color: var(--el-color-success) !important;
+  background: #06bd4b !important;  /* 启用 - 绿色 */
+  border-color: #06bd4b !important;
 }
 
 /* 确保开关标签文字颜色正确 - 使用Element Plus颜色变量 */
@@ -756,11 +756,11 @@ html.light body .status-switch-wrapper .status-label {
 }
 
 html.light body .status-switch-wrapper .status-label.enabled.active {
-  color: var(--el-color-success) !important;  /* 启用时显示Element Plus成功色（绿色） */
+  color: #06bd4b !important;  /* 启用时显示绿色 */
 }
 
 html.light body .status-switch-wrapper .status-label.disabled.active {
-  color: var(--el-color-danger) !important;  /* 禁用时显示红色 */
+  color: #f23838 !important;  /* 禁用时显示红色 */
 }
 
 html.light body .status-switch-wrapper .status-label.enabled:not(.active) {

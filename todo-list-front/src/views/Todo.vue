@@ -49,7 +49,7 @@
         </el-table-column>
 
         <el-table-column prop="title" label="标题" align="center" />
-        <el-table-column prop="content" label="内容" align="center" />
+        <el-table-column prop="content" width="200" label="内容" align="center" show-overflow-tooltip />
 
         <el-table-column label="创建时间" align="center">
           <template #default="{ row }">
@@ -79,9 +79,11 @@
 
         <el-table-column label="操作" width="200" align="center">
           <template #default="{ row }">
-            <BaseButton v-if="isMyTask(row)" type="primary" link @click="handleEdit(row)"> 编辑 </BaseButton>
-            <BaseButton v-if="isMyTask(row)" type="danger" link @click="handleDelete(row)"> 删除 </BaseButton>
-            <span v-else style="color: #999">无操作权限</span>
+            <el-button v-if="isMyTask(row)" link style="color: #6ab0ff" @click="handleEdit(row)">编辑</el-button>
+            <el-button v-if="isMyTask(row)" link style="color: #f87171" @click="handleDelete(row)"
+              >删除</el-button
+            >
+            <span v-else style="color: rgba(255, 255, 255, 0.5)">无操作权限</span>
           </template>
         </el-table-column>
       </el-table>
@@ -230,6 +232,8 @@ handleEdit = async (row: any) => {
 </script>
 
 <style scoped lang="less">
+@import '../assets/css/variables.less';
+
 .todo-page {
   background-color: transparent;
 }
@@ -238,6 +242,100 @@ handleEdit = async (row: any) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: @spacing-lg;
+
+  h3 {
+    color: @text-primary;
+    font-size: @font-size-xl;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.common-card {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: @radius-lg;
+}
+
+:deep(.el-button--info) {
+  background: rgba(@accent-blue, 0.2);
+  border-color: rgba(@accent-blue, 0.3);
+  color: @text-primary;
+
+  &:hover {
+    background: rgba(@accent-blue, 0.3);
+    border-color: rgba(@accent-blue, 0.5);
+  }
+}
+
+/* 状态开关样式 */
+:deep(.status-switch-wrapper) {
+  display: flex;
+  align-items: center;
+  gap: @spacing-xs;
+}
+
+:deep(.status-label) {
+  font-size: @font-size-xs;
+  color: @text-muted;
+  transition: color @transition-fast;
+
+  &.disabled {
+    &.active {
+      color: @accent-red;
+    }
+  }
+
+  &.enabled {
+    &.active {
+      color: @accent-green;
+    }
+  }
+}
+
+:deep(.custom-switch) {
+  :deep(.el-switch__core) {
+    background-color: rgba(@accent-red, 0.3) !important;
+    border-color: rgba(@accent-red, 0.4) !important;
+
+    &.is-checked {
+      background-color: rgba(@accent-green, 0.5) !important;
+      border-color: rgba(@accent-green, 0.6) !important;
+    }
+  }
+
+  :deep(.el-switch__label) {
+    color: @text-secondary;
+    font-size: @font-size-xs;
+  }
+}
+</style>
+<style scoped lang="less">
+@import '@/assets/css/variables.less';
+@import '@/assets/css/mixins.less';
+
+.todo-page {
+  background-color: transparent;
+}
+
+.header-bar {
+  .flex-between();
+  margin-bottom: @spacing-lg;
+
+  h3 {
+    color: @text-primary;
+    font-size: @font-size-xl;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.common-card {
+  .card-dark();
+}
+
+:deep(.el-button--info) {
+  .btn-info();
 }
 </style>

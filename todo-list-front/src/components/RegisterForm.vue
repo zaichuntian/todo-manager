@@ -1,6 +1,9 @@
-<!-- src/components/RegisterForm.vue -->
 <template>
   <div class="login-card">
+    <!-- 动态网格背景 -->
+    <div class="grid-bg"></div>
+    <!-- 光效扫描线 -->
+    <div class="light-scan"></div>
     <div class="login-header">
       <div class="login-icon">
         <div class="icon-circle"></div>
@@ -17,8 +20,14 @@
       class="login-form"
     >
       <el-form-item prop="username" class="form-item">
-        <div class="input-wrapper">
-          <el-input v-model="form.username" placeholder="请输入用户名" class="modern-input">
+        <div class="input-wrapper" :class="{ focused: focusedField === 'username' }">
+          <el-input
+            v-model="form.username"
+            placeholder="请输入用户名"
+            class="modern-input"
+            @focus="focusedField = 'username'"
+            @blur="focusedField = ''"
+          >
             <template #prefix>
               <div class="input-icon">
                 <i class="el-icon-user"></i>
@@ -28,8 +37,15 @@
         </div>
       </el-form-item>
       <el-form-item prop="password" class="form-item">
-        <div class="input-wrapper">
-          <el-input v-model="form.password" type="password" placeholder="请输入密码" class="modern-input">
+        <div class="input-wrapper" :class="{ focused: focusedField === 'password' }">
+          <el-input
+            v-model="form.password"
+            type="password"
+            placeholder="请输入密码"
+            class="modern-input"
+            @focus="focusedField = 'password'"
+            @blur="focusedField = ''"
+          >
             <template #prefix>
               <div class="input-icon">
                 <i class="el-icon-lock"></i>
@@ -39,8 +55,15 @@
         </div>
       </el-form-item>
       <el-form-item prop="confirmPassword" class="form-item">
-        <div class="input-wrapper">
-          <el-input v-model="form.confirmPassword" type="password" placeholder="请确认密码" class="modern-input">
+        <div class="input-wrapper" :class="{ focused: focusedField === 'confirmPassword' }">
+          <el-input
+            v-model="form.confirmPassword"
+            type="password"
+            placeholder="请确认密码"
+            class="modern-input"
+            @focus="focusedField = 'confirmPassword'"
+            @blur="focusedField = ''"
+          >
             <template #prefix>
               <div class="input-icon">
                 <i class="el-icon-lock"></i>
@@ -84,6 +107,7 @@ const form = reactive({
 });
 const loading = ref(false);
 const formRef = ref();
+const focusedField = ref('');
 
 const handleSubmit = async () => {
   // 表单验证
@@ -133,263 +157,69 @@ const onLoginClick = () => {
 };
 </script>
 
-<style scoped>
-.login-card {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 24px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  padding: 50px 40px;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  animation: fadeIn 0.6s ease-out;
-}
+<style scoped lang="less">
+@import '@/assets/css/variables.less';
+@import '@/assets/css/mixins.less';
 
-.login-card::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(64, 158, 255, 0.1), transparent);
-  transform: rotate(45deg);
-  animation: shine 6s linear infinite;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.login-card:hover::before {
-  opacity: 1;
-}
-
-@keyframes shine {
-  0% {
-    transform: translateX(-100%) rotate(45deg);
-  }
-  100% {
-    transform: translateX(100%) rotate(45deg);
-  }
-}
-
-.login-card:hover {
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
-  transform: translateY(-8px);
-}
-
-.login-footer {
-  text-align: center;
-  margin-top: 30px;
-  font-size: 14px;
-  color: #606266;
-}
-
-.link {
-  cursor: pointer;
-  margin-left: 8px;
-  font-weight: 500;
-  position: relative;
-  transition: all 0.3s ease;
-}
-
-.link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: #409eff;
-  transition: width 0.3s ease;
-}
-
-.link:hover::after {
-  width: 100%;
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: 40px;
-  position: relative;
-  z-index: 1;
-}
-
-.login-icon {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.icon-circle {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #409eff 0%, #69c0ff 100%);
-  box-shadow: 0 10px 30px rgba(64, 158, 255, 0.3);
-  position: relative;
-  overflow: hidden;
-}
-
-.icon-circle::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 40px;
-  height: 40px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.login-title {
-  font-size: 28px;
-  font-weight: 600;
-  color: #303133;
-  margin: 0 0 12px 0;
-  position: relative;
-  z-index: 1;
-}
-
-.login-subtitle {
-  font-size: 16px;
-  color: #909399;
-  margin: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.login-form {
-  width: 100%;
-  position: relative;
-  z-index: 1;
+.register-form {
+  .flex-wrap();
+  flex-direction: column;
+  gap: @spacing-md;
 }
 
 .form-item {
-  margin-bottom: 24px;
-  animation: fadeIn 0.6s ease-out;
-}
-
-.form-item:nth-child(1) {
-  animation-delay: 0.1s;
-}
-
-.form-item:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.form-item:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-.form-item:nth-child(4) {
-  animation-delay: 0.4s;
-}
-
-.form-item:nth-child(3) {
-  animation-delay: 0.3s;
-}
-
-.input-wrapper {
   position: relative;
-  overflow: hidden;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.8);
-  transition: all 0.3s ease;
+}
+
+.form-label {
+  color: @text-secondary;
+  font-size: @font-size-sm;
+  margin-bottom: @spacing-xs;
+  display: block;
+}
+
+.form-input {
+  .input-dark();
   width: 100%;
-  max-width: 300px;
-  margin: 0 auto;
+  padding: @spacing-sm @spacing-md;
+  height: 40px;
 }
 
-.input-wrapper:hover {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.15);
-}
-
-.modern-input {
-  height: 52px;
-  font-size: 16px;
-  border: none;
-  background: transparent;
-  transition: all 0.3s ease;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-:deep(.modern-input) .el-input__wrapper {
-  box-shadow: none !important;
-  border: none !important;
-  background: transparent !important;
-}
-
-:deep(.modern-input) .el-input__inner {
-  width: 100%;
-  font-size: 16px;
-  color: #303133;
-  background: transparent;
-  text-align: center;
-}
-
-.input-icon {
-  display: none;
-}
-
-.modern-button {
-  width: 100%;
-  height: 52px;
-  border-radius: 16px;
-  font-size: 16px;
-  font-weight: 600;
-  background: linear-gradient(135deg, #409eff 0%, #69c0ff 100%);
-  border: none;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.modern-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(64, 158, 255, 0.4);
-}
-
-.modern-button:active {
-  transform: translateY(0);
-}
-
-.button-text {
-  position: relative;
-  z-index: 1;
-  color: #ffffff;
-}
-
-.modern-button::before {
-  content: '';
+.password-toggle {
   position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.6s ease;
-}
+  right: @spacing-md;
+  top: 50%;
+  transform: translateY(-50%);
+  color: @text-muted;
+  cursor: pointer;
+  transition: color @transition-fast;
 
-.modern-button:hover::before {
-  left: 100%;
-}
-
-/* 动画效果 */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+  &:hover {
+    color: @text-secondary;
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+}
+
+.register-btn {
+  .btn-primary();
+  width: 100%;
+  height: 40px;
+  margin-top: @spacing-sm;
+}
+
+.agree-terms {
+  display: flex;
+  align-items: center;
+  gap: @spacing-xs;
+  color: @text-muted;
+  font-size: @font-size-xs;
+
+  a {
+    color: @accent-blue;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 </style>

@@ -66,10 +66,16 @@
 
         <el-table-column label="操作" width="300" align="center">
           <template #default="{ row }">
-            <el-button v-if="isMyCategory(row)" type="primary" link @click="handleEdit(row)"> 编辑 </el-button>
-            <el-button v-if="isMyCategory(row)" type="warning" link @click="handleViewTasks(row)"> 查看任务 </el-button>
-            <el-button v-if="isMyCategory(row)" type="danger" link @click="handleDelete(row)"> 删除 </el-button>
-            <span v-else style="color: #999">无操作权限</span>
+            <el-button v-if="isMyCategory(row)" link style="color: #6ab0ff" @click="handleEdit(row)"
+              >编辑</el-button
+            >
+            <el-button v-if="isMyCategory(row)" link style="color: #fbbf24" @click="handleViewTasks(row)"
+              >查看任务</el-button
+            >
+            <el-button v-if="isMyCategory(row)" link style="color: #f87171" @click="handleDelete(row)"
+              >删除</el-button
+            >
+            <span v-else style="color: rgba(255, 255, 255, 0.5)">无操作权限</span>
           </template>
         </el-table-column>
       </el-table>
@@ -206,14 +212,34 @@ const handleViewTasks = async (row: Category) => {
 </script>
 
 <style scoped lang="less">
+@import '@/assets/css/variables.less';
+@import '@/assets/css/mixins.less';
+
 .category-page {
   background-color: transparent;
 }
 
 .header-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
+  .flex-between();
+  margin-bottom: @spacing-lg;
+
+  h3 {
+    color: @text-primary;
+    font-size: @font-size-xl;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+.common-card {
+  .card-dark();
+}
+
+:deep(.el-button--info) {
+  .btn-info();
+}
+
+:deep(.el-button--primary) {
+  .btn-primary();
 }
 </style>

@@ -5,23 +5,24 @@ import { UserInfo } from '@/types/user.ts';
 const routes = [
   {
     path: '/login',
-    component: () => import('../views/Login.vue'),
+    component: () => import('@/views/Login.vue'),
     meta: { title: '登录页' },
   },
   {
     path: '/',
-    component: () => import('../layouts/Layout.vue'),
+    component: () => import('@/layouts/Layout.vue'),
     children: [
-      { path: '', component: () => import('../views/Home.vue'), meta: { title: '首页' } },
-      { path: '/user', component: () => import('../views/User.vue'), meta: { title: '用户管理' } },
-      { path: '/todo', component: () => import('../views/Todo.vue'), meta: { title: '任务管理' } },
-      { path: '/category', component: () => import('../views/Category.vue'), meta: { title: '分类管理' } },
+      { path: '', component: () => import('@/views/Home.vue'), meta: { title: '首页' } },
+      { path: '/user', component: () => import('@/views/User.vue'), meta: { title: '用户管理' } },
+      { path: '/todo', component: () => import('@/views/Todo.vue'), meta: { title: '任务管理' } },
+      { path: '/category', component: () => import('@/views/Category.vue'), meta: { title: '分类管理' } },
+      { path: '/profile', component: () => import('@/views/Profile.vue'), meta: { title: '个人中心' } },
     ],
   },
-  { path: '/401', component: () => import('../views/401.vue'), meta: { title: '401' } },
-  { path: '/403', component: () => import('../views/403.vue'), meta: { title: '403' } },
-  { path: '/empty', component: () => import('../views/empty.vue'), meta: { title: '空页面' } },
-  { path: '/:pathMatch(.*)*', component: () => import('../views/404.vue'), meta: { title: '404' } },
+  { path: '/401', component: () => import('@/views/401.vue'), meta: { title: '401' } },
+  { path: '/403', component: () => import('@/views/403.vue'), meta: { title: '403' } },
+  { path: '/empty', component: () => import('@/views/empty.vue'), meta: { title: '空页面' } },
+  { path: '/:pathMatch(.*)*', component: () => import('@/views/404.vue'), meta: { title: '404' } },
 ];
 
 const router = createRouter({

@@ -42,7 +42,14 @@
 /* 页面容器 */
 .page-container {
   padding: 20px;
-  min-height: calc(100vh - 60px);
+  height: 100%;
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* 页面头部 */
@@ -60,7 +67,6 @@
   margin: 0;
   font-size: 24px;
   font-weight: 600;
-  color: #303133;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 

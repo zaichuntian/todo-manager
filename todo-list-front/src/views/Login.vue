@@ -22,6 +22,8 @@ import LoginForm from '../components/LoginForm.vue';
 import RegisterForm from '../components/RegisterForm.vue';
 import { loginRules, registerRules } from '../utils/validationRules';
 
+// tsparticles-vue3 会自动加载，无需手动调用
+
 // 状态管理
 const isRegister = ref(false);
 const rules = computed(() => (isRegister.value ? registerRules : loginRules));
@@ -32,15 +34,26 @@ const toggleCard = () => {
 };
 </script>
 
-<style scoped>
-.login {
-  height: 100vh;
+<style scoped lang="less">
+@import '@/assets/css/variables.less';
+@import '@/assets/css/mixins.less';
+
+.login-page {
+  position: relative;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f0f9ff;
-  position: relative;
   overflow: hidden;
+}
+
+.login-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
 .login-container {
@@ -48,56 +61,110 @@ const toggleCard = () => {
   z-index: 1;
   width: 100%;
   max-width: 420px;
-  padding: 0 20px;
+  padding: @spacing-xl;
 }
 
-/* 卡片过渡动画 */
-/* 定义冒泡动画 */
-@keyframes bubbleUp {
-  0% {
-    opacity: 0;
-    transform: translateY(40px) scale(0.95);
+.login-card {
+  .card-dark();
+  .card-hover();
+  padding: @spacing-xxl;
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: @spacing-xl;
+}
+
+.login-title {
+  color: @text-primary;
+  font-size: @font-size-xxl;
+  font-weight: 700;
+  margin: 0 0 @spacing-xs 0;
+}
+
+.login-subtitle {
+  color: @text-muted;
+  font-size: @font-size-sm;
+}
+
+.form-toggle {
+  .flex-center();
+  justify-content: center;
+  gap: @spacing-lg;
+  margin-bottom: @spacing-xl;
+}
+
+.toggle-btn {
+  padding: @spacing-sm @spacing-lg;
+  border-radius: @radius-md;
+  cursor: pointer;
+  transition: all @transition-normal;
+  font-size: @font-size-sm;
+  font-weight: 500;
+
+  &.active {
+    background: rgba(@accent-blue, 0.2);
+    color: @accent-blue;
+    border: 1px solid rgba(@accent-blue, 0.3);
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+
+  &.inactive {
+    background: transparent;
+    color: @text-muted;
+    border: 1px solid transparent;
+
+    &:hover {
+      color: @text-secondary;
+      border-color: @border-color;
+    }
   }
 }
 
-/* 定义淡出动画 */
-@keyframes fadeOut {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.95);
-  }
+.form-container {
+  min-height: 300px;
 }
 
-.card-fade-enter-active {
-  animation: bubbleUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  position: relative;
-  z-index: 2;
+/* 表单切换动画 */
+.form-enter-active,
+.form-leave-active {
+  transition: all @transition-normal;
 }
 
-.card-fade-leave-active {
-  animation: fadeOut 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1;
-}
-
-.card-fade-enter-from {
+.form-enter-from {
   opacity: 0;
-  transform: translateY(40px) scale(0.95);
+  transform: translateX(30px);
 }
 
-.card-fade-leave-to {
+.form-leave-to {
   opacity: 0;
-  transform: translateY(-20px) scale(0.95);
+  transform: translateX(-30px);
+}
+
+.wechat-login {
+  margin-top: @spacing-lg;
+  padding-top: @spacing-lg;
+  border-top: 1px solid @border-color;
+}
+
+.wechat-title {
+  text-align: center;
+  color: @text-muted;
+  font-size: @font-size-sm;
+  margin-bottom: @spacing-md;
+}
+
+.wechat-qrcode {
+  .flex-center();
+  gap: @spacing-lg;
+}
+
+.qrcode-container {
+  .card-dark();
+  padding: @spacing-md;
+}
+
+.qrcode-tips {
+  color: @text-secondary;
+  font-size: @font-size-sm;
 }
 </style>

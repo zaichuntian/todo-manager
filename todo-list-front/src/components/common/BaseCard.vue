@@ -19,15 +19,12 @@ defineProps({
 });
 </script>
 
-<style scoped>
-.common-card {
-  background: transparent;
-  border-radius: 12px;
-  transition: all 0.3s ease;
-}
+<style scoped lang="less">
+@import '@/assets/css/variables.less';
+@import '@/assets/css/mixins.less';
 
-.common-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(64, 158, 255, 0.15);
+.base-card {
+  .card-dark();
+  .card-hover();
 }
 </style>

@@ -75,3 +75,67 @@ defineExpose({
   getFormData: () => localForm.value,
 });
 </script>
+<style scoped lang="less">
+@import '@/assets/css/variables.less';
+@import '@/assets/css/mixins.less';
+
+.user-form {
+  .flex-wrap();
+  flex-direction: column;
+  gap: @spacing-md;
+}
+
+.form-item {
+  position: relative;
+}
+
+.form-label {
+  color: @text-secondary;
+  font-size: @font-size-sm;
+  margin-bottom: @spacing-xs;
+  display: block;
+}
+
+.form-input {
+  .input-dark();
+  width: 100%;
+  padding: @spacing-sm @spacing-md;
+  height: 40px;
+}
+
+.form-select {
+  :deep(.el-select) {
+    width: 100%;
+
+    :deep(.el-input__inner) {
+      .input-dark();
+    }
+  }
+}
+
+.form-switch {
+  :deep(.el-switch) {
+    :deep(.el-switch__core) {
+      background-color: rgba(@accent-red, 0.3);
+
+      &.is-checked {
+        background-color: rgba(@accent-green, 0.5);
+      }
+    }
+  }
+}
+
+.form-footer {
+  .flex-end();
+  gap: @spacing-sm;
+  margin-top: @spacing-lg;
+}
+
+.btn-cancel {
+  .btn-info();
+}
+
+.btn-submit {
+  .btn-primary();
+}
+</style>

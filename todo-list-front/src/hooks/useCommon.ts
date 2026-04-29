@@ -5,7 +5,12 @@ export function useCommon() {
     router.push('/');
   };
 
+  const goProfile = () => {
+    router.push('/profile');
+  };
+
   return {
     goHomePage,
+    goProfile,
   };
 }

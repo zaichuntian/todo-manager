@@ -17,44 +17,31 @@
           <el-card shadow="hover" class="task-card todo-card">
             <!-- 上部分：标题（header 插槽，占 20%） -->
             <template #header>
-              <div class="card-header" :style="{ backgroundColor: task.category?.color || '#f5f7fa' }">
-                <span class="task-title">title: {{ task.title }}</span>
+              <div class="card-header">
+                <span class="task-title">{{ task.title }}</span>
                 <span class="task-category">{{ task.category?.name || '未分类' }}</span>
               </div>
             </template>
 
             <!-- 中间部分：内容（默认插槽，占 60%） -->
-            <div class="card-body">
+            <div class="task-body">
               <p class="task-content">{{ task.content || '暂无描述' }}</p>
             </div>
 
-            <!-- 下部分：底部信息（footer 插槽，占 20%） -->
-            <template #footer>
-              <div class="card-footer">
-                <div class="footer-left">
-                  <!-- 新增：创建人 -->
+            <div class="task-footer">
+              <div class="task-info">
+                <div class="creator-badge">
+                  <span class="creator-icon"></span>
                   <span class="creator">{{ task.user?.username || '未知用户' }}</span>
-                  <span class="divider">|</span>
-                  <!-- 原创建时间 -->
-                  <el-icon><Clock /></el-icon>
-                  <span>{{ formatTime(task.createdAt) }}</span>
                 </div>
-                <div class="footer-right">
-                  <el-button
-                    v-if="task.status === 0 && isMyTask(task)"
-                    type="primary"
-                    size="small"
-                    @click="handleComplete(task)"
-                    class="complete-btn"
-                  >
-                    完成任务
-                  </el-button>
-                  <el-tag v-else :type="task.status === 1 ? 'success' : 'warning'" size="small">{{
-                    task.status === 1 ? '已完成' : '未完成'
-                  }}</el-tag>
-                </div>
+                <span class="task-time">{{ formatTime(task.createdAt) }}</span>
               </div>
-            </template>
+
+              <span :class="['task-status', task.status === 1 ? 'completed' : '']">
+                <span class="status-dot"></span>
+                {{ task.status === 1 ? '已完成' : '未完成' }}
+              </span>
+            </div>
           </el-card>
         </div>
 
@@ -66,12 +53,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
-import { ElMessageBox } from 'element-plus';
-import { Clock } from '@element-plus/icons-vue';
 import dayjs from 'dayjs';
 import { api } from '@/api';
-import { showSuccessMessage, showInfoMessage } from '@/utils/common';
-
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 
@@ -98,11 +81,6 @@ let particles: THREE.Points | null = null;
 
 // 格式化时间
 const formatTime = (time: string) => dayjs(time).format('YYYY-MM-DD HH:mm');
-
-// 判断是否是自己的任务
-const isMyTask = (row: any) => {
-  return row.userUuid === loginUserUuid.value;
-};
 
 // 初始化 Three.js 背景
 const initThreeBackground = () => {
@@ -177,50 +155,18 @@ const animateTaskCards = () => {
     opacity: 1,
     clearProps: 'all',
   });
-
-  // 然后执行入场动画
-  gsap.from('.todo-card', {
-    duration: 0.2,
-    y: 50,
-    opacity: 0,
-    stagger: 0.1,
-    ease: 'back.out(1.7)',
-    onComplete: () => {
-      // 动画结束后再次重置，确保所有卡片在同一水平线上
-      gsap.set('.todo-card', {
-        y: 0,
-        clearProps: 'all',
-      });
-    },
-  });
 };
 
 // 获取任务列表
 const getList = async () => {
   try {
-    console.log('开始获取任务列表');
     // 直接使用 api.todo.getList
     const res: any = await api.todo.getList({ pageNum: 1, pageSize: 100 });
 
-    console.log('任务数据:', res);
-    console.log('任务列表:', res?.list);
-    console.log('任务总数:', res?.total);
-
     if (res && res.list) {
-      console.log('设置任务数据:', res.list);
       // 显示所有任务，不分状态
       tableData.value = res.list;
       total.value = res.total;
-      console.log('tableData 值:', tableData.value);
-      console.log('tableData 长度:', tableData.value.length);
-
-      // 打印第一个任务的详细信息，特别是 category 字段
-      if (tableData.value.length > 0) {
-        console.log('第一个任务的详细信息:', tableData.value[0]);
-        console.log('第一个任务的 category 信息:', tableData.value[0].category);
-        console.log('第一个任务的 category.color:', tableData.value[0].category?.color);
-      }
-
       // 等待 DOM 更新后执行动画
       setTimeout(animateTaskCards, 100);
     } else {
@@ -228,40 +174,6 @@ const getList = async () => {
     }
   } catch (err) {
     console.error('获取任务失败', err);
-  }
-};
-
-// 完成任务（带确认）
-const handleComplete = async (task: any) => {
-  try {
-    await ElMessageBox.confirm('确认将此任务标记为已完成吗？', '任务确认', {
-      confirmButtonText: '确认完成',
-      cancelButtonText: '取消',
-      type: 'success',
-    });
-
-    // 动画效果
-    const taskElement = document.querySelector(`[data-task-id="${task.uuid}"]`);
-    if (taskElement) {
-      gsap.to(taskElement, {
-        duration: 0.5,
-        scale: 0.9,
-        opacity: 0,
-        y: -50,
-        ease: 'power2.out',
-        onComplete: async () => {
-          await api.todo.updateStatus(task.uuid, 1);
-          showSuccessMessage('任务已完成！');
-          getList();
-        },
-      });
-    } else {
-      await api.todo.updateStatus(task.uuid, 1);
-      showSuccessMessage('任务已完成！');
-      getList();
-    }
-  } catch {
-    showInfoMessage('已取消操作');
   }
 };
 
@@ -288,281 +200,289 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="less">
+@import '../assets/css/variables.less';
+@import '../assets/css/mixins.less';
+
+/* 页面容器 */
 .home-page {
   position: relative;
   min-height: 100vh;
-  padding: 20px;
-  background: transparent;
-  z-index: 0;
-  overflow: hidden;
+  padding: @spacing-lg;
+  z-index: 1;
+  box-sizing: border-box;
 }
 
+/* Three.js 背景 */
 .three-bg {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  z-index: 0;
   overflow: hidden;
 }
 
-.common-card {
-  border-radius: 16px;
-  transition: all 0.3s ease;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  max-height: calc(100vh - 80px);
-  overflow-y: auto;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-  backdrop-filter: blur(10px);
-
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
-  }
-}
-
+/* 页面头部 */
 .page-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  margin-bottom: 30px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #f0f0f0;
+  align-items: center;
+  margin-bottom: @spacing-xxl;
+  padding-bottom: @spacing-md;
+  border-bottom: 1px solid @border-color;
 
-  h2 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #303133;
+  .page-title {
+    color: @text-primary;
+    font-size: @font-size-xxl;
+    font-weight: 600;
     margin: 0;
   }
 
-  .task-stats {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+  .page-subtitle {
+    color: @text-muted;
+    font-size: @font-size-sm;
+    margin-top: @spacing-xs;
+  }
+}
 
-    .el-tag {
-      font-size: 14px;
-      padding: 4px 12px;
+/* 统计摘要 */
+.stats-summary {
+  display: flex;
+  align-items: center;
+  gap: @spacing-xl;
+
+  .stat-item {
+    text-align: center;
+
+    .stat-num {
+      display: block;
+      font-size: @font-size-xxl;
+      font-weight: 700;
+      color: @text-primary;
+    }
+
+    .stat-text {
+      font-size: @font-size-xs;
+      color: @text-muted;
+    }
+
+    &.completed .stat-num {
+      color: rgba(@accent-green, 0.9);
+    }
+
+    &.pending .stat-num {
+      color: rgba(@accent-yellow, 0.9);
     }
   }
 }
 
+/* 任务卡片列表 */
 .task-card-list {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 30px;
-  width: 100%;
-  padding: 20px;
-  box-sizing: border-box;
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none; /* IE and Edge */
-
-  &::-webkit-scrollbar {
-    display: none; /* Chrome, Safari and Opera */
-  }
-
-  /* 响应式调整 */
-  @media (max-width: 768px) {
-    gap: 12px;
-    padding: 16px 12px;
-  }
-
-  @media (max-width: 480px) {
-    gap: 10px;
-    padding: 12px 10px;
-  }
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 2fr)) !important;
+  gap: @spacing-lg !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-/* 响应式适配：不同屏幕自动减少列数 */
-@media (max-width: 1539px) {
-  .task-card-list {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media (max-width: 1280px) {
-  .task-card-list {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-@media (max-width: 979px) {
-  .task-card-list {
-    grid-template-columns: 1fr;
-  }
+:deep(.task-card-wrapper .el-card__body) {
+  padding-top: 0;
 }
 
-.task-card-wrapper {
-  box-sizing: border-box;
-  position: relative;
-  display: block;
-  padding-bottom: 20px;
-}
-
-.todo-card {
-  width: 100%;
-  height: 220px;
-  display: flex;
-  flex-direction: column;
-  transition: all 0.3s ease;
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: none;
-  opacity: 1 !important;
-  z-index: 1;
-  vertical-align: top;
+/* 覆盖 Element Plus 卡片的默认 hover 效果 */
+:deep(.task-card-wrapper .el-card) {
+  background: transparent !important;
+  border: none !important;
 
   &:hover {
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-  }
-
-  :deep(.el-card) {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    width: 100%;
-  }
-
-  :deep(.el-card__header) {
-    height: 60px;
-    display: flex;
-    /* align-items: center; */
-    justify-content: space-between;
-    margin: 0;
-    padding: 0;
-    border-bottom: none;
-  }
-
-  :deep(.el-card__body) {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    padding: 16px;
-    margin: 0;
-  }
-
-  :deep(.el-card__footer) {
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
-    border-radius: 0 0 16px 16px;
-    margin: 0;
-  }
-
-  /* 响应式调整 */
-  @media (max-width: 768px) {
-    height: 200px;
-  }
-
-  @media (max-width: 480px) {
-    height: 180px;
+    opacity: 1 !important; /* 强制不透明 */
   }
 }
 
-.todo-card .card-header {
+:deep(.task-card-wrapper .el-card__body) {
+  background: transparent !important;
+  opacity: 1 !important; /* 强制不透明 */
+
+  &:hover {
+    opacity: 1 !important; /* 强制 hover 时不透明 */
+  }
+}
+
+/* 任务卡片 - 完整设计 */
+.task-card-wrapper {
+  border: 1px solid @border-color !important;
+  border-radius: @radius-lg !important;
+  padding: 0;
+  cursor: pointer;
+  transition: all @transition-normal;
+  position: relative;
+  overflow: hidden;
+  opacity: 1 !important; /* 确保默认不透明 */
+
+  /* 顶部渐变条 */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, @accent-purple, @accent-blue);
+    opacity: 0.7;
+  }
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    border-color: rgba(@accent-blue, 0.3) !important;
+    opacity: 1 !important; /* 强制 hover 时不透明 */
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &.completed {
+    opacity: 0.7;
+    border-color: rgba(@accent-green, 0.2) !important;
+
+    &::before {
+      background: linear-gradient(90deg, @accent-green, rgba(@accent-green, 0.5));
+    }
+  }
+}
+
+/* 卡片内容区域 */
+.task-card-content {
+  padding: @spacing-md;
+}
+
+:deep(.el-card__header) {
+  border-bottom: none;
+}
+
+:deep(.el-card__body) {
+  padding-top: 14px;
+}
+
+/* 任务头部 */
+.card-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  width: 100%;
-  transition: all 0.3s ease;
-  padding: 12px 16px;
-  border-radius: 16px 16px 0 0;
-  backdrop-filter: blur(12px);
+  padding-bottom: 14px;
+  border-bottom: 1px solid @border-color-light;
 
   .task-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: #ffffff;
-    white-space: nowrap;
+    color: @text-primary;
+    font-size: @font-size-md;
+    font-weight: 600;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex: 1;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .task-category {
-    color: #f0f0f0;
-    font-size: 11px;
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 10px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    display: inline-block;
+    background: rgba(@accent-purple, 0.1);
+    border: 1px solid rgba(@accent-purple, 0.15);
+    color: rgba(@accent-purple, 0.7);
+    font-size: @font-size-xs;
+    padding: 2px @spacing-sm;
+    border-radius: @radius-sm;
   }
 }
 
-.todo-card .card-body {
-  padding: 16px;
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+/* 任务内容 */
+.task-body {
+  border-bottom: 1px solid @border-color-light;
 
   .task-content {
-    margin: 0;
-    color: #333333;
-    font-size: 14px;
+    color: @text-secondary;
+    font-size: @font-size-sm;
+    margin: 0 0 @spacing-md 0;
     line-height: 1.6;
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    text-align: justify;
+    text-overflow: ellipsis;
   }
 }
 
-.todo-card .card-footer {
-  width: 100%;
+/* 任务底部 - 修改为水平排列 */
+.task-footer {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  backdrop-filter: blur(12px);
-  border-radius: 0 0 16px 16px;
+  align-items: center;
+  margin-top: 10px;
 
-  .footer-left {
+  .task-info {
+    display: flex;
+    flex-direction: row; /* 修改为水平排列 */
+    align-items: center;
+    gap: @spacing-md;
+
+    .creator-row {
+      display: flex;
+      align-items: center;
+      gap: @spacing-xs;
+
+      .creator-icon {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: rgba(@accent-blue, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: rgba(@accent-blue, 0.8);
+      }
+
+      .creator {
+        color: rgba(@accent-blue, 0.9);
+        font-size: @font-size-xs;
+        font-weight: 500;
+      }
+    }
+
+    .task-time {
+      color: @text-muted;
+      font-size: 11px;
+    }
+  }
+
+  .task-status {
     display: flex;
     align-items: center;
     gap: 6px;
-    color: #555555;
-    font-size: 12px;
+    padding: 5px @spacing-sm;
+    border-radius: @radius-sm;
+    font-size: @font-size-xs;
+    font-weight: 500;
+    background: rgba(@accent-yellow, 0.12);
+    color: rgba(@accent-yellow, 0.85);
 
-    .el-icon {
-      font-size: 12px;
-      color: #888888;
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(@accent-yellow, 0.8);
     }
 
-    .creator {
-      font-weight: 600;
-      color: #333333;
-    }
+    &.completed {
+      background: rgba(@accent-green, 0.12);
+      color: rgba(@accent-green, 0.85);
 
-    .divider {
-      color: #dcdfe6;
-    }
-  }
-
-  .footer-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .complete-btn {
-    transition: all 0.3s ease;
-    border-radius: 6px;
-    font-size: 12px;
-    color: #ffffff;
-
-    &:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
-      background: rgba(64, 158, 255, 1);
+      .status-dot {
+        background: rgba(@accent-green, 0.8);
+      }
     }
   }
 }

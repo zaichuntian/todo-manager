@@ -3,6 +3,7 @@
 import { getTodosApi, updateTodoStatusApi, deleteTodoApi, addTodoApi, updateTodoApi } from './todo';
 import { loginApi, registerApi, getUserListApi, updateUserApi, deleteUserApi, updateUserStatusApi } from './user';
 import { getCategoriesApi, addCategoryApi, updateCategoryApi, deleteCategoryApi } from './category';
+import { getLoginQrCode, checkLoginStatus, wechatLoginCallback } from './wechat';
 
 export const api = {
   // 任务相关
@@ -30,6 +31,13 @@ export const api = {
     add: addCategoryApi,
     update: updateCategoryApi,
     delete: deleteCategoryApi,
+  },
+
+  // 微信登录相关
+  wechat: {
+    getLoginQrCode,
+    checkLoginStatus,
+    wechatLoginCallback,
   },
 };
 

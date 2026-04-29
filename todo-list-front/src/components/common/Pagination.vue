@@ -57,9 +57,59 @@ const handleSizeChange = (size: number) => {
 </script>
 
 <style scoped lang="less">
+@import '@/assets/css/variables.less';
+@import '@/assets/css/mixins.less';
+
 .pagination-wrapper {
-  display: flex;
+  .flex-center();
   justify-content: flex-end;
-  margin-top: 15px;
+  padding: @spacing-md @spacing-lg;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+:deep(.el-pagination) {
+  color: @text-secondary;
+
+  .btn-prev,
+  .btn-next {
+    background: rgba(@bg-primary, 0.9) !important;
+    border: 1px solid @border-color !important;
+    color: @text-secondary !important;
+
+    &:hover {
+      background: rgba(@accent-blue, 0.2) !important;
+      border-color: rgba(@accent-blue, 0.4) !important;
+      color: @accent-blue !important;
+    }
+
+    &:disabled {
+      opacity: 0.3;
+    }
+  }
+
+  .el-pager li {
+    background: rgba(@bg-primary, 0.9) !important;
+    border: 1px solid @border-color !important;
+    color: @text-secondary !important;
+
+    &:hover {
+      background: rgba(@accent-blue, 0.2) !important;
+      border-color: rgba(@accent-blue, 0.4) !important;
+      color: @accent-blue !important;
+    }
+
+    &.active {
+      background: rgba(@accent-blue, 0.3) !important;
+      border-color: @accent-blue !important;
+      color: #fff !important;
+    }
+  }
+
+  .el-select {
+    :deep(.el-input__inner) {
+      .input-dark();
+    }
+  }
 }
 </style>

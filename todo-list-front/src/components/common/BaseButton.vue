@@ -17,15 +17,32 @@ defineProps({
 });
 </script>
 
-<style scoped>
+<style scoped lang="less">
+@import '@/assets/css/variables.less';
+@import '@/assets/css/mixins.less';
+
 .common-button {
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  .btn-base();
+  border-radius: @radius-md;
+
+  &:hover {
+    .shadow-sm();
+  }
 }
 
-.common-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.3);
+:deep(.el-button--primary) {
+  .btn-primary();
+}
+
+:deep(.el-button--info) {
+  .btn-info();
+}
+
+:deep(.el-button--danger) {
+  .btn-danger();
+}
+
+:deep(.el-button--text) {
+  .btn-text();
 }
 </style>

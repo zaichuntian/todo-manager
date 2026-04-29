@@ -35,35 +35,23 @@ const handleChange = (value: number) => {
 </script>
 
 <style scoped lang="less">
-.status-switch-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
+@import '@/assets/css/variables.less';
+@import '@/assets/css/mixins.less';
 
-.status-label {
-  font-size: 12px;
-  color: #999; /* 默认灰色 */
-  transition: color 0.2s;
-}
+:deep(.el-switch) {
+  :deep(.el-switch__core) {
+    background-color: rgba(@accent-red, 0.3);
+    border-color: rgba(@accent-red, 0.4);
 
-/* 激活时高亮 */
-.status-label.disabled.active {
-  color: #ff4949;
-}
+    &.is-checked {
+      background-color: rgba(@accent-green, 0.5);
+      border-color: rgba(@accent-green, 0.6);
+    }
+  }
 
-.status-label.enabled.active {
-  color: #13ce66;
-}
-
-:deep(.custom-switch) .el-switch__core {
-  border-color: #ff4949;
-  background-color: #ff4d4f !important;
-}
-
-:deep(.custom-switch.is-checked) .el-switch__core {
-  border-color: #13ce66;
-  background-color: #13ce66 !important;
+  :deep(.el-switch__label) {
+    color: @text-secondary;
+    font-size: @font-size-xs;
+  }
 }
 </style>

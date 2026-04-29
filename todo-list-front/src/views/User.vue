@@ -50,17 +50,14 @@
           <el-table-column prop="username" width="120" label="用户名" align="center" />
           <el-table-column label="角色" width="120" align="center">
             <template #default="{ row }">
-              <el-tag
-                :type="row.role === 2 ? 'danger' : row.role === 1 ? 'success' : 'primary'"
-                style="width: 80px; text-align: center"
-              >
+              <el-tag :style="getRoleTagStyle(row.role)" style="width: 80px; text-align: center">
                 {{ row.role === 2 ? '超级管理员' : row.role === 1 ? '管理员' : '普通用户' }}
               </el-tag>
             </template>
           </el-table-column>
           <el-table-column prop="nickname" width="120" label="昵称" align="center" />
           <el-table-column prop="phone" width="150" label="手机号" align="center" />
-          <el-table-column prop="email" width="200" label="邮箱" align="center" />
+          <el-table-column prop="email" width="220" label="邮箱" align="center" show-overflow-tooltip />
           <el-table-column label="创建时间" align="center">
             <template #default="{ row }">
               {{ formatTime(row.createdAt) }}
@@ -84,8 +81,8 @@
 
           <el-table-column label="操作" width="130" align="center">
             <template #default="{ row }">
-              <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
-              <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
+              <el-button link style="color: #6ab0ff" @click="handleEdit(row)">编辑</el-button>
+              <el-button link style="color: #f87171" @click="handleDelete(row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -126,15 +123,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useUser } from '@/hooks/useUser';
+import { debounce } from 'lodash';
+import { ElMessage } from 'element-plus';
+import { Search, Refresh, Delete } from '@element-plus/icons-vue';
 import BaseCard from '@/components/common/BaseCard.vue';
 import BaseButton from '@/components/common/BaseButton.vue';
 import SearchBar from '@/components/common/SearchBar.vue';
 import Pagination from '@/components/common/Pagination.vue';
 import StatusSwitch from '@/components/common/StatusSwitch.vue';
 import UserForm from '@/components/user/UserForm.vue';
-import { ElMessage } from 'element-plus';
-import { debounce } from 'lodash';
-import { Search, Refresh, Delete } from '@element-plus/icons-vue';
 
 // 使用用户管理自定义 Hook
 const {
@@ -184,6 +181,29 @@ const handleSearch = () => {
   debouncedSearch();
 };
 
+const getRoleTagStyle = (role: number) => {
+  switch (role) {
+    case 2:
+      return {
+        backgroundColor: 'rgba(248, 113, 113, 0.2) !important',
+        borderColor: 'rgba(248, 113, 113, 0.3) !important',
+        color: 'rgba(248, 113, 113, 0.9) !important',
+      };
+    case 1:
+      return {
+        backgroundColor: 'rgba(34, 197, 94, 0.2) !important',
+        borderColor: 'rgba(34, 197, 94, 0.3) !important',
+        color: 'rgba(34, 197, 94, 0.9) !important',
+      };
+    default:
+      return {
+        backgroundColor: 'rgba(106, 176, 255, 0.2) !important',
+        borderColor: 'rgba(106, 176, 255, 0.3) !important',
+        color: 'rgba(106, 176, 255, 0.9) !important',
+      };
+  }
+};
+
 // 加载状态
 const resetLoading = ref(false);
 
@@ -222,14 +242,95 @@ const handleBatchDeleteClick = async () => {
 </script>
 
 <style scoped lang="less">
+@import '@/assets/css/variables.less';
+@import '@/assets/css/mixins.less';
+
 .user-page {
   background-color: transparent;
 }
 
 .header-bar {
+  .flex-between();
+  margin-bottom: @spacing-lg;
+
+  h3 {
+    color: @text-primary;
+    font-size: @font-size-xl;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+/* 状态开关样式 */
+:deep(.status-switch-wrapper) {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  gap: @spacing-xs;
+}
+
+:deep(.status-label) {
+  font-size: @font-size-xs;
+  color: @text-muted;
+  transition: color @transition-fast;
+
+  &.disabled {
+    &.active {
+      color: @accent-red;
+    }
+  }
+
+  &.enabled {
+    &.active {
+      color: @accent-green;
+    }
+  }
+}
+
+:deep(.custom-switch) {
+  :deep(.el-switch__core) {
+    background-color: rgba(@accent-red, 0.3) !important;
+    border-color: rgba(@accent-red, 0.4) !important;
+
+    &.is-checked {
+      background-color: rgba(@accent-green, 0.5) !important;
+      border-color: rgba(@accent-green, 0.6) !important;
+    }
+  }
+
+  :deep(.el-switch__label) {
+    color: @text-secondary;
+    font-size: @font-size-xs;
+  }
+}
+
+:deep(.el-button--info) {
+  .btn-info();
+}
+
+:deep(.el-button--primary) {
+  .btn-primary();
+}
+
+:deep(.el-button--danger) {
+  .btn-danger();
+}
+
+/* 标签样式 */
+:deep(.el-tag--danger) {
+  background: rgba(@accent-red, 0.2) !important;
+  border-color: rgba(@accent-red, 0.3) !important;
+  color: rgba(@accent-red, 0.9) !important;
+}
+
+:deep(.el-tag--success) {
+  background: rgba(@accent-green, 0.2) !important;
+  border-color: rgba(@accent-green, 0.3) !important;
+  color: rgba(@accent-green, 0.9) !important;
+}
+
+:deep(.el-tag--primary) {
+  background: rgba(@accent-blue, 0.2) !important;
+  border-color: rgba(@accent-blue, 0.3) !important;
+  color: rgba(@accent-blue, 0.9) !important;
 }
 </style>

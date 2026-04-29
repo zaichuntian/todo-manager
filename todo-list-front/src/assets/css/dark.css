@@ -1,0 +1,138 @@
+/* 自定义暗黑模式变量 */
+html.dark {
+  /* 背景颜色 */
+  --el-bg-color: #0f172a;
+  --el-bg-color-page: #0f172a;
+  --el-bg-color-overlay: #1e293b;
+
+  /* 文字颜色 */
+  --el-text-color-primary: rgba(255, 255, 255, 0.95);
+  --el-text-color-regular: rgba(255, 255, 255, 0.85);
+  --el-text-color-secondary: rgba(255, 255, 255, 0.6);
+  --el-text-color-placeholder: rgba(255, 255, 255, 0.4);
+
+  /* 边框颜色 */
+  --el-border-color: rgba(255, 255, 255, 0.15);
+  --el-border-color-light: rgba(255, 255, 255, 0.1);
+
+  /* 表格 */
+  --el-table-header-bg-color: #1e293b;
+  --el-table-row-bg-color: rgba(15, 23, 42, 0.8);
+  --el-table-row-hover-bg-color: rgba(106, 176, 255, 0.15);
+
+  /* 输入框 */
+  --el-input-bg-color: rgba(15, 23, 42, 0.9);
+  --el-input-border-color: rgba(255, 255, 255, 0.2);
+
+  /* 按钮 */
+  --el-button-primary-bg-color: #3b82f6;
+  --el-button-primary-hover-bg-color: #2563eb;
+
+  /* 卡片 */
+  --el-card-bg-color: rgba(30, 41, 59, 0.8);
+
+  /* 下拉框 */
+  --el-select-dropdown-bg-color: rgba(15, 23, 42, 0.98);
+
+  /* 弹窗 */
+  --el-dialog-bg-color: rgba(15, 23, 42, 0.95);
+}
+
+/* 全局暗色背景 */
+html.dark body {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  background-attachment: fixed;
+}
+
+/* 输入框样式优化 */
+html.dark .el-input__wrapper {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+html.dark .el-input__inner {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* 表格样式优化 */
+html.dark .el-table {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+
+html.dark .el-table__header th {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+html.dark .el-table__row {
+  background: rgba(15, 23, 42, 0.8) !important;
+}
+
+/* 分页样式优化 */
+html.dark .el-pagination .el-pager li {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+html.dark .el-pagination .el-pager li.active {
+  background: rgba(106, 176, 255, 0.3) !important;
+  border-color: #6ab0ff !important;
+  color: #fff !important;
+}
+
+/* 下拉框样式优化 */
+html.dark .el-select-dropdown {
+  background: rgba(15, 23, 42, 0.98) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+html.dark .el-select-dropdown__item {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* 按钮样式优化 */
+html.dark .el-button--primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
+  border: none !important;
+}
+
+/* 弹窗样式优化 */
+html.dark .el-dialog {
+  background: rgba(15, 23, 42, 0.95) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+html.dark .el-dialog__header {
+  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
+}
+
+html.dark .el-dialog__title {
+  color: rgba(255, 255, 255, 0.95) !important;
+}
+
+/* 标签样式优化 */
+html.dark .el-tag {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.dark .el-tag--danger {
+  background: rgba(248, 113, 113, 0.2) !important;
+  border-color: rgba(248, 113, 113, 0.3) !important;
+  color: rgba(248, 113, 113, 0.9) !important;
+}
+
+html.dark .el-tag--success {
+  background: rgba(34, 197, 94, 0.2) !important;
+  border-color: rgba(34, 197, 94, 0.3) !important;
+  color: rgba(34, 197, 94, 0.9) !important;
+}
+
+/* 卡片样式优化 */
+html.dark .el-card {
+  background: rgba(30, 41, 59, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+}

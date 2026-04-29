@@ -276,77 +276,31 @@ html.dark .el-switch.is-checked .el-switch__core {
   border-color: var(--el-color-success) !important;
 }
 
-/* 暗色模式下开关标签文字颜色 */
-html.dark body .status-switch-wrapper .status-label {
-  color: var(--el-text-color-secondary) !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-}
-
-html.dark body .status-switch-wrapper .status-label.enabled.active {
-  color: var(--el-color-success) !important;
-  font-weight: 600 !important;
-}
-
-html.dark body .status-switch-wrapper .status-label.disabled.active {
-  color: var(--el-text-color-secondary) !important;
-  font-weight: 600 !important;
-}
-
-html.dark body .status-switch-wrapper .status-label.enabled:not(.active) {
-  color: var(--el-text-color-placeholder) !important;
-}
-
-html.dark body .status-switch-wrapper .status-label.disabled:not(.active) {
-  color: var(--el-text-color-placeholder) !important;
-}
-
-/* ============ 更强的开关标签样式覆盖 ============ */
-/* 开关标签基础样式 - 添加margin */
+/* ============ 开关标签样式 ============ */
+/* 开关标签基础样式 */
 html.dark .status-switch-wrapper .status-label,
 html.light .status-switch-wrapper .status-label {
-  margin: 0 8px !important;
+  margin: 0 4px !important;  /* 减小margin */
+  font-size: 12px !important;  /* 减小字体大小 */
+  font-weight: 400 !important;  /* 减小字体粗细 */
 }
 
-/* 禁用状态 - 第一个标签显示红色 */
+/* 禁用状态 - 显示红色 */
+html.dark .status-switch-wrapper .status-label.disabled.active,
+html.light .status-switch-wrapper .status-label.disabled.active,
 html.dark .status-switch-wrapper .status-label:first-child.active,
 html.light .status-switch-wrapper .status-label:first-child.active {
   color: var(--el-color-danger) !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;  /* 适中的字体粗细 */
 }
 
-/* 确保暗色模式下禁用标签显示红色 */
-html.dark body .status-switch-wrapper .status-label.disabled.active {
-  color: var(--el-color-danger) !important;
-  font-weight: 600 !important;
-}
-
-/* 启用状态 - 第二个标签显示绿色 */
+/* 启用状态 - 显示绿色 */
+html.dark .status-switch-wrapper .status-label.enabled.active,
+html.light .status-switch-wrapper .status-label.enabled.active,
 html.dark .status-switch-wrapper .status-label:last-child.active,
 html.light .status-switch-wrapper .status-label:last-child.active {
   color: var(--el-color-success) !important;
-  font-weight: 600 !important;
-}
-
-/* 非激活状态标签 - 显示浅灰色 */
-html.dark .status-switch-wrapper .status-label:not(.active),
-html.light .status-switch-wrapper .status-label:not(.active) {
-  color: var(--el-text-color-placeholder) !important;
-}
-
-/* ============ 更强的开关标签样式覆盖 ============ */
-/* 禁用状态标签 - 显示灰色 */
-html.dark .status-switch-wrapper .status-label.disabled.active,
-html.light .status-switch-wrapper .status-label.disabled.active {
-  color: var(--el-text-color-secondary) !important;
-  font-weight: 600 !important;
-}
-
-/* 启用状态标签 - 显示绿色 */
-html.dark .status-switch-wrapper .status-label.enabled.active,
-html.light .status-switch-wrapper .status-label.enabled.active {
-  color: var(--el-color-success) !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;  /* 适中的字体粗细 */
 }
 
 /* 非激活状态标签 - 显示浅灰色 */
@@ -799,18 +753,14 @@ html.light body .el-switch.is-checked .el-switch__core {
 /* 确保开关标签文字颜色正确 - 使用Element Plus颜色变量 */
 html.light body .status-switch-wrapper .status-label {
   color: var(--el-text-color-secondary) !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
 }
 
 html.light body .status-switch-wrapper .status-label.enabled.active {
   color: var(--el-color-success) !important;  /* 启用时显示Element Plus成功色（绿色） */
-  font-weight: 600 !important;
 }
 
 html.light body .status-switch-wrapper .status-label.disabled.active {
   color: var(--el-color-danger) !important;  /* 禁用时显示红色 */
-  font-weight: 600 !important;
 }
 
 html.light body .status-switch-wrapper .status-label.enabled:not(.active) {
@@ -821,7 +771,7 @@ html.light body .status-switch-wrapper .status-label.disabled:not(.active) {
   color: var(--el-text-color-placeholder) !important;  /* 非激活状态显示占位符颜色 */
 }
 
-/* 确保分页组件在亮色模式下显示正确 */
+/* ============ 亮色模式下分页组件样式 ============ */
 html.light body .pagination-wrapper {
   background: #ffffff !important;
   border-top: 1px solid #e2e8f0 !important;
@@ -832,18 +782,21 @@ html.light body .el-pagination {
   color: #64748b !important;
 }
 
-html.light body .el-pagination .el-pager li {
+html.light body .el-pagination .el-pager li,
+html.light body .pagination-wrapper .el-pagination .el-pager li {
   background: #ffffff !important;
   border-color: #e2e8f0 !important;
   color: #64748b !important;
 }
 
-html.light body .el-pagination .el-pager li:hover {
+html.light body .el-pagination .el-pager li:hover,
+html.light body .pagination-wrapper .el-pagination .el-pager li:hover {
   background: #f1f5f9 !important;
   border-color: #94a3b8 !important;
 }
 
-html.light body .el-pagination .el-pager li.active {
+html.light body .el-pagination .el-pager li.active,
+html.light body .pagination-wrapper .el-pagination .el-pager li.active {
   background: #3b82f6 !important;
   border-color: #3b82f6 !important;
   color: #ffffff !important;
@@ -854,18 +807,6 @@ html.light body .el-pagination button:not(.is-disabled):hover {
   color: #3b82f6 !important;
 }
 
-html.light body .el-pagination .el-select .el-input__inner {
-  background: #ffffff !important;
-  border-color: #e2e8f0 !important;
-  color: #1e293b !important;
-}
-
-/* ============ 亮色模式下分页组件样式修复 ============ */
-html.light body .el-pagination {
-  background: #ffffff !important;
-}
-
-/* 更强的样式覆盖 - 确保分页按钮显示正确颜色 */
 html.light body .pagination-wrapper .el-pagination .btn-prev,
 html.light body .pagination-wrapper .el-pagination .btn-next {
   background: #ffffff !important;
@@ -880,26 +821,10 @@ html.light body .pagination-wrapper .el-pagination .btn-next:hover {
   color: #3b82f6 !important;
 }
 
-html.light body .pagination-wrapper .el-pagination .el-pager li {
+html.light body .el-pagination .el-select .el-input__inner {
   background: #ffffff !important;
   border-color: #e2e8f0 !important;
-  color: #64748b !important;
-}
-
-html.light body .pagination-wrapper .el-pagination .el-pager li:hover {
-  background: #f1f5f9 !important;
-  border-color: #94a3b8 !important;
-}
-
-html.light body .pagination-wrapper .el-pagination .el-pager li.active {
-  background: #3b82f6 !important;
-  border-color: #3b82f6 !important;
-  color: #ffffff !important;
-}
-
-html.light body .pagination-wrapper {
-  background: #ffffff !important;
-  border-top: 1px solid #e2e8f0 !important;
+  color: #1e293b !important;
 }
 
 /* 提示框样式优化 */

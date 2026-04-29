@@ -41,19 +41,14 @@ const handleChange = (value: number) => {
 /* 最强选择器 - 确保优先级最高 */
 :root :deep(.status-switch-wrapper) :deep(.status-label.disabled.active) {
   color: #dc2626 !important;
-  font-weight: 600 !important;
-  margin: 0 8px !important;
 }
 
 :root :deep(.status-switch-wrapper) :deep(.status-label.enabled.active) {
   color: #22c55e !important;
-  font-weight: 600 !important;
-  margin: 0 8px !important;
 }
 
 :root :deep(.status-switch-wrapper) :deep(.status-label:not(.active)) {
   color: #94a3b8 !important;
-  margin: 0 8px !important;
 }
 
 :deep(.el-switch) {

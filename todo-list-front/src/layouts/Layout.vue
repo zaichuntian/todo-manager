@@ -33,11 +33,11 @@
           <span>首页</span>
         </el-menu-item>
         <el-menu-item index="/todo">
-          <el-icon><UserFilled /></el-icon>
+          <el-icon><List /></el-icon>
           <span>任务管理</span>
         </el-menu-item>
         <el-menu-item index="/category">
-          <el-icon><UserFilled /></el-icon>
+          <el-icon><FolderOpened /></el-icon>
           <span>分类管理</span>
         </el-menu-item>
         <el-menu-item index="/user">
@@ -63,11 +63,7 @@
         </div>
         <div class="header-right">
           <!-- 主题切换按钮 -->
-          <button 
-            class="theme-toggle-btn" 
-            @click="themeStore.toggleTheme"
-            title="切换主题"
-          >
+          <button class="theme-toggle-btn" @click="themeStore.toggleTheme" title="切换主题">
             <el-icon :size="20">
               <component :is="themeStore.theme === 'dark' ? Sunny : Moon" />
             </el-icon>
@@ -117,7 +113,16 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
-import { ArrowDown, UserFilled, HomeFilled, SwitchButton, Sunny, Moon } from '@element-plus/icons-vue';
+import {
+  ArrowDown,
+  UserFilled,
+  HomeFilled,
+  SwitchButton,
+  Sunny,
+  Moon,
+  List,
+  FolderOpened,
+} from '@element-plus/icons-vue';
 import { useRoute } from 'vue-router';
 import * as THREE from 'three';
 import { useLayout } from '../hooks/useLayout';

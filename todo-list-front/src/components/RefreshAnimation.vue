@@ -383,27 +383,27 @@ const updateParticles = (): void => {
   coreMaterial.uniforms.uSize.value = PARTICLE_SIZE * 4 * (1 + sizeProgress);
 
   // 更新线段位置（动态跟随粒子）更新前进进度（降低速度）
-    forwardProgress += 0.0008;
+  forwardProgress += 0.0008;
 
-    for (let i = 0; i < count; i++) {
-      // 粒子初始位置（在远处）
-      const initialZ = -120 - (i / count) * 180;
-      
-      // 顺时针螺旋运动
-      const angle = spiralAngle + (i / count) * Math.PI * 6;
-      const radius = 50 + (i / count) * 80 + Math.sin(spiralAngle * 0.2 + i * 0.03) * 8;
-      
-      // 计算当前Z位置（向相机移动）
-      const progress = ((forwardProgress * 2 + i / count) % 1);
-      const currentZ = initialZ + progress * 250; // 从-200移动到50
-      
-      // 当接近相机时放大
-      const scaleFactor = 1 + Math.max(0, (currentZ + 80) / 120) * 1.5;
-      
-      positions[i * 3] = Math.cos(angle) * radius * scaleFactor;
-      positions[i * 3 + 1] = Math.sin(angle) * radius * scaleFactor;
-      positions[i * 3 + 2] = currentZ + Math.sin(animationTime * 0.003 + i * 0.015) * 3;
-    }
+  for (let i = 0; i < count; i++) {
+    // 粒子初始位置（在远处）
+    const initialZ = -120 - (i / count) * 180;
+
+    // 顺时针螺旋运动
+    const angle = spiralAngle + (i / count) * Math.PI * 6;
+    const radius = 50 + (i / count) * 80 + Math.sin(spiralAngle * 0.2 + i * 0.03) * 8;
+
+    // 计算当前Z位置（向相机移动）
+    const progress = (forwardProgress * 2 + i / count) % 1;
+    const currentZ = initialZ + progress * 250; // 从-200移动到50
+
+    // 当接近相机时放大
+    const scaleFactor = 1 + Math.max(0, (currentZ + 80) / 120) * 1.5;
+
+    positions[i * 3] = Math.cos(angle) * radius * scaleFactor;
+    positions[i * 3 + 1] = Math.sin(angle) * radius * scaleFactor;
+    positions[i * 3 + 2] = currentZ + Math.sin(animationTime * 0.003 + i * 0.015) * 3;
+  }
 
   particles.geometry.attributes.position.needsUpdate = true;
 
@@ -532,51 +532,71 @@ const createGSAPAnimations = (): void => {
   });
 
   // 粒子系统缩放动画（呼吸效果）
-  animationTimeline.to(particles.scale, {
-    x: 1.2,
-    y: 1.2,
-    z: 1.2,
-    duration: 4,
-    ease: 'sine.inOut',
-    yoyo: true,
-  }, 0);
+  animationTimeline.to(
+    particles.scale,
+    {
+      x: 1.2,
+      y: 1.2,
+      z: 1.2,
+      duration: 4,
+      ease: 'sine.inOut',
+      yoyo: true,
+    },
+    0
+  );
 
   // 光晕层缩放动画（与粒子不同步）
-  animationTimeline.to(glowParticles.scale, {
-    x: 1.15,
-    y: 1.15,
-    z: 1.15,
-    duration: 3.5,
-    ease: 'sine.inOut',
-    yoyo: true,
-  }, 0.5);
+  animationTimeline.to(
+    glowParticles.scale,
+    {
+      x: 1.15,
+      y: 1.15,
+      z: 1.15,
+      duration: 3.5,
+      ease: 'sine.inOut',
+      yoyo: true,
+    },
+    0.5
+  );
 
   // 相机轻微摆动
-  animationTimeline.to(camera.position, {
-    x: 5,
-    duration: 2,
-    ease: 'sine.inOut',
-    yoyo: true,
-  }, 0);
+  animationTimeline.to(
+    camera.position,
+    {
+      x: 5,
+      duration: 2,
+      ease: 'sine.inOut',
+      yoyo: true,
+    },
+    0
+  );
 
-  animationTimeline.to(camera.position, {
-    y: 3,
-    duration: 2.5,
-    ease: 'sine.inOut',
-    yoyo: true,
-  }, 0.3);
+  animationTimeline.to(
+    camera.position,
+    {
+      y: 3,
+      duration: 2.5,
+      ease: 'sine.inOut',
+      yoyo: true,
+    },
+    0.3
+  );
 
   // 文字闪烁效果
   if (textMesh) {
-    animationTimeline.to(textMesh.scale, {
-      x: 1.05,
-      y: 1.05,
-      z: 1.05,
-      duration: 0.5,
-      ease: 'power2.inOut',
-      yoyo: true,
-      repeat: 3,
-    }, 1);
+    animationTimeline.to(
+      textMesh.scale,
+      {
+        x: 1.05,
+        y: 1.05,
+        z: 1.05,
+        duration: 0.5,
+        ease: 'power2.inOut',
+        yoyo: true,
+        repeat: 3,
+      },
+      1
+    );
   }
 };
 
@@ -586,34 +606,17 @@ const createGSAPAnimations = (): void => {
 const create3DText = (): void => {
   // 创建文字画布
   const canvas = document.createElement('canvas');
-  canvas.width = 600;
-  canvas.height = 160;
+  canvas.width = 512;
+  canvas.height = 128;
   const ctx = canvas.getContext('2d')!;
 
   // 清空画布（透明）
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // 设置文字样式
-  ctx.font = 'bold 56px Microsoft YaHei, sans-serif';
+  ctx.font = 'bold 52px Microsoft YaHei, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-
-  // 创建渐变背景
-  const bgGradient = ctx.createRadialGradient(
-    canvas.width / 2, canvas.height / 2, 0,
-    canvas.width / 2, canvas.height / 2, canvas.width / 2
-  );
-  bgGradient.addColorStop(0, 'rgba(59, 130, 246, 0.3)');
-  bgGradient.addColorStop(1, 'rgba(139, 92, 246, 0.1)');
-  ctx.fillStyle = bgGradient;
-  ctx.beginPath();
-  ctx.roundRect(50, 20, canvas.width - 100, canvas.height - 40, 20);
-  ctx.fill();
-
-  // 添加边框
-  ctx.strokeStyle = 'rgba(167, 139, 250, 0.5)';
-  ctx.lineWidth = 2;
-  ctx.stroke();
 
   // 绘制文字发光效果
   const textGradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
@@ -623,23 +626,24 @@ const create3DText = (): void => {
   textGradient.addColorStop(0.7, '#c084fc');
   textGradient.addColorStop(1, '#f472b6');
 
-  // 最外层发光
-  ctx.shadowColor = '#3b82f6';
-  ctx.shadowBlur = 40;
-  ctx.globalAlpha = 0.3;
+  // 最外层发光（青色）
+  ctx.shadowColor = '#22d3ee';
+  ctx.shadowBlur = 35;
+  ctx.globalAlpha = 0.4;
   ctx.fillStyle = textGradient;
-  ctx.fillText('页面内容加载中', canvas.width / 2, canvas.height / 2);
+  ctx.fillText('页面内容加载中...', canvas.width / 2, canvas.height / 2);
 
-  // 中间发光
-  ctx.shadowBlur = 25;
-  ctx.globalAlpha = 0.6;
-  ctx.fillText('页面内容加载中', canvas.width / 2, canvas.height / 2);
+  // 中间发光（紫色）
+  ctx.shadowColor = '#a855f7';
+  ctx.shadowBlur = 20;
+  ctx.globalAlpha = 0.7;
+  ctx.fillText('页面内容加载中...', canvas.width / 2, canvas.height / 2);
 
-  // 内层发光
-  ctx.shadowBlur = 10;
+  // 内层文字（白色）
+  ctx.shadowBlur = 5;
   ctx.globalAlpha = 1;
   ctx.fillStyle = '#ffffff';
-  ctx.fillText('页面内容加载中', canvas.width / 2, canvas.height / 2);
+  ctx.fillText('页面内容加载中...', canvas.width / 2, canvas.height / 2);
 
   // 创建纹理
   const texture = new THREE.CanvasTexture(canvas);

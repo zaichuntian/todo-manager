@@ -16,13 +16,15 @@
 
 /* 空内容 */
 .empty-content {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 60px;
-  max-width: 900px;
-  width: 90%;
-  position: relative;
+  width: 100vw;
+  height: 100vh;
   z-index: 10;
 }
 

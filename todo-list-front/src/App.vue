@@ -1,5 +1,6 @@
 <template>
   <div class="app-container">
+    <RefreshAnimation :visible="showLoading" :duration="50000" @complete="onLoadingComplete" />
     <!-- 路由视图 -->
     <div class="content-container">
       <router-view v-slot="{ Component }">
@@ -24,9 +25,14 @@
 <script setup lang="ts">
 import { ref, onErrorCaptured } from 'vue';
 import { ElNotification } from 'element-plus';
+import RefreshAnimation from '@/components/RefreshAnimation.vue';
 
 const errorMessage = ref('');
+const showLoading = ref(true);
 
+const onLoadingComplete = () => {
+  showLoading.value = false;
+};
 // 全局错误捕获
 const handleError = (err: Error, _instance: any, info: string) => {
   console.error('全局错误:', err);

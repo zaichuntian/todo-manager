@@ -4,7 +4,15 @@
     <div class="loading-content">
       <div class="loading-ring"></div>
       <div class="loading-text">
-        <span>页面内容加载中</span>
+        <span class="bounce-text">
+          <span class="char" style="animation-delay: 0s">页</span>
+          <span class="char" style="animation-delay: 0.4s">面</span>
+          <span class="char" style="animation-delay: 0.8s">内</span>
+          <span class="char" style="animation-delay: 1.2s">容</span>
+          <span class="char" style="animation-delay: 1.6s">加</span>
+          <span class="char" style="animation-delay: 2s">载</span>
+          <span class="char" style="animation-delay: 2.4s">中</span>
+        </span>
         <span class="loading-dots">
           <span></span>
           <span></span>
@@ -22,10 +30,10 @@ import * as THREE from 'three';
 const props = withDefaults(
   defineProps<{
     visible: boolean;
-    duration?: number; // 动画持续时间（毫秒）
+    duration?: number;
   }>(),
   {
-    duration: 5000, // 默认5秒
+    duration: 5000,
   }
 );
 
@@ -40,7 +48,9 @@ let camera: THREE.PerspectiveCamera;
 let renderer: THREE.WebGLRenderer;
 let particles: THREE.Points;
 let animationId: number;
-
+let particlePositions: Float32Array;
+let particleVelocities: Float32Array;
+let lineMesh: THREE.LineSegments;
 
 const initScene = () => {
   if (!canvasRef.value || !props.visible) return;
@@ -49,89 +59,144 @@ const initScene = () => {
   const width = window.innerWidth;
   const height = window.innerHeight;
 
-  // 创建场景
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0f172a);
+  scene.background = new THREE.Color(0x0a0a1a);
 
-  // 创建相机
   camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
-  camera.position.z = 100;
+  camera.position.z = 120;
 
-  // 创建渲染器
   renderer = new THREE.WebGLRenderer({ canvas: container, antialias: true });
   renderer.setSize(width, height);
   renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setClearColor(0x0a0a1a, 1);
 
-  // 创建粒子
   createParticles();
+  createParticleLines();
 
-  // 开始动画
   animate();
 
-  // 设置完成回调
   setTimeout(() => {
     emit('complete');
   }, props.duration);
 };
 
 const createParticles = () => {
-  const particleCount = 200;
+  const particleCount = 300;
   const geometry = new THREE.BufferGeometry();
-  const positions = new Float32Array(particleCount * 3);
+  particlePositions = new Float32Array(particleCount * 3);
+  particleVelocities = new Float32Array(particleCount * 3);
   const colors = new Float32Array(particleCount * 3);
-  const sizes = new Float32Array(particleCount);
 
   const colorPalette = [
-    new THREE.Color(0x3b82f6), // blue
-    new THREE.Color(0x8b5cf6), // purple
-    new THREE.Color(0xec4899), // pink
-    new THREE.Color(0x10b981), // green
-    new THREE.Color(0xf59e0b), // yellow
+    new THREE.Color(0x3b82f6),
+    new THREE.Color(0x8b5cf6),
+    new THREE.Color(0xec4899),
+    new THREE.Color(0x10b981),
+    new THREE.Color(0xf59e0b),
+    new THREE.Color(0x06b6d4),
+    new THREE.Color(0xa855f7),
   ];
 
   for (let i = 0; i < particleCount; i++) {
-    positions[i * 3] = (Math.random() - 0.5) * 200;
-    positions[i * 3 + 1] = (Math.random() - 0.5) * 200;
-    positions[i * 3 + 2] = (Math.random() - 0.5) * 200;
+    const theta = Math.random() * Math.PI * 2;
+    const phi = Math.acos(2 * Math.random() - 1);
+    const r = 60 + Math.random() * 60;
+
+    particlePositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+    particlePositions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    particlePositions[i * 3 + 2] = r * Math.cos(phi);
+
+    particleVelocities[i * 3] = (Math.random() - 0.5) * 0.08;
+    particleVelocities[i * 3 + 1] = (Math.random() - 0.5) * 0.08;
+    particleVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.08;
 
     const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
     colors[i * 3] = color.r;
     colors[i * 3 + 1] = color.g;
     colors[i * 3 + 2] = color.b;
-
-    sizes[i] = Math.random() * 4 + 1;
   }
 
-  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
   const material = new THREE.PointsMaterial({
-    size: 4,
+    size: 5,
     vertexColors: true,
     transparent: true,
-    opacity: 0.9,
+    opacity: 0.95,
     blending: THREE.AdditiveBlending,
     depthWrite: false,
-    sizeAttenuation: true
+    sizeAttenuation: true,
   });
 
   particles = new THREE.Points(geometry, material);
   scene.add(particles);
 };
 
+const createParticleLines = () => {
+  const lineCount = 200;
+  const lineGeometry = new THREE.BufferGeometry();
+  const linePositions = new Float32Array(lineCount * 6);
+
+  for (let i = 0; i < lineCount; i++) {
+    const i1 = Math.floor(Math.random() * 300);
+    const i2 = Math.floor(Math.random() * 300);
+
+    linePositions[i * 6] = particlePositions[i1 * 3];
+    linePositions[i * 6 + 1] = particlePositions[i1 * 3 + 1];
+    linePositions[i * 6 + 2] = particlePositions[i1 * 3 + 2];
+    linePositions[i * 6 + 3] = particlePositions[i2 * 3];
+    linePositions[i * 6 + 4] = particlePositions[i2 * 3 + 1];
+    linePositions[i * 6 + 5] = particlePositions[i2 * 3 + 2];
+  }
+
+  lineGeometry.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+
+  const lineMaterial = new THREE.LineBasicMaterial({
+    color: 0x3b82f6,
+    transparent: true,
+    opacity: 0.2,
+  });
+
+  lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
+  scene.add(lineMesh);
+};
+
 const animate = () => {
   animationId = requestAnimationFrame(animate);
 
-  if (particles) {
-    // 顺时针旋转动画
-    particles.rotation.x -= 0.002;
-    particles.rotation.y -= 0.003;
+  if (particles && particlePositions) {
+    const positions = particles.geometry.attributes.position.array as Float32Array;
+    for (let i = 0; i < 300; i++) {
+      positions[i * 3] += particleVelocities[i * 3];
+      positions[i * 3 + 1] += particleVelocities[i * 3 + 1];
+      positions[i * 3 + 2] += particleVelocities[i * 3 + 2];
+
+      const dist = Math.sqrt(positions[i * 3] ** 2 + positions[i * 3 + 1] ** 2 + positions[i * 3 + 2] ** 2);
+      if (dist > 120) {
+        particleVelocities[i * 3] *= -0.8;
+        particleVelocities[i * 3 + 1] *= -0.8;
+        particleVelocities[i * 3 + 2] *= -0.8;
+      }
+    }
+    particles.geometry.attributes.position.needsUpdate = true;
+
+    particles.rotation.x -= 0.0015;
+    particles.rotation.y -= 0.0025;
     particles.rotation.z -= 0.001;
 
-    // 轻微缩放动画
-    const scale = 1 + Math.sin(Date.now() * 0.001) * 0.05;
+    const scale = 1 + Math.sin(Date.now() * 0.001) * 0.03;
     particles.scale.set(scale, scale, scale);
+
+    camera.position.x = Math.sin(Date.now() * 0.0005) * 5;
+    camera.position.y = Math.cos(Date.now() * 0.0003) * 3;
+    camera.lookAt(0, 0, 0);
+  }
+
+  if (lineMesh) {
+    lineMesh.rotation.x -= 0.0015;
+    lineMesh.rotation.y -= 0.0025;
+    lineMesh.rotation.z -= 0.001;
   }
 
   renderer.render(scene, camera);
@@ -164,6 +229,10 @@ onUnmounted(() => {
     particles.geometry.dispose();
     (particles.material as THREE.Material).dispose();
   }
+  if (lineMesh) {
+    lineMesh.geometry.dispose();
+    (lineMesh.material as THREE.Material).dispose();
+  }
   window.removeEventListener('resize', handleResize);
 });
 </script>
@@ -175,7 +244,7 @@ onUnmounted(() => {
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: #0f172a;
+  background: #0a0a1a;
   z-index: 9999;
   display: flex;
   align-items: center;
@@ -223,6 +292,38 @@ canvas {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.bounce-text {
+  display: flex;
+  gap: 2px;
+}
+
+.char {
+  display: inline-block;
+  animation: charBounce 2.8s ease-in-out infinite;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 600;
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+  letter-spacing: 4px;
+}
+
+@keyframes charBounce {
+  0%, 100% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5));
+  }
+  10% {
+    transform: translateY(-12px) scale(1.1);
+    filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.8));
+  }
+  20% {
+    transform: translateY(0);
+    filter: drop-shadow(0 0 5px rgba(59, 130, 246, 0.5));
+  }
 }
 
 .loading-dots {

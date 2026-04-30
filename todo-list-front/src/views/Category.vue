@@ -21,7 +21,7 @@
           <el-button type="info" @click="resetSearch" style="margin-left: 10px" :loading="resetLoading"
             ><el-icon v-show="!resetLoading"><Refresh /></el-icon> 重置</el-button
           >
-          <el-button type="primary" @click="handleAdd" style="margin-left: 10px">新增分类</el-button>
+          <BaseButton type="primary" @click="handleAdd" style="margin-left: 10px">新增分类</BaseButton>
         </SearchBar>
       </div>
 
@@ -117,6 +117,7 @@ import { ref } from 'vue';
 import { useCategory } from '../hooks/useCategory';
 import { debounce } from 'lodash';
 import SearchBar from '@/components/common/SearchBar.vue';
+import BaseButton from '@/components/common/BaseButton.vue';
 import Pagination from '@/components/common/Pagination.vue';
 import CategoryForm from '@/components/category/CategoryForm.vue';
 import CategoryTasks from '@/components/category/CategoryTasks.vue';

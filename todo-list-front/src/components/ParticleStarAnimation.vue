@@ -1,12 +1,15 @@
 <template>
-  <div class="particle-star-container">
+  <div class="particle-star-container" :class="{ 'light-theme': themeStore.isLight, 'dark-theme': themeStore.isDark }">
     <div class="three-bg" ref="threeBg"></div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, watch } from 'vue';
 import * as THREE from 'three';
+import { useThemeStore } from '@/stores/theme';
+
+const themeStore = useThemeStore();
 
 const threeBg = ref<HTMLElement | null>(null);
 
@@ -15,6 +18,31 @@ let scene: THREE.Scene | null = null;
 let camera: THREE.PerspectiveCamera | null = null;
 let renderer: THREE.WebGLRenderer | null = null;
 let particles: THREE.Points | null = null;
+
+// 暗色主题粒子颜色 - 明亮的蓝色
+const DARK_COLOR = 0x409eff;
+// 亮色主题粒子颜色 - 中等蓝色，更明显
+const LIGHT_COLOR = 0x60a5fa;
+
+// 根据主题获取粒子颜色
+const getParticleColor = () => {
+  return themeStore.isDark ? DARK_COLOR : LIGHT_COLOR;
+};
+
+// 根据主题获取粒子大小
+const getParticleSize = () => {
+  return themeStore.isDark ? 0.02 : 0.025;
+};
+
+// 根据主题获取透明度
+const getOpacity = () => {
+  return themeStore.isDark ? 0.6 : 0.65;
+};
+
+// 根据主题获取粒子数量
+const getParticleCount = () => {
+  return themeStore.isDark ? 1000 : 1000;
+};
 
 // 初始化 Three.js 背景
 const initThreeBackground = () => {
@@ -40,7 +68,7 @@ const initThreeBackground = () => {
 
   // 创建粒子
   const particlesGeometry = new THREE.BufferGeometry();
-  const particlesCount = 1000;
+  const particlesCount = getParticleCount();
 
   const posArray = new Float32Array(particlesCount * 3);
 
@@ -51,25 +79,38 @@ const initThreeBackground = () => {
   particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
 
   const particlesMaterial = new THREE.PointsMaterial({
-    size: 0.02,
-    color: 0x409eff,
+    size: getParticleSize(),
+    color: getParticleColor(),
+    transparent: true,
+    opacity: getOpacity(),
+    sizeAttenuation: true,
   });
 
   particles = new THREE.Points(particlesGeometry, particlesMaterial);
   scene.add(particles);
 
   // 动画循环
-  const animate = () => {
-    requestAnimationFrame(animate);
-    if (particles) {
-      particles.rotation.y += 0.001;
-    }
-    if (renderer && scene && camera) {
-      renderer.render(scene, camera);
-    }
-  };
-
   animate();
+};
+
+// 更新粒子属性
+const updateParticleProperties = () => {
+  if (particles && particles.material instanceof THREE.PointsMaterial) {
+    particles.material.color.setHex(getParticleColor());
+    particles.material.size = getParticleSize();
+    particles.material.opacity = getOpacity();
+  }
+};
+
+// 动画循环
+const animate = () => {
+  requestAnimationFrame(animate);
+  if (particles) {
+    particles.rotation.y += 0.001;
+  }
+  if (renderer && scene && camera) {
+    renderer.render(scene, camera);
+  }
 };
 
 // 处理窗口大小变化
@@ -80,6 +121,14 @@ const handleResize = () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
 };
+
+// 监听主题变化
+watch(
+  () => themeStore.theme,
+  () => {
+    updateParticleProperties();
+  }
+);
 
 onMounted(() => {
   initThreeBackground();
@@ -119,6 +168,15 @@ onUnmounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+/* 暗色主题样式 */
+.dark-theme .three-bg {
   opacity: 0.6;
+}
+
+/* 亮色主题样式 - 提高透明度 */
+.light-theme .three-bg {
+  opacity: 0.7;
 }
 </style>

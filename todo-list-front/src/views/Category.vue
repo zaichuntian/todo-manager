@@ -1,5 +1,8 @@
 <template>
   <div class="category-page page-container">
+    <!-- 添加粒子背景动画 -->
+    <ParticleStarAnimation />
+
     <el-card class="common-card">
       <div class="header-bar">
         <h3>分类管理</h3>
@@ -126,6 +129,7 @@ import { Search, Refresh } from '@element-plus/icons-vue';
 import type { Category } from '../types/category';
 import type { Todo } from '../types/todo';
 import '@/assets/css/pages/category.css';
+import ParticleStarAnimation from '@/components/ParticleStarAnimation.vue';
 
 // 使用分类管理自定义 Hook
 const {

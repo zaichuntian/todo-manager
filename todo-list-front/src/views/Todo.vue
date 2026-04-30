@@ -1,5 +1,8 @@
 <template>
   <div class="todo-page page-container">
+    <!-- 添加粒子背景动画 -->
+    <ParticleStarAnimation />
+
     <el-card class="common-card">
       <div class="header-bar">
         <h3>任务管理</h3>
@@ -121,6 +124,7 @@ import { ElMessage } from 'element-plus';
 import { Search, Refresh } from '@element-plus/icons-vue';
 import type { Category } from '@/types/category';
 import '@/assets/css/pages/todo.css';
+import ParticleStarAnimation from '@/components/ParticleStarAnimation.vue';
 
 // 使用任务管理自定义 Hook
 let {

@@ -1,6 +1,9 @@
 <template>
   <div class="user-page page-container">
     <BaseCard v-if="hasUserManagementPermission()">
+      <!-- 添加粒子背景动画 -->
+      <ParticleStarAnimation />
+
       <!-- 顶部操作栏 -->
       <div class="header-bar">
         <h3>用户管理</h3>
@@ -133,6 +136,7 @@ import Pagination from '@/components/common/Pagination.vue';
 import StatusSwitch from '@/components/common/StatusSwitch.vue';
 import UserForm from '@/components/user/UserForm.vue';
 import '@/assets/css/pages/user.css';
+import ParticleStarAnimation from '@/components/ParticleStarAnimation.vue';
 
 // 使用用户管理自定义 Hook
 const {

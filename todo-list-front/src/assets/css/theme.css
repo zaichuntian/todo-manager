@@ -147,3 +147,55 @@ html.light {
   padding-top: 16px;
   border-top: 1px solid var(--border-color);
 }
+
+/* ============ 暗色主题面包屑样式 ============ */
+html.dark .breadcrumb-wrapper {
+  :deep(.el-breadcrumb__item) {
+    .el-breadcrumb__inner {
+      color: rgba(255, 255, 255, 0.9) !important;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    &:not(:last-child) .el-breadcrumb__inner:hover {
+      color: #409eff !important;
+    }
+
+    &:last-child .el-breadcrumb__inner {
+      color: #409eff !important;
+      font-weight: 600;
+    }
+  }
+
+  :deep(.el-breadcrumb__separator) {
+    color: rgba(255, 255, 255, 0.5) !important;
+    margin: 0 8px;
+    font-size: 12px;
+  }
+}
+
+/* ============ 亮色主题面包屑样式 ============ */
+html.light .breadcrumb-wrapper {
+  :deep(.el-breadcrumb__item) {
+    .el-breadcrumb__inner {
+      color: #475569 !important;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    &:not(:last-child) .el-breadcrumb__inner:hover {
+      color: #3b82f6 !important;
+    }
+
+    &:last-child .el-breadcrumb__inner {
+      color: #2563eb !important;
+      font-weight: 600;
+    }
+  }
+
+  :deep(.el-breadcrumb__separator) {
+    color: #94a3b8 !important;
+    margin: 0 8px;
+    font-size: 12px;
+  }
+}

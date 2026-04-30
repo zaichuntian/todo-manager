@@ -9,6 +9,7 @@ import './assets/css/mixins.less';
 import 'element-plus/dist/index.css';
 import 'element-plus/theme-chalk/dark/css-vars.css';
 import './assets/css/dark.css';
+import './assets/css/theme.css';
 import App from './App.vue';
 // @ts-ignore
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'; // 导入中文包

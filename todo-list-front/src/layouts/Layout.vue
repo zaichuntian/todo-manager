@@ -393,10 +393,10 @@ onUnmounted(() => {
   height: 100%;
 }
 
-/* 面包屑容器 - 在Canvas之上，居左显示 */
+/* 面包屑容器 - 在Canvas之上 */
 .breadcrumb-wrapper {
   position: relative;
-  z-index: 10; /* 在Canvas之上 */
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -408,30 +408,6 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     gap: 4px;
-  }
-
-  :deep(.el-breadcrumb__item) {
-    .el-breadcrumb__inner {
-      color: rgba(255, 255, 255, 0.9) !important;
-      font-size: 14px;
-      font-weight: 500;
-      transition: color 0.2s ease;
-
-      &:hover {
-        color: #409eff !important;
-      }
-    }
-
-    &:last-child .el-breadcrumb__inner {
-      color: #409eff !important;
-      font-weight: 600;
-    }
-
-    .el-breadcrumb__separator {
-      color: rgba(255, 255, 255, 0.35) !important;
-      margin: 0 8px;
-      font-size: 12px;
-    }
   }
 }
 
@@ -472,6 +448,7 @@ onUnmounted(() => {
   }
 
   .user-role {
+    margin-top: 5px;
     color: rgba(255, 255, 255, 0.5);
     font-size: 12px;
   }
@@ -515,6 +492,10 @@ onUnmounted(() => {
   align-items: center;
   gap: 10px;
   width: 100%;
+}
+
+:deep(.el-dropdown-menu__item i) {
+  margin-right: 0;
 }
 
 .dropdown-user-details {

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <RefreshAnimation :visible="showLoading" :duration="900" @complete="onLoadingComplete" />
+    <RefreshAnimation :visible="showLoading" :duration="1400" @complete="onLoadingComplete" />
     <!-- 路由视图 -->
     <div class="content-container">
       <router-view v-slot="{ Component }">

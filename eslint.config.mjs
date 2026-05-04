@@ -1,8 +1,8 @@
-import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import pluginVue from 'eslint-plugin-vue';
 import prettier from 'eslint-plugin-prettier';
+import vueParser from 'vue-eslint-parser';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
@@ -24,7 +24,6 @@ export default defineConfig([
   // 基础 JS 配置
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,vue}'],
-    plugins: { js },
     extends: ['js/recommended'],
     languageOptions: {
       globals: {
@@ -54,6 +53,7 @@ export default defineConfig([
   {
     files: ['**/*.vue'],
     languageOptions: {
+      parser: vueParser,
       parserOptions: {
         parser: tseslint.parser,
         ecmaVersion: 'latest',

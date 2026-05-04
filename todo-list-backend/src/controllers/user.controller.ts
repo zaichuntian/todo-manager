@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { decrypt } from '../utils/crypto';
 import { BaseController } from './base.controller';
-import { CONSTANTS } from '../config/constants';
+import { CONSTANTS } from '../constants';
 import { logger } from '../utils/logger';
 import { User } from '../models';
 import { Op } from 'sequelize';
@@ -88,9 +88,14 @@ export class UserController extends BaseController {
         return res.json(fail('用户名或密码错误'));
       }
 
+      // 检查JWT_SECRET是否存在
+      if (!process.env.JWT_SECRET) {
+        return res.json(fail('服务器配置错误', 500));
+      }
+
       // 生成JWT token
-      const token = jwt.sign({ uuid: user.uuid }, process.env.JWT_SECRET as string, {
-        expiresIn: '7d' as const,
+      const token = jwt.sign({ uuid: user.uuid }, process.env.JWT_SECRET, {
+        expiresIn: '7d',
       });
 
       // 构建用户信息

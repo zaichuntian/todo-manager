@@ -132,7 +132,7 @@ import SearchBar from '@/components/common/SearchBar.vue';
 import Pagination from '@/components/common/Pagination.vue';
 import StatusSwitch from '@/components/common/StatusSwitch.vue';
 import UserForm from '@/components/user/UserForm.vue';
-import '@/assets/css/pages/user.css';
+import '@/assets/styles/pages/user.css';
 
 // 使用用户管理自定义 Hook
 const {

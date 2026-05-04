@@ -35,8 +35,8 @@ const handleChange = (value: number) => {
 </script>
 
 <style scoped lang="less">
-@import '@/assets/css/variables.less';
-@import '@/assets/css/mixins.less';
+@import '@/assets/styles/base/variables.less';
+@import '@/assets/styles/base/mixins.less';
 
 /* 最强选择器 - 确保优先级最高 */
 :root :deep(.status-switch-wrapper) :deep(.status-label.disabled.active) {

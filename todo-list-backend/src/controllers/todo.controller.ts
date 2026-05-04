@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { TodoService } from '../services/todo.service';
 import { success, fail } from '../utils/response';
 import { BaseController } from './base.controller';
-import { CONSTANTS } from '../config/constants';
+import { CONSTANTS } from '../constants/index';
 import { CategoryService } from '../services/category.service';
 import { logger } from '../utils/logger';
 

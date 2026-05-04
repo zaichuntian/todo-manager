@@ -2,13 +2,13 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import ElementPlus from 'element-plus';
 import router from './router';
-import './assets/css/main.css';
-import './assets/css/common.css';
-import './assets/css/variables.less';
-import './assets/css/mixins.less';
+import './assets/styles/main.css';
+import './assets/styles/common.css';
+import './assets/styles/base/variables.less';
+import './assets/styles/base/mixins.less';
 import 'element-plus/dist/index.css';
 import 'element-plus/theme-chalk/dark/css-vars.css';
-import './assets/css/dark.css';
+import './assets/styles/themes/dark.css';
 import App from './App.vue';
 // @ts-ignore
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'; // 导入中文包

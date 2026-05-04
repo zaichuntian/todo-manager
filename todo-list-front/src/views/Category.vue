@@ -66,15 +66,11 @@
 
         <el-table-column label="操作" width="300" align="center">
           <template #default="{ row }">
-            <el-button v-if="isMyCategory(row)" link style="color: #6ab0ff" @click="handleEdit(row)"
-              >编辑</el-button
-            >
+            <el-button v-if="isMyCategory(row)" link style="color: #6ab0ff" @click="handleEdit(row)">编辑</el-button>
             <el-button v-if="isMyCategory(row)" link style="color: #fbbf24" @click="handleViewTasks(row)"
               >查看任务</el-button
             >
-            <el-button v-if="isMyCategory(row)" link style="color: #f87171" @click="handleDelete(row)"
-              >删除</el-button
-            >
+            <el-button v-if="isMyCategory(row)" link style="color: #f87171" @click="handleDelete(row)">删除</el-button>
             <span v-else style="color: rgba(255, 255, 255, 0.5)">无操作权限</span>
           </template>
         </el-table-column>
@@ -124,7 +120,7 @@ import { ElMessage } from 'element-plus';
 import { Search, Refresh } from '@element-plus/icons-vue';
 import type { Category } from '../types/category';
 import type { Todo } from '../types/todo';
-import '@/assets/css/pages/category.css';
+import '@/assets/styles/pages/category.css';
 
 // 使用分类管理自定义 Hook
 const {

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { CategoryService } from '../services/category.service';
 import { success, fail } from '../utils/response';
 import { BaseController } from './base.controller';
-import { CONSTANTS } from '../config/constants';
+import { CONSTANTS } from '../constants';
 import { logger } from '../utils/logger';
 
 export class CategoryController extends BaseController {

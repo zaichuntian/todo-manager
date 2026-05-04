@@ -39,41 +39,46 @@ const createStarGeometry = (size: number): THREE.BufferGeometry => {
   const geometry = new THREE.BufferGeometry();
   const vertices: number[] = [];
   const indices: number[] = [];
-  
+
   const outerRadius = size;
   const innerRadius = size * 0.45;
-  
+
   // 创建五角星的10个顶点
   for (let i = 0; i < 5; i++) {
     const angle1 = (Math.PI * 2 * i) / 5 - Math.PI / 2;
     const angle2 = angle1 + Math.PI / 5;
-    
+
     // 外顶点
     const x1 = Math.cos(angle1) * outerRadius;
     const y1 = Math.sin(angle1) * outerRadius;
     vertices.push(x1, y1, 0);
-    
+
     // 内顶点
     const x2 = Math.cos(angle2) * innerRadius;
     const y2 = Math.sin(angle2) * innerRadius;
     vertices.push(x2, y2, 0);
   }
-  
+
   // 五角星的面（5个三角形）
   const faces = [
-    [0, 1, 3], [0, 3, 2],
-    [2, 3, 5], [2, 5, 4],
-    [4, 5, 7], [4, 7, 6],
-    [6, 7, 9], [6, 9, 8],
-    [8, 9, 1], [8, 1, 0],
+    [0, 1, 3],
+    [0, 3, 2],
+    [2, 3, 5],
+    [2, 5, 4],
+    [4, 5, 7],
+    [4, 7, 6],
+    [6, 7, 9],
+    [6, 9, 8],
+    [8, 9, 1],
+    [8, 1, 0],
   ];
-  
+
   faces.forEach(f => indices.push(f[0], f[1], f[2]));
-  
+
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
-  
+
   return geometry;
 };
 
@@ -85,7 +90,7 @@ const createStars = () => {
     // 创建星星几何体（五角星）
     const size = 0.03 + Math.random() * 0.04;
     const geometry = createStarGeometry(size);
-    
+
     // 创建自发光材质（不需要光照）
     const colorChoice = Math.random();
     let color: number;
@@ -96,7 +101,7 @@ const createStars = () => {
     } else {
       color = 0xfff0a0; // 淡黄色
     }
-    
+
     const material = new THREE.MeshBasicMaterial({
       color: color,
       transparent: true,
@@ -105,7 +110,7 @@ const createStars = () => {
     });
 
     const star = new THREE.Mesh(geometry, material);
-    
+
     // 设置随机位置
     star.position.x = (Math.random() - 0.5) * 8;
     star.position.y = (Math.random() - 0.5) * 6;
@@ -138,13 +143,13 @@ const createStars = () => {
 const updateStars = () => {
   const time = Date.now() * 0.001;
 
-  stars.forEach((star) => {
+  stars.forEach(star => {
     const material = star.mesh.material as THREE.MeshBasicMaterial;
-    
+
     // 柔和闪烁效果
     const twinkle = Math.sin(time * star.twinkleSpeed + star.twinkleOffset);
     const opacity = star.baseOpacity + twinkle * 0.3;
-    
+
     material.opacity = Math.max(0.2, Math.min(0.9, opacity));
 
     // 缓慢移动星星

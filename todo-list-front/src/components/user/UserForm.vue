@@ -76,8 +76,8 @@ defineExpose({
 });
 </script>
 <style scoped lang="less">
-@import '@/assets/css/variables.less';
-@import '@/assets/css/mixins.less';
+@import '@/assets/styles/base/variables.less';
+@import '@/assets/styles/base/mixins.less';
 
 .user-form {
   .flex-wrap();

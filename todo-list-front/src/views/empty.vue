@@ -21,8 +21,8 @@
 import { useRouter } from 'vue-router';
 import ParticleAnimation from '../components/ParticleAnimation';
 import { DocumentRemove } from '@element-plus/icons-vue';
-import '@/assets/css/pages/empty.css';
-import '@/assets/css/pages/empty.css';
+import '@/assets/styles/pages/empty.css';
+import '@/assets/styles/pages/empty.css';
 
 const router = useRouter();
 
@@ -34,8 +34,7 @@ const goHome = () => {
   router.push('/');
 };
 </script>
-  }
-}
+} }
 <style scoped lang="less">
 .empty-title {
   font-size: 36px;

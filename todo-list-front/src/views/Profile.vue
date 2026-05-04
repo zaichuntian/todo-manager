@@ -167,7 +167,7 @@ import gsap from 'gsap';
 import { useAuthStore } from '@/stores/auth';
 import { api } from '@/api';
 import { ElMessage } from 'element-plus';
-import '@/assets/css/pages/profile.css';
+import '@/assets/styles/pages/profile.css';
 
 const authStore = useAuthStore();
 const userInfo = authStore.userInfo;

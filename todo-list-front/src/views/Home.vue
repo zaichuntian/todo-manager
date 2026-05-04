@@ -57,7 +57,7 @@ import dayjs from 'dayjs';
 import { api } from '@/api';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
-import '@/assets/css/pages/home.css';
+import '@/assets/styles/pages/home.css';
 
 const tableData = ref<any[]>([]);
 const total = ref(0);

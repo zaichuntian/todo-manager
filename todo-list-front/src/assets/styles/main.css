@@ -1,4 +1,4 @@
-@import './theme.css'; /* 全局字体重置，覆盖浏览器默认样式 */
+@import 'themes/theme.css'; /* 全局字体重置，覆盖浏览器默认样式 */
 
 * {
   margin: 0;

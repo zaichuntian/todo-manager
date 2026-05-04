@@ -21,42 +21,36 @@
         class="login-form"
       >
         <el-form-item prop="username" class="form-item">
-          <div class="input-wrapper" :class="{ focused: focusedField === 'username' }">
+          <div class="input-wrapper" :class="{ focused: focusedField === 'username' }" ref="usernameInput">
+            <div class="input-icon">
+              <User :size="18" />
+            </div>
             <el-input
               v-model="form.username"
               placeholder="请输入用户名"
               class="modern-input"
-              @focus="focusedField = 'username'"
-              @blur="focusedField = ''"
-            >
-              <template #prefix>
-                <div class="input-icon">
-                  <i class="el-icon-user"></i>
-                </div>
-              </template>
-            </el-input>
+              @focus="handleInputFocus('username', $event)"
+              @blur="handleInputBlur('username', $event)"
+            />
           </div>
         </el-form-item>
         <el-form-item prop="password" class="form-item">
-          <div class="input-wrapper" :class="{ focused: focusedField === 'password' }">
+          <div class="input-wrapper" :class="{ focused: focusedField === 'password' }" ref="passwordInput">
+            <div class="input-icon">
+              <Lock :size="18" />
+            </div>
             <el-input
               v-model="form.password"
               type="password"
               placeholder="请输入密码"
               class="modern-input"
-              @focus="focusedField = 'password'"
-              @blur="focusedField = ''"
-            >
-              <template #prefix>
-                <div class="input-icon">
-                  <i class="el-icon-lock"></i>
-                </div>
-              </template>
-            </el-input>
+              @focus="handleInputFocus('password', $event)"
+              @blur="handleInputBlur('password', $event)"
+            />
           </div>
         </el-form-item>
         <el-form-item class="form-item">
-          <el-button type="primary" class="modern-button" native-type="submit" :loading="loading">
+          <el-button type="primary" class="modern-button" native-type="submit" :loading="loading" ref="loginButton">
             <span class="button-text">登录</span>
           </el-button>
         </el-form-item>
@@ -102,15 +96,17 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, onUnmounted } from 'vue';
+import { reactive, ref, onMounted, onUnmounted } from 'vue';
 import { ElMessage } from 'element-plus';
-import { useAuthStore } from '../stores/auth';
+import { useAuthStore } from '../../stores/auth';
 import { useRouter } from 'vue-router';
-import { loginApi } from '../api/user';
+import { loginApi } from '../../api/user';
 import { api } from '@/api';
-import { encrypt } from '../utils/crypto';
-import { updateUserInfoCache } from '../utils/request';
-import QrcodeVue from 'qrcode.vue'; // 导入二维码组件
+import { encrypt } from '../../utils/crypto';
+import { updateUserInfoCache } from '../../utils/request';
+import QrcodeVue from 'qrcode.vue';
+import gsap from 'gsap';
+import { User, Lock } from '@element-plus/icons-vue';
 
 defineProps<{
   rules: any;
@@ -127,6 +123,11 @@ const form = reactive({
 const loading = ref(false);
 const formRef = ref<any>(null);
 const focusedField = ref('');
+
+// GSAP 动画 refs
+const usernameInput = ref<HTMLElement | null>(null);
+const passwordInput = ref<HTMLElement | null>(null);
+const loginButton = ref<HTMLElement | null>(null);
 
 // 状态管理
 const showWechatQrCode = ref(false);
@@ -186,6 +187,96 @@ const handleSubmit = async () => {
 const onRegisterClick = () => {
   emit('register');
 };
+
+// 输入框聚焦动画
+const handleInputFocus = (field: string, event: FocusEvent) => {
+  focusedField.value = field;
+
+  const target = event.target as HTMLElement;
+  const wrapper = target.closest('.input-wrapper') as HTMLElement;
+
+  if (wrapper) {
+    gsap.fromTo(
+      wrapper,
+      { scale: 0.98, boxShadow: 'none' },
+      {
+        scale: 1,
+        boxShadow: '0 0 30px rgba(106, 176, 255, 0.4)',
+        duration: 0.4,
+        ease: 'elastic.out(1, 0.5)',
+      }
+    );
+
+    // 图标脉冲效果
+    const icon = wrapper.querySelector('.input-icon');
+    if (icon) {
+      gsap.fromTo(
+        icon,
+        { scale: 1 },
+        {
+          scale: 1.2,
+          duration: 0.3,
+          yoyo: true,
+          repeat: 1,
+          ease: 'power2.inOut',
+        }
+      );
+    }
+  }
+};
+
+// 输入框失焦动画
+const handleInputBlur = (_field: string, event: FocusEvent) => {
+  focusedField.value = '';
+
+  const target = event.target as HTMLElement;
+  const wrapper = target.closest('.input-wrapper') as HTMLElement;
+
+  if (wrapper) {
+    gsap.to(wrapper, {
+      scale: 1,
+      boxShadow: 'none',
+      duration: 0.3,
+      ease: 'power2.out',
+    });
+  }
+};
+
+// 页面加载动画
+onMounted(() => {
+  // 卡片入场动画
+  const card = document.querySelector('.login-card');
+  if (card) {
+    gsap.fromTo(
+      card,
+      { opacity: 0, y: 30, scale: 0.9 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power3.out' }
+    );
+  }
+
+  // 输入框依次入场
+  const inputs = document.querySelectorAll('.form-item');
+  gsap.fromTo(
+    inputs,
+    { opacity: 0, x: -20 },
+    {
+      opacity: 1,
+      x: 0,
+      duration: 0.5,
+      stagger: 0.15,
+      ease: 'power2.out',
+    }
+  );
+
+  // 按钮弹性入场
+  if (loginButton.value) {
+    gsap.fromTo(
+      loginButton.value,
+      { opacity: 0, scale: 0.8 },
+      { opacity: 1, scale: 1, duration: 0.5, delay: 0.4, ease: 'back.out(1.7)' }
+    );
+  }
+});
 
 // 微信登录处理
 const handleWechatLogin = async () => {
@@ -263,81 +354,129 @@ onUnmounted(() => {
 </script>
 
 <style scoped lang="less">
-@import '@/assets/css/variables.less';
-@import '@/assets/css/mixins.less';
+@import '@/assets/styles/base/variables.less';
+
+.login-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
 
 .login-form {
-  .flex-wrap();
+  width: 100%;
+  max-width: 300px;
+  display: flex;
   flex-direction: column;
-  gap: @spacing-md;
+  gap: 16px;
 }
 
 .form-item {
+  width: 100%;
+  margin: 0;
+}
+
+.input-wrapper {
   position: relative;
-}
-
-.form-label {
-  color: @text-secondary;
-  font-size: @font-size-sm;
-  margin-bottom: @spacing-xs;
-  display: block;
-}
-
-.form-input {
-  .input-dark();
   width: 100%;
-  padding: @spacing-sm @spacing-md;
-  height: 40px;
-}
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
 
-.password-toggle {
-  position: absolute;
-  right: @spacing-md;
-  top: 50%;
-  transform: translateY(-50%);
-  color: @text-muted;
-  cursor: pointer;
-  transition: color @transition-fast;
-
-  &:hover {
-    color: @text-secondary;
+  &.focused {
+    border-color: rgba(106, 176, 255, 0.6);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(106, 176, 255, 0.15);
   }
-}
 
-.login-btn {
-  .btn-primary();
-  width: 100%;
-  height: 40px;
-  margin-top: @spacing-sm;
-}
+  :deep(.el-input__wrapper) {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
 
-.forgot-password {
-  text-align: right;
-  margin-top: @spacing-xs;
+  :deep(.el-input__inner) {
+    width: 100%;
+    height: 48px;
+    background: transparent;
+    border: none;
+    color: @text-primary;
+    font-size: 14px;
+    padding: 0 16px 0 48px;
 
-  a {
-    color: @accent-blue;
-    font-size: @font-size-sm;
-    text-decoration: none;
+    &::placeholder {
+      color: @text-muted;
+    }
 
-    &:hover {
-      color: lighten(@accent-blue, 10%);
-      text-decoration: underline;
+    &:focus {
+      box-shadow: none;
+      outline: none;
     }
   }
 }
 
-/* 输入框聚焦动画 */
-.input-focus {
-  animation: inputGlow 0.3s ease-out;
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: @text-muted;
+  transition: color 0.3s ease;
+  z-index: 1;
+
+  .input-wrapper.focused & {
+    color: @accent-blue;
+  }
 }
 
-@keyframes inputGlow {
-  0% {
-    box-shadow: 0 0 0 0 rgba(@accent-blue, 0.4);
+.modern-button {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6ab0ff 0%, #3b82f6 100%);
+  border: none;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(106, 176, 255, 0.35);
   }
-  100% {
-    box-shadow: 0 0 0 10px rgba(@accent-blue, 0);
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
   }
+
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.login-footer {
+  margin-top: 20px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  color: @text-muted;
+  font-size: 14px;
+
+  .link {
+    cursor: pointer;
+    color: @accent-blue;
+    transition: opacity 0.3s ease;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+.wechat-link {
+  color: @accent-green;
 }
 </style>

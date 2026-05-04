@@ -100,12 +100,19 @@
         </div>
       </el-header>
 
-      <el-main class="main main-animate" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%)">
-        <router-view v-slot="{ Component }">
-          <transition mode="out-in" @enter="enterAnimation" @leave="leaveAnimation">
-            <component :is="Component" />
-          </transition>
-        </router-view>
+      <el-main class="main main-animate" style="background: transparent; position: relative;">
+        <!-- Three.js 背景动画 - 使用fixed定位确保在底层 -->
+        <div class="background-particles">
+          <canvas ref="mainCanvas"></canvas>
+        </div>
+        <!-- 内容区域 -->
+        <div class="content-wrapper">
+          <router-view v-slot="{ Component }">
+            <transition mode="out-in" @enter="enterAnimation" @leave="leaveAnimation">
+              <component :is="Component" />
+            </transition>
+          </router-view>
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -142,12 +149,19 @@ const { goHomePage, goProfile } = useCommon();
 
 // Three.js 相关变量
 const sidebarCanvas = ref<HTMLCanvasElement>();
+const mainCanvas = ref<HTMLCanvasElement>();
 
 let sidebarScene: THREE.Scene;
 let sidebarCamera: THREE.PerspectiveCamera;
 let sidebarRenderer: THREE.WebGLRenderer;
 let sidebarParticles: THREE.Group;
 let sidebarAnimationId: number;
+
+let mainScene: THREE.Scene;
+let mainCamera: THREE.PerspectiveCamera;
+let mainRenderer: THREE.WebGLRenderer;
+let mainParticles: THREE.Points;
+let mainAnimationId: number;
 
 // 获取用户角色
 const getUserRole = (role: number | undefined) => {
@@ -313,11 +327,90 @@ watch(
   }
 );
 
+// 初始化主内容区域Three.js场景
+const initMainThree = () => {
+  if (!mainCanvas.value) return;
+
+  // 创建场景
+  mainScene = new THREE.Scene();
+
+  // 创建相机
+  mainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  mainCamera.position.z = 5;
+
+  // 创建渲染器
+  mainRenderer = new THREE.WebGLRenderer({
+    canvas: mainCanvas.value,
+    alpha: true,
+    antialias: true,
+  });
+  mainRenderer.setSize(window.innerWidth, window.innerHeight);
+  mainRenderer.setPixelRatio(window.devicePixelRatio);
+  mainRenderer.setClearColor(0x000000, 0);
+
+  // 创建粒子
+  createMainParticles();
+
+  // 开始动画
+  animateMain();
+
+  // 监听窗口大小变化
+  window.addEventListener('resize', handleMainResize);
+};
+
+// 创建主内容区域粒子
+const createMainParticles = () => {
+  const particlesCount = 1000;
+
+  const particlesGeometry = new THREE.BufferGeometry();
+  const posArray = new Float32Array(particlesCount * 3);
+
+  for (let i = 0; i < particlesCount * 3; i++) {
+    posArray[i] = (Math.random() - 0.5) * 10;
+  }
+
+  particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+  const particlesMaterial = new THREE.PointsMaterial({
+    size: 0.02,
+    color: 0x409eff,
+    transparent: true,
+    opacity: 0.6,
+    blending: THREE.AdditiveBlending,
+  });
+
+  mainParticles = new THREE.Points(particlesGeometry, particlesMaterial);
+  mainScene.add(mainParticles);
+};
+
+// 主内容区域动画循环
+const animateMain = () => {
+  mainAnimationId = requestAnimationFrame(animateMain);
+
+  if (mainParticles) {
+    mainParticles.rotation.y += 0.001;
+  }
+
+  if (mainRenderer && mainScene && mainCamera) {
+    mainRenderer.render(mainScene, mainCamera);
+  }
+};
+
+// 处理主内容区域大小变化
+const handleMainResize = () => {
+  if (!mainCamera || !mainRenderer) return;
+
+  mainCamera.aspect = window.innerWidth / window.innerHeight;
+  mainCamera.updateProjectionMatrix();
+  mainRenderer.setSize(window.innerWidth, window.innerHeight);
+};
+
 // 组件挂载时初始化
 onMounted(() => {
   // 延迟初始化，确保DOM已经渲染完成
   setTimeout(() => {
     initSidebarThree();
+    initMainThree();
   }, 100);
   // 初始化主题
   themeStore.initTheme();
@@ -331,19 +424,32 @@ onUnmounted(() => {
   if (headerAnimationId) {
     cancelAnimationFrame(headerAnimationId);
   }
+  if (mainAnimationId) {
+    cancelAnimationFrame(mainAnimationId);
+  }
   window.removeEventListener('resize', handleSidebarResize);
+  window.removeEventListener('resize', handleMainResize);
   if (sidebarRenderer) {
     sidebarRenderer.dispose();
   }
   if (headerRenderer) {
     headerRenderer.dispose();
   }
+  if (mainRenderer) {
+    mainRenderer.dispose();
+  }
+  if (mainParticles && mainParticles.geometry) {
+    mainParticles.geometry.dispose();
+  }
+  if (mainParticles && mainParticles.material) {
+    (mainParticles.material as THREE.Material).dispose();
+  }
 });
 </script>
 
 <style scoped lang="less">
-@import '@/assets/css/variables.less';
-@import '@/assets/css/mixins.less';
+@import '@/assets/styles/base/variables.less';
+@import '@/assets/styles/base/mixins.less';
 
 .particles-bg {
   position: absolute;
@@ -554,6 +660,82 @@ onUnmounted(() => {
 .sidebar-bg-canvas {
   width: 100%;
   height: 100%;
+}
+
+/* 主内容区域Canvas背景 */
+.main-bg-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.main-bg-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* 路由视图容器 */
+:deep(.router-view-wrapper) {
+  position: relative !important;
+  z-index: 100 !important;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* 确保路由视图内的所有元素都在背景之上 */
+:deep(.router-view-wrapper > *) {
+  position: relative !important;
+  z-index: 101 !important;
+}
+
+/* 主内容区域Canvas背景 */
+.main-bg-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.main-bg-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* 背景动画容器 - 固定定位在最底层 */
+.background-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.background-particles canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* 内容区域 - 在背景之上 */
+.content-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 /* Logo样式 */

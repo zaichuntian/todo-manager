@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineExpose, ref, watch, defineEmits, computed } from 'vue';
+import { defineProps, defineExpose, ref, watch, defineEmits } from 'vue';
 import type { TodoFormData } from '@/types/todo';
 import type { Category } from '@/types/category';
 
@@ -60,8 +60,8 @@ defineExpose({
 });
 </script>
 <style scoped lang="less">
-@import '@/assets/css/variables.less';
-@import '@/assets/css/mixins.less';
+@import '@/assets/styles/base/variables.less';
+@import '@/assets/styles/base/mixins.less';
 
 .todo-form {
   .flex-wrap();

@@ -33,6 +33,10 @@
        2.3 合并家里和公司的代码（可选）如果有冲突，编辑器会提示你解决，解决完就可以正常提交了。
           git stash pop
 
+12. 如果本地代码和远程代码不一致，想使用远程的版本：
+    git fetch --all && git reset --hard origin/main && git clean -fd
+    拉取远程最新版本（不合并）--> 强制重置到远程主分支（覆盖本地）--> 清理本地未跟踪文件
+
 ## 提交规范
 1. 提交新功能：feat: add login page
 2. 修复 bug：fix: fix login validation

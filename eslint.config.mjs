@@ -4,6 +4,7 @@ import tseslint from 'typescript-eslint';
 import pluginVue from 'eslint-plugin-vue';
 import prettier from 'eslint-plugin-prettier';
 import { defineConfig } from 'eslint/config';
+import vueParser from 'vue-eslint-parser'; // 添加 Vue 解析器
 
 export default defineConfig([
   // 忽略文件
@@ -50,10 +51,11 @@ export default defineConfig([
     },
   },
 
-  // Vue 文件解析配置
+  // Vue 文件解析配置（更新）
   {
     files: ['**/*.vue'],
     languageOptions: {
+      parser: vueParser, // 使用 vue-eslint-parser
       parserOptions: {
         parser: tseslint.parser,
         ecmaVersion: 'latest',
@@ -73,6 +75,14 @@ export default defineConfig([
       '@typescript-eslint/ban-ts-comment': 'warn',
       'vue/no-param-reassign': 'off',
       'vue/html-self-closing': 'off',
+      // 添加 Vue 模板解析相关规则
+      'vue/no-parsing-error': [
+        'error',
+        {
+          'x-invalid-end-tag': false,
+        },
+      ],
+      'vue/valid-template-root': 'off',
     },
   },
 ]);

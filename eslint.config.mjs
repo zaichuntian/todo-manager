@@ -1,4 +1,5 @@
 import globals from 'globals';
+import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import pluginVue from 'eslint-plugin-vue';
 import prettier from 'eslint-plugin-prettier';
@@ -24,7 +25,7 @@ export default defineConfig([
   // 基础 JS 配置
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,vue}'],
-    extends: ['js/recommended'],
+    extends: [js.configs.recommended],
     languageOptions: {
       globals: {
         ...globals.browser,

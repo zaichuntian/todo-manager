@@ -100,7 +100,7 @@
         </div>
       </el-header>
 
-      <el-main class="main main-animate" style="background: transparent; position: relative;">
+      <el-main class="main main-animate" style="background: transparent; position: relative">
         <!-- Three.js 背景动画 - 使用fixed定位确保在底层 -->
         <div class="background-particles">
           <canvas ref="mainCanvas"></canvas>
@@ -450,6 +450,10 @@ onUnmounted(() => {
 <style scoped lang="less">
 @import '@/assets/styles/base/variables.less';
 @import '@/assets/styles/base/mixins.less';
+
+:deep(.el-dropdown-menu__item i) {
+  margin-right: 0;
+}
 
 .particles-bg {
   position: absolute;

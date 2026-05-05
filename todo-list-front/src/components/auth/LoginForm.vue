@@ -9,7 +9,6 @@
         <!-- 用户头像展示（始终显示，有用户信息显示头像，否则显示默认图标） -->
         <div class="user-avatar-wrapper">
           <el-avatar :size="64" :icon="User" :src="auth.userInfo?.avatar" class="user-avatar" />
-          <div class="user-name" v-if="auth.userInfo?.username">{{ auth.userInfo.username }}</div>
         </div>
         <h2 class="login-title">欢迎回来</h2>
       </div>
@@ -119,7 +118,7 @@ const emit = defineEmits<{
 }>();
 
 const form = reactive({
-  username: '',
+  username: localStorage.getItem('lastLoginUsername') || '',
   password: '',
 });
 const loading = ref(false);

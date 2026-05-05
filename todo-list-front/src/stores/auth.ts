@@ -17,6 +17,8 @@ export const useAuthStore = defineStore('auth', {
     // 退出登录，保留用户信息（用于登录框展示）
     logout() {
       if (this.userInfo) {
+        // 保存用户名到 localStorage（用于登录框预填）
+        localStorage.setItem('lastLoginUsername', this.userInfo.username || '');
         // 只清除 token，保留其他信息
         const { token, ...rest } = this.userInfo;
         this.userInfo = rest as UserInfo;

@@ -26,6 +26,7 @@
 import { ref, onErrorCaptured } from 'vue';
 import { ElNotification } from 'element-plus';
 import RefreshAnimation from '@/components/effect/RefreshAnimation.vue';
+import { logger } from '@/utils/logger';
 
 const errorMessage = ref('');
 const showLoading = ref(true);
@@ -33,12 +34,13 @@ const showLoading = ref(true);
 const onLoadingComplete = () => {
   showLoading.value = false;
 };
+
 // 全局错误捕获
 const handleError = (err: Error, _instance: any, info: string) => {
-  console.error('全局错误:', err);
-  console.error('错误信息:', info);
+  logger.error('全局Vue错误:', err);
+  logger.error('组件信息:', info);
   errorMessage.value = `发生错误: ${err.message}`;
-  return true; // 阻止错误继续传播
+  return true;
 };
 
 // 注册全局错误捕获
@@ -46,13 +48,13 @@ onErrorCaptured(handleError);
 
 // 全局未捕获错误处理
 window.addEventListener('error', event => {
-  console.error('未捕获的错误:', event.error);
+  logger.error('未捕获的全局错误:', event.error);
   errorMessage.value = `发生未捕获的错误: ${event.error?.message || '未知错误'}`;
 });
 
 // 全局未处理的Promise拒绝处理
 window.addEventListener('unhandledrejection', event => {
-  console.error('未处理的Promise拒绝:', event.reason);
+  logger.error('未处理的Promise拒绝:', event.reason);
   errorMessage.value = `发生Promise错误: ${event.reason?.message || '未知错误'}`;
 });
 </script>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import router from '../router';
+import { requestInterceptor, responseInterceptor, errorInterceptor } from '@/api';
 
 // 自定义响应类型
 export interface ApiResponse<T = any> {
@@ -31,13 +32,13 @@ request.interceptors.request.use(
       // 检查用户状态：如果账户已被禁用，提示用户
       if (cachedUserInfo.status === 0) {
         ElMessage.error('您的账户已被禁用，请联系管理员开通权限');
-        router.push('/401');
+        router.push('/403');
         return Promise.reject(new Error('账户已被禁用'));
       }
       config.headers = config.headers || {};
       config.headers.Authorization = `Bearer ${cachedUserInfo.token}`;
     }
-    return config;
+    return requestInterceptor(config);
   },
   error => {
     console.error('请求错误:', error);
@@ -58,13 +59,16 @@ export const clearUserInfoCache = () => {
 // 响应拦截器
 request.interceptors.response.use(
   response => {
+    // 先调用日志拦截器
+    const loggedResponse = responseInterceptor(response);
+
     // 处理304响应
-    if (response.status === 304) {
-      return response.data;
+    if (loggedResponse.status === 304) {
+      return loggedResponse.data;
     }
 
     // 处理正常响应
-    const { code, data, msg } = response.data as ApiResponse;
+    const { code, data, msg } = loggedResponse.data as ApiResponse;
     if (code !== 200) {
       ElMessage.error(msg || '请求失败');
       return Promise.reject(new Error(msg || '请求失败'));
@@ -72,6 +76,8 @@ request.interceptors.response.use(
     return data;
   },
   error => {
+    errorInterceptor(error);
+
     if (error.response?.status === 401) {
       localStorage.removeItem('userInfo');
       ElMessage.error('登录已过期，请重新登录');

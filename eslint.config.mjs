@@ -68,12 +68,16 @@ export default defineConfig([
     rules: {
       'no-var': 'error',
       'no-console': 'warn',
+      'no-useless-assignment': 'off', // 在 Vue 组件中，函数在模板中使用，ESLint 无法识别
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-namespace': 'error',
       '@typescript-eslint/ban-ts-comment': 'warn',
       'vue/no-param-reassign': 'off',
       'vue/html-self-closing': 'off',
+      'vue/no-unknown-vue-component': 'off',
+      'vue/no-any': 'off',
+      'vue/multi-word-component-names': 'off', // 允许单单词组件名
     },
   },
 ]);

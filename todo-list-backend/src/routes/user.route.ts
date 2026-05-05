@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { UserController } from '../controllers/user.controller';
-import { WechatController } from '../controllers/wechat.controller';
-import { authMiddleware } from '../middleware/auth.middleware';
-import { userValidationRules, validate } from '../middleware/validation.middleware';
+import { UserController } from '@controllers/user.controller';
+import { WechatController } from '@controllers/wechat.controller';
+import { authMiddleware } from '@middleware/auth.middleware';
+import { userValidationRules, validate } from '@middleware/validation.middleware';
 
 const router = Router();
 

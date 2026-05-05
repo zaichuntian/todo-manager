@@ -19,8 +19,8 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import ParticleAnimation from '../components/ParticleAnimation';
-import '@/assets/styles/pages/error.css';
+import ParticleAnimation from '@components/ParticleAnimation';
+import '@styles/pages/error.css';
 
 const router = useRouter();
 

@@ -17,13 +17,11 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import ParticleBackground from '../components/effect/ParticleBackground.vue';
-import LoginForm from '../components/auth/LoginForm.vue';
-import RegisterForm from '../components/auth/RegisterForm.vue';
-import { loginRules, registerRules } from '../utils/validationRules';
-import '@/assets/styles/pages/login.css';
-
-// tsparticles-vue3 会自动加载，无需手动调用
+import ParticleBackground from '@components/effect/ParticleBackground';
+import LoginForm from '@components/auth/LoginForm';
+import RegisterForm from '@components/auth/RegisterForm';
+import { loginRules, registerRules } from '@utils/validationRules';
+import '@styles/pages/login.css';
 
 // 状态管理
 const isRegister = ref(false);

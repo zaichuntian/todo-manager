@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
-import { UserService } from '../services/user.service';
-import { success, fail } from '../utils/response';
+import { UserService } from '@services/user.service';
+import { success, fail } from '@utils/response';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { decrypt } from '../utils/crypto';
+import { decrypt } from '@utils/crypto';
 import { BaseController } from './base.controller';
-import { CONSTANTS } from '../constants';
-import { logger } from '../utils/logger';
-import { User } from '../models';
+import { CONSTANTS } from '@/constants';
+import { logger } from '@utils/logger';
+import User from '@models/user.model';
 import { Op } from 'sequelize';
 
 export class UserController extends BaseController {

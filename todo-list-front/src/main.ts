@@ -1,20 +1,20 @@
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
-import router from '@/router';
+import router from './router';
 import ElementPlus from 'element-plus';
 import 'element-plus/theme-chalk/dark/css-vars.css';
 import 'element-plus/dist/index.css';
-import '@/assets/styles/base/variables.less';
-import '@/assets/styles/base/mixins.less';
-import '@/assets/styles/main.css';
-import '@/assets/styles/common.css';
-import '@/assets/styles/themes/dark.css';
+import '@styles/base/variables.less';
+import '@styles/base/mixins.less';
+import '@styles/main.css';
+import '@styles/common.css';
+import '@styles/themes/dark.css';
 // @ts-ignore
 import zhCn from 'element-plus/dist/locale/zh-cn.mjs'; // 导入中文包
 import Particles from '@tsparticles/vue3';
 import { loadSlim } from '@tsparticles/slim';
-import { logger } from '@/utils/logger';
-import App from '@/App.vue';
+import { logger } from '@utils/logger';
+import App from './App.vue';
 
 const app = createApp(App);
 

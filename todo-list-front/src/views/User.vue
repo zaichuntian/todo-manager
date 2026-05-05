@@ -122,17 +122,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useUser } from '@/hooks/useUser';
+import { useUser } from '@hooks/useUser';
 import { debounce } from 'lodash';
 import { ElMessage } from 'element-plus';
 import { Search, Refresh, Delete } from '@element-plus/icons-vue';
-import BaseCard from '@/components/common/BaseCard.vue';
-import BaseButton from '@/components/common/BaseButton.vue';
-import SearchBar from '@/components/common/SearchBar.vue';
-import Pagination from '@/components/common/Pagination.vue';
-import StatusSwitch from '@/components/common/StatusSwitch.vue';
-import UserForm from '@/components/user/UserForm.vue';
-import '@/assets/styles/pages/user.css';
+import BaseCard from '@components/common/BaseCard';
+import BaseButton from '@components/common/BaseButton';
+import SearchBar from '@components/common/SearchBar';
+import Pagination from '@components/common/Pagination';
+import StatusSwitch from '@components/common/StatusSwitch';
+import UserForm from '@components/user/UserForm';
+import '@styles/pages/user';
 
 // 使用用户管理自定义 Hook
 const {

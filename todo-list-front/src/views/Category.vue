@@ -110,17 +110,17 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useCategory } from '../hooks/useCategory';
+import { useCategory } from '@hooks/useCategory';
 import { debounce } from 'lodash';
-import SearchBar from '@/components/common/SearchBar.vue';
-import Pagination from '@/components/common/Pagination.vue';
-import CategoryForm from '@/components/category/CategoryForm.vue';
-import CategoryTasks from '@/components/category/CategoryTasks.vue';
+import SearchBar from '@components/common/SearchBar.vue';
+import Pagination from '@components/common/Pagination.vue';
+import CategoryForm from '@components/category/CategoryForm.vue';
+import CategoryTasks from '@components/category/CategoryTasks.vue';
 import { ElMessage } from 'element-plus';
 import { Search, Refresh } from '@element-plus/icons-vue';
-import type { Category } from '../types/category';
-import type { Todo } from '../types/todo';
-import '@/assets/styles/pages/category.css';
+import type { Category } from '@src-types/category';
+import type { Todo } from '@src-types/todo';
+import '@styles/pages/category.css';
 
 // 使用分类管理自定义 Hook
 const {

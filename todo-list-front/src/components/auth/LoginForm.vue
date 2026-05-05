@@ -21,7 +21,7 @@
         class="login-form"
       >
         <el-form-item prop="username" class="form-item">
-          <div class="input-wrapper" :class="{ focused: focusedField === 'username' }" ref="usernameInput">
+          <div class="input-wrapper" :class="{ focused: focusedField === 'username' }">
             <div class="input-icon">
               <User :size="18" />
             </div>
@@ -35,7 +35,7 @@
           </div>
         </el-form-item>
         <el-form-item prop="password" class="form-item">
-          <div class="input-wrapper" :class="{ focused: focusedField === 'password' }" ref="passwordInput">
+          <div class="input-wrapper" :class="{ focused: focusedField === 'password' }">
             <div class="input-icon">
               <Lock :size="18" />
             </div>
@@ -50,7 +50,7 @@
           </div>
         </el-form-item>
         <el-form-item class="form-item">
-          <el-button type="primary" class="modern-button" native-type="submit" :loading="loading" ref="loginButton">
+          <el-button type="primary" class="modern-button" native-type="submit" :loading="loading" ref="loginButtonRef">
             <span class="button-text">登录</span>
           </el-button>
         </el-form-item>
@@ -98,12 +98,12 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted, onUnmounted } from 'vue';
 import { ElMessage } from 'element-plus';
-import { useAuthStore } from '../../stores/auth';
+import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
-import { loginApi } from '../../api/user';
+import { loginApi } from '@api/user';
 import { api } from '@/api';
-import { encrypt } from '../../utils/crypto';
-import { updateUserInfoCache } from '../../utils/request';
+import { encrypt } from '@utils/crypto';
+import { updateUserInfoCache } from '@utils/request';
 import QrcodeVue from 'qrcode.vue';
 import gsap from 'gsap';
 import { User, Lock } from '@element-plus/icons-vue';
@@ -125,9 +125,7 @@ const formRef = ref<any>(null);
 const focusedField = ref('');
 
 // GSAP 动画 refs
-const usernameInput = ref<HTMLElement | null>(null);
-const passwordInput = ref<HTMLElement | null>(null);
-const loginButton = ref<HTMLElement | null>(null);
+const loginButtonRef = ref<InstanceType<typeof HTMLButtonElement> | null>(null);
 
 // 状态管理
 const showWechatQrCode = ref(false);
@@ -147,49 +145,54 @@ const handleSubmit = async () => {
     return;
   }
 
-  formRef.value.validate((valid: boolean, invalidFields: any) => {
-    if (valid) {
-      loading.value = true;
-      // 使用立即执行的异步函数
-      (async () => {
-        try {
-          // 前端加密密码
-          const encryptedPwd = encrypt(form.password);
-
-          // 请求后端
-          const userInfo = await loginApi({
-            username: form.username,
-            password: encryptedPwd,
-          });
-
-          ElMessage.success('登录成功');
-          auth.setUserInfo(userInfo);
-          updateUserInfoCache(userInfo); // 更新内存缓存
-          await router.push('/');
-        } catch (err: any) {
-          ElMessage.error(err.message || '登录失败');
-        } finally {
-          loading.value = false;
-        }
-      })();
-    } else {
-      // 遍历invalidFields对象，获取第一个错误信息
-      for (const field in invalidFields) {
-        if (invalidFields[field] && invalidFields[field].length > 0) {
-          ElMessage.error(invalidFields[field][0].message);
-          break;
+  // 使用 Promise 方式处理验证
+  const valid = await new Promise<boolean>(resolve => {
+    formRef.value!.validate((valid: boolean, invalidFields: any) => {
+      if (!valid && invalidFields) {
+        // 遍历invalidFields对象，获取第一个错误信息
+        for (const field in invalidFields) {
+          if (invalidFields[field] && invalidFields[field].length > 0) {
+            ElMessage.error(invalidFields[field][0].message);
+            break;
+          }
         }
       }
-    }
+      resolve(valid);
+    });
   });
+
+  if (!valid) {
+    return;
+  }
+
+  loading.value = true;
+  try {
+    // 前端加密密码
+    const encryptedPwd = encrypt(form.password);
+
+    // 请求后端
+    const userInfo = await loginApi({
+      username: form.username,
+      password: encryptedPwd,
+    });
+
+    ElMessage.success('登录成功');
+    auth.setUserInfo(userInfo);
+    updateUserInfoCache(userInfo); // 更新内存缓存
+    await router.push('/');
+  } catch (err: any) {
+    ElMessage.error(err.message || '登录失败');
+  } finally {
+    loading.value = false;
+  }
 };
 
-const onRegisterClick = () => {
+const onRegisterClick = (): void => {
   emit('register');
 };
 
 // 输入框聚焦动画
-const handleInputFocus = (field: string, event: FocusEvent) => {
+const handleInputFocus = (field: string, event: FocusEvent): void => {
   focusedField.value = field;
 
   const target = event.target as HTMLElement;
@@ -226,7 +229,7 @@ const handleInputFocus = (field: string, event: FocusEvent) => {
 };
 
 // 输入框失焦动画
-const handleInputBlur = (_field: string, event: FocusEvent) => {
+const handleInputBlur = (_field: string, event: FocusEvent): void => {
   focusedField.value = '';
 
   const target = event.target as HTMLElement;
@@ -269,9 +272,9 @@ onMounted(() => {
   );
 
   // 按钮弹性入场
-  if (loginButton.value) {
+  if (loginButtonRef.value) {
     gsap.fromTo(
-      loginButton.value,
+      loginButtonRef.value,
       { opacity: 0, scale: 0.8 },
       { opacity: 1, scale: 1, duration: 0.5, delay: 0.4, ease: 'back.out(1.7)' }
     );
@@ -279,7 +282,7 @@ onMounted(() => {
 });
 
 // 微信登录处理
-const handleWechatLogin = async () => {
+const handleWechatLogin = async (): Promise<void> => {
   try {
     // 调用后端接口获取微信登录二维码
     const response = await api.wechat.getLoginQrCode();

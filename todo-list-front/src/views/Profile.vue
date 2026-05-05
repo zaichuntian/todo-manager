@@ -164,8 +164,8 @@
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
 import { UserFilled, Timer, Check, Close } from '@element-plus/icons-vue';
 import gsap from 'gsap';
-import { useAuthStore } from '@/stores/auth';
-import { api } from '@/api';
+import { useAuthStore } from '@stores/auth';
+import { api } from '@api';
 import { ElMessage } from 'element-plus';
 import '@/assets/styles/pages/profile.css';
 

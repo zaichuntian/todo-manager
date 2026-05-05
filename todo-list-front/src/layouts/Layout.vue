@@ -132,11 +132,11 @@ import {
 } from '@element-plus/icons-vue';
 import { useRoute } from 'vue-router';
 import * as THREE from 'three';
-import { useLayout } from '../hooks/useLayout';
-import { useAnimation } from '@/hooks/useAnimation';
-import { useCommon } from '@/hooks/useCommon.ts';
-import { useAuthStore } from '@/stores/auth';
-import { useThemeStore } from '@/stores/theme';
+import { useLayout } from '@hooks/useLayout';
+import { useAnimation } from '@hooks/useAnimation';
+import { useCommon } from '@hooks/useCommon.ts';
+import { useAuthStore } from '@stores/auth';
+import { useThemeStore } from '@stores/theme';
 
 const authStore = useAuthStore();
 const userInfo = authStore.userInfo;
@@ -174,9 +174,6 @@ const getUserRole = (role: number | undefined) => {
       return '普通用户';
   }
 };
-
-let headerRenderer: THREE.WebGLRenderer;
-let headerAnimationId: number;
 
 // 初始化左侧菜单Three.js场景
 const initSidebarThree = () => {
@@ -421,9 +418,6 @@ onUnmounted(() => {
   if (sidebarAnimationId) {
     cancelAnimationFrame(sidebarAnimationId);
   }
-  if (headerAnimationId) {
-    cancelAnimationFrame(headerAnimationId);
-  }
   if (mainAnimationId) {
     cancelAnimationFrame(mainAnimationId);
   }
@@ -431,9 +425,6 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleMainResize);
   if (sidebarRenderer) {
     sidebarRenderer.dispose();
-  }
-  if (headerRenderer) {
-    headerRenderer.dispose();
   }
   if (mainRenderer) {
     mainRenderer.dispose();

@@ -3,7 +3,7 @@ dotenv.config();
 
 import app from './app';
 import { testConnection, syncModels } from './config';
-import { logger } from './utils/logger';
+import { logger } from '@utils/logger';
 
 const port = parseInt(process.env.DEV_API_PORT || '3001');
 

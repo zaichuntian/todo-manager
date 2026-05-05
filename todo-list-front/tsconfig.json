@@ -15,8 +15,21 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@": ["src"],
+      "@api": ["src/api"],
+      "@assets": ["src/assets"],
+      "@styles": ["src/assets/styles"],
+      "@components": ["src/components"],
+      "@constants": ["src/constants"],
+      "@hooks": ["src/hooks"],
+      "@layouts": ["src/layouts"],
+      "@router": ["src/router"],
+      "@stores": ["src/stores"],
+      "@src-types": ["src/types"],
+      "@utils": ["src/utils"],
+      "@views": ["src/views"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],

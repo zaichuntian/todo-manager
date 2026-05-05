@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { TodoController } from '../controllers/todo.controller';
-import { authMiddleware } from '../middleware/auth.middleware';
-import { todoValidationRules, validate } from '../middleware/validation.middleware';
+import { TodoController } from '@controllers/todo.controller';
+import { authMiddleware } from '@middleware/auth.middleware';
+import { todoValidationRules, validate } from '@middleware/validation.middleware';
 
 const router = Router();
 

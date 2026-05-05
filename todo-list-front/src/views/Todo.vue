@@ -107,18 +107,18 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useTodo } from '@/hooks/useTodo';
+import { useTodo } from '@hooks/useTodo';
 import { debounce } from 'lodash';
-import BaseButton from '@/components/common/BaseButton.vue';
-import SearchBar from '@/components/common/SearchBar.vue';
-import Pagination from '@/components/common/Pagination.vue';
-import StatusSwitch from '@/components/common/StatusSwitch.vue';
-import TodoForm from '@/components/todo/TodoForm.vue';
-import { getCategoriesApi } from '@/api/category';
+import BaseButton from '@components/common/BaseButton.vue';
+import SearchBar from '@components/common/SearchBar.vue';
+import Pagination from '@components/common/Pagination.vue';
+import StatusSwitch from '@components/common/StatusSwitch.vue';
+import TodoForm from '@components/todo/TodoForm.vue';
+import { getCategoriesApi } from '@api/category';
 import { ElMessage } from 'element-plus';
 import { Search, Refresh } from '@element-plus/icons-vue';
-import type { Category } from '@/types/category';
-import '@/assets/styles/pages/todo.css';
+import type { Category } from '@src-types/category';
+import '@assets/styles/pages/todo.css';
 
 // 使用任务管理自定义 Hook
 let {

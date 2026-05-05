@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { validationResult } from 'express-validator';
-import { fail } from '../utils/response';
-import { decrypt } from '../utils/crypto';
+import { fail } from '@utils/response';
+import { decrypt } from '@utils/crypto';
 import { body } from 'express-validator';
 
 // 用户验证规则

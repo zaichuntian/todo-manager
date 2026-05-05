@@ -1,8 +1,7 @@
-// src/services/user.service.ts
-import User from '../models/user.model';
+import User from '@models/user.model';
 import { BaseService } from './base.service';
-import { RedisUtil } from '../utils/redis';
-import { logger } from '../utils/logger';
+import { RedisUtil } from '@utils/redis';
+import { logger } from '@utils/logger';
 import { Op } from 'sequelize';
 
 export class UserService extends BaseService<any> {

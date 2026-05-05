@@ -1,6 +1,6 @@
-import request from '../utils/request';
-import type { User, UserFormData, UserInfo } from '../types/user';
-import type { ApiResponse } from '../types/common';
+import request from '@utils/request';
+import type { User, UserFormData, UserInfo } from '@src-types/user';
+import type { ApiResponse } from '@src-types/common';
 
 // 登录
 export function loginApi(data: { username: string; password: string }): Promise<UserInfo> {

@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
-import { logger } from '../utils/logger';
+import { logger } from '@utils/logger';
 
 // 加载环境变量
 dotenv.config();

@@ -5,11 +5,11 @@ import {
   updateCategoryApi,
   deleteCategoryApi,
   getCategoryWithTodosApi,
-} from '../api/category';
+} from '@api/category';
 import { useCrud } from './useCrud';
-import { formatTime } from '../utils/format';
+import { formatTime } from '@utils/format';
 import { useAuth } from './useAuth';
-import type { Category, CategoryFormData } from '../types/category';
+import type { Category, CategoryFormData } from '@src-types/category';
 
 /**
  * 分类管理自定义 Hook

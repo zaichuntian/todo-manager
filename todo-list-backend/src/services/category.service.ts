@@ -1,7 +1,7 @@
-import Category from '../models/category.model';
+import Category from '@models/category.model';
 import { BaseService } from './base.service';
-import { RedisUtil } from '../utils/redis';
-import { logger } from '../utils/logger';
+import { RedisUtil } from '@utils/redis';
+import { logger } from '@utils/logger';
 import { Op } from 'sequelize';
 
 export class CategoryService extends BaseService<any> {

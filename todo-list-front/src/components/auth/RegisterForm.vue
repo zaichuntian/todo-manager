@@ -20,55 +20,55 @@
       class="login-form"
     >
       <el-form-item prop="username" class="form-item">
-          <div class="input-wrapper" :class="{ focused: focusedField === 'username' }">
-            <div class="input-icon">
-              <User :size="18" />
-            </div>
-            <el-input
-              v-model="form.username"
-              placeholder="请输入用户名"
-              class="modern-input"
-              @focus="focusedField = 'username'"
-              @blur="focusedField = ''"
-            />
+        <div class="input-wrapper" :class="{ focused: focusedField === 'username' }">
+          <div class="input-icon">
+            <User :size="18" />
           </div>
-        </el-form-item>
-        <el-form-item prop="password" class="form-item">
-          <div class="input-wrapper" :class="{ focused: focusedField === 'password' }">
-            <div class="input-icon">
-              <Lock :size="18" />
-            </div>
-            <el-input
-              v-model="form.password"
-              type="password"
-              placeholder="请输入密码"
-              class="modern-input"
-              @focus="focusedField = 'password'"
-              @blur="focusedField = ''"
-            />
+          <el-input
+            v-model="form.username"
+            placeholder="请输入用户名"
+            class="modern-input"
+            @focus="focusedField = 'username'"
+            @blur="focusedField = ''"
+          />
+        </div>
+      </el-form-item>
+      <el-form-item prop="password" class="form-item">
+        <div class="input-wrapper" :class="{ focused: focusedField === 'password' }">
+          <div class="input-icon">
+            <Lock :size="18" />
           </div>
-        </el-form-item>
-        <el-form-item prop="confirmPassword" class="form-item">
-          <div class="input-wrapper" :class="{ focused: focusedField === 'confirmPassword' }">
-            <div class="input-icon">
-              <Lock :size="18" />
-            </div>
-            <el-input
-              v-model="form.confirmPassword"
-              type="password"
-              placeholder="请确认密码"
-              class="modern-input"
-              @focus="focusedField = 'confirmPassword'"
-              @blur="focusedField = ''"
-            />
+          <el-input
+            v-model="form.password"
+            type="password"
+            placeholder="请输入密码"
+            class="modern-input"
+            @focus="focusedField = 'password'"
+            @blur="focusedField = ''"
+          />
+        </div>
+      </el-form-item>
+      <el-form-item prop="confirmPassword" class="form-item">
+        <div class="input-wrapper" :class="{ focused: focusedField === 'confirmPassword' }">
+          <div class="input-icon">
+            <Lock :size="18" />
           </div>
-        </el-form-item>
+          <el-input
+            v-model="form.confirmPassword"
+            type="password"
+            placeholder="请确认密码"
+            class="modern-input"
+            @focus="focusedField = 'confirmPassword'"
+            @blur="focusedField = ''"
+          />
+        </div>
+      </el-form-item>
 
-        <el-form-item class="form-item">
-          <el-button type="primary" class="modern-button" native-type="submit" :loading="loading" ref="registerButton">
-            <span class="button-text">注册</span>
-          </el-button>
-        </el-form-item>
+      <el-form-item class="form-item">
+        <el-button type="primary" class="modern-button" native-type="submit" :loading="loading" ref="registerButton">
+          <span class="button-text">注册</span>
+        </el-button>
+      </el-form-item>
     </el-form>
     <div class="login-footer">
       <span>已有账号？</span>
@@ -80,8 +80,8 @@
 <script setup lang="ts">
 import { reactive, ref, onMounted } from 'vue';
 import { ElMessage } from 'element-plus';
-import { registerApi } from '../../api/user';
-import { encrypt } from '../../utils/crypto';
+import { registerApi } from '@api/user';
+import { encrypt } from '@utils/crypto';
 import { User, Lock } from '@element-plus/icons-vue';
 import gsap from 'gsap';
 
@@ -155,28 +155,31 @@ onMounted(() => {
   // 卡片入场动画
   const card = document.querySelector('.login-card');
   if (card) {
-    gsap.fromTo(card,
+    gsap.fromTo(
+      card,
       { opacity: 0, y: 30, scale: 0.9 },
       { opacity: 1, y: 0, scale: 1, duration: 0.8, ease: 'power3.out' }
     );
   }
-  
+
   // 输入框依次入场
   const inputs = document.querySelectorAll('.form-item');
-  gsap.fromTo(inputs,
+  gsap.fromTo(
+    inputs,
     { opacity: 0, x: -20 },
-    { 
-      opacity: 1, 
-      x: 0, 
-      duration: 0.5, 
+    {
+      opacity: 1,
+      x: 0,
+      duration: 0.5,
       stagger: 0.15,
-      ease: 'power2.out'
+      ease: 'power2.out',
     }
   );
-  
+
   // 按钮弹性入场
   if (registerButton.value) {
-    gsap.fromTo(registerButton.value,
+    gsap.fromTo(
+      registerButton.value,
       { opacity: 0, scale: 0.8 },
       { opacity: 1, scale: 1, duration: 0.5, delay: 0.5, ease: 'back.out(1.7)' }
     );

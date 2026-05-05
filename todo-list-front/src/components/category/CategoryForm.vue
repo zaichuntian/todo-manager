@@ -28,8 +28,8 @@
 
 <script setup lang="ts">
 import { defineProps, defineExpose, ref, watch, defineEmits } from 'vue';
-import type { CategoryFormData } from '@/types/category';
-import type { Category } from '@/types/category';
+import type { CategoryFormData } from '@src-types/category';
+import type { Category } from '@src-types/category';
 
 const props = defineProps<{
   form: CategoryFormData;

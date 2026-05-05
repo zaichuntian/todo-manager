@@ -1,11 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { logger } from './utils/logger';
-import { errorHandler, notFoundHandler } from './middleware/error.middleware';
-import registerRoutes from './routes/index';
-
-// 导入模型关联文件
-import './models/index';
+import registerRoutes from '@routes/index';
+import '@models/index';
+import { logger } from '@utils/logger';
+import { errorHandler, notFoundHandler } from '@middleware/error.middleware';
 
 const app = express();
 const isProd = process.env.NODE_ENV === 'production';

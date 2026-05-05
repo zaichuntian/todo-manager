@@ -1,6 +1,6 @@
-import request from '../utils/request';
-import type { Category, CategoryFormData } from '../types/category';
-import type { ApiResponse } from '../types/common';
+import request from '@utils/request';
+import type { Category, CategoryFormData } from '@src-types/category';
+import type { ApiResponse } from '@src-types/common';
 
 // 获取分类列表
 export function getCategoriesApi(params: {

@@ -19,10 +19,9 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-import ParticleAnimation from '../components/ParticleAnimation';
+import ParticleAnimation from '@components/ParticleAnimation';
 import { DocumentRemove } from '@element-plus/icons-vue';
-import '@/assets/styles/pages/empty.css';
-import '@/assets/styles/pages/empty.css';
+import '@styles/pages/empty.css';
 
 const router = useRouter();
 

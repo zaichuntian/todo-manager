@@ -1,7 +1,7 @@
 import { ref, Ref, onUnmounted } from 'vue';
 import { ElMessage, ElMessageBox, ElForm } from 'element-plus';
 import { debounce } from 'lodash';
-import type { FormRules, PaginationParams } from '../types/common';
+import type { FormRules, PaginationParams } from '@src-types/common';
 
 /**
  * CRUD 通用 Hook 配置

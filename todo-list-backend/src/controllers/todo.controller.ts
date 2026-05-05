@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { TodoService } from '../services/todo.service';
-import { success, fail } from '../utils/response';
+import { TodoService } from '@services/todo.service';
+import { success, fail } from '@utils/response';
 import { BaseController } from './base.controller';
-import { CONSTANTS } from '../constants/index';
-import { CategoryService } from '../services/category.service';
-import { logger } from '../utils/logger';
+import { CONSTANTS } from '@/constants';
+import { CategoryService } from '@services/category.service';
+import { logger } from '@utils/logger';
 
 export class TodoController extends BaseController {
   static async getMyList(req: Request, res: Response) {

@@ -1,4 +1,4 @@
-import request from '@/utils/request';
+import request from '@utils/request';
 
 // 微信登录二维码响应类型
 export interface WechatQrCodeResponse {

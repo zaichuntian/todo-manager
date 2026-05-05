@@ -1,10 +1,10 @@
-import Todo from '../models/todo.model';
-import User from '../models/user.model';
-import Category from '../models/category.model';
+import Todo from '@models/todo.model';
+import User from '@models/user.model';
+import Category from '@models/category.model';
 import { Op } from 'sequelize';
 import { BaseService } from './base.service';
-import { RedisUtil } from '../utils/redis';
-import { logger } from '../utils/logger';
+import { RedisUtil } from '@utils/redis';
+import { logger } from '@utils/logger';
 
 export class TodoService extends BaseService<any> {
   // 获取所有任务（带分页，支持搜索）

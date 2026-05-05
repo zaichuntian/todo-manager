@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { UserInfo } from '@/types/user.ts';
+import { UserInfo } from '@src-types/user';
 
 const routes = [
   {

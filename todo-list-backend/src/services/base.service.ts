@@ -1,5 +1,5 @@
 import { Model, Op, FindOptions } from 'sequelize';
-import { logger } from '../utils/logger';
+import { logger } from '@utils/logger';
 
 export class BaseService<T extends Model> {
   // 静态方法，查询列表（分页）

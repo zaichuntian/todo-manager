@@ -26,9 +26,9 @@
 
 <script setup lang="ts">
 import { defineProps } from 'vue';
-import { formatTime } from '@/utils/format';
-import type { Category } from '@/types/category';
-import type { Todo } from '@/types/todo';
+import { formatTime } from '@utils/format';
+import type { Category } from '@src-types/category';
+import type { Todo } from '@src-types/todo';
 
 defineProps<{
   category: Category | null;

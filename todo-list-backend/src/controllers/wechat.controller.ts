@@ -1,10 +1,9 @@
-// src/controllers/wechat.controller.ts
 import { Request, Response } from 'express';
-import { fail, success } from '../utils/response';
-import { logger } from '../utils/logger';
-import { RedisUtil } from '../utils/redis';
+import { fail, success } from '@utils/response';
+import { logger } from '@utils/logger';
+import { RedisUtil } from '@utils/redis';
 import { v4 as uuidv4 } from 'uuid';
-import { User } from '../models';
+import User from '@models/user.model';
 import jwt from 'jsonwebtoken';
 import axios from 'axios';
 

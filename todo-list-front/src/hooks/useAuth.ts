@@ -1,6 +1,6 @@
 import { computed } from 'vue';
-import { useAuthStore } from '../stores/auth';
-import { updateUserInfoCache, clearUserInfoCache } from '../utils/request';
+import { useAuthStore } from '@stores/auth';
+import { updateUserInfoCache, clearUserInfoCache } from '@utils/request';
 
 /**
  * 认证相关的自定义 Hook

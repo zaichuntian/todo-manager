@@ -1,13 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import User from '../models/user.model';
-import { fail } from '../utils/response';
-import { verifyToken } from '../auth/jwt';
+import User from '@models/user.model';
+import { fail } from '@utils/response';
+import { verifyToken } from '@auth/jwt';
+import { logger } from '@utils/logger';
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: User;
-    }
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: User;
   }
 }
 
@@ -30,7 +29,7 @@ export async function authMiddleware(req: Request, res: Response, next: NextFunc
     req.user = user;
     next();
   } catch (err) {
-    console.error('❌ JWT 验证失败', err);
+    logger.error('❌ JWT 验证失败', err);
     return res.json(fail('登录已过期或无效', 401));
   }
 }

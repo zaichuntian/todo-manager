@@ -1,4 +1,3 @@
-// src/utils/validationRules.ts
 export const loginRules = {
   username: [
     { required: true, message: '请输入用户名', trigger: 'blur' },

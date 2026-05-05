@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { CategoryController } from '../controllers/category.controller';
-import { authMiddleware } from '../middleware/auth.middleware';
-import { categoryValidationRules, validate } from '../middleware/validation.middleware';
+import { CategoryController } from '@controllers/category.controller';
+import { authMiddleware } from '@middleware/auth.middleware';
+import { categoryValidationRules, validate } from '@middleware/validation.middleware';
 
 const router = Router();
 

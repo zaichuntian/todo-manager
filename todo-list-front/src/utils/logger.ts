@@ -1,4 +1,3 @@
-// src/utils/logger.ts
 const LOG_PREFIX = '[TODO-APP]';
 const isDevelopment = import.meta.env.DEV;
 

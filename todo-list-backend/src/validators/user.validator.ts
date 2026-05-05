@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { fail } from '../utils/response';
+import { fail } from '@utils/response';
 
 /**
  * 验证注册请求

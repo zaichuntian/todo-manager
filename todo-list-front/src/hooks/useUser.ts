@@ -6,12 +6,12 @@ import {
   registerApi,
   updateUserStatusApi,
   batchDeleteUserApi,
-} from '../api/user';
-import { encrypt } from '../utils/crypto';
+} from '@api/user';
+import { encrypt } from '@utils/crypto';
 import { useCrud } from './useCrud';
-import { formatDateTime } from '../utils/format';
+import { formatDateTime } from '@utils/format';
 import { useAuth } from './useAuth';
-import type { User, UserFormData } from '../types/user';
+import type { User, UserFormData } from '@src-types/user';
 
 /**
  * 用户管理自定义 Hook

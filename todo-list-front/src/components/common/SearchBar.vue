@@ -5,8 +5,8 @@
 </template>
 
 <style scoped lang="less">
-@import '@/assets/styles/base/variables.less';
-@import '@/assets/styles/base/mixins.less';
+@import '@styles/base/variables';
+@import '@styles/base/mixins';
 
 .search-bar {
   .flex-center();

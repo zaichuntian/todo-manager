@@ -1,4 +1,4 @@
-import { CONSTANTS } from '../constants';
+import { CONSTANTS } from '@/constants';
 import { sequelize, testConnection, syncModels } from './database';
 import redisClient from './redis';
 
@@ -10,6 +10,6 @@ export const config = {
   redisClient,
 };
 
-export { CONSTANTS } from '../constants';
+export { CONSTANTS } from '@/constants';
 export { sequelize, testConnection, syncModels } from './database';
 export { default as redisClient } from './redis';

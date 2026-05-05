@@ -16,8 +16,8 @@
 
 <script setup lang="ts">
 import { defineProps, defineExpose, ref, watch, defineEmits } from 'vue';
-import type { TodoFormData } from '@/types/todo';
-import type { Category } from '@/types/category';
+import type { TodoFormData } from '@src-types/todo';
+import type { Category } from '@src-types/category';
 
 const props = defineProps<{
   form: TodoFormData;

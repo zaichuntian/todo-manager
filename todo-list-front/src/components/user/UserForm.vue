@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 import { defineProps, defineExpose, ref, watch, defineEmits } from 'vue';
-import type { UserFormData } from '@/types/user';
+import type { UserFormData } from '@src-types/user';
 
 const props = defineProps<{
   form: UserFormData;

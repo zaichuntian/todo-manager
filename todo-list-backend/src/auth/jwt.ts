@@ -1,5 +1,5 @@
 import jwt, { SignOptions } from 'jsonwebtoken';
-import User from '../models/user.model';
+import User from '@models/user.model';
 
 // 从环境变量获取密钥
 const getSecret = (): jwt.Secret => {
@@ -15,11 +15,11 @@ export function generateToken(user: User): string {
     id: user.id,
     email: user.email,
   };
-  
+
   const options: SignOptions = {
     expiresIn: (process.env.JWT_EXPIRES_IN || '7d') as SignOptions['expiresIn'],
   };
-  
+
   return jwt.sign(payload, getSecret() as jwt.Secret, options);
 }
 
@@ -30,7 +30,10 @@ export function verifyToken(token: string): any {
   try {
     return jwt.verify(token, getSecret());
   } catch (error) {
-    throw new Error('Token 验证失败');
+    const err = new Error('Token 验证失败');
+    // 将原始错误作为属性附加
+    (err as any).originalError = error;
+    throw err;
   }
 }
 

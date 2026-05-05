@@ -25,8 +25,8 @@
 <script setup lang="ts">
 import { ref, onErrorCaptured } from 'vue';
 import { ElNotification } from 'element-plus';
-import RefreshAnimation from '@/components/effect/RefreshAnimation.vue';
-import { logger } from '@/utils/logger';
+import RefreshAnimation from '@components/effect/RefreshAnimation.vue';
+import { logger } from '@utils/logger';
 
 const errorMessage = ref('');
 const showLoading = ref(true);

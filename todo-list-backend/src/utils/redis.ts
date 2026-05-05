@@ -1,4 +1,5 @@
-import redis from '../config/redis';
+import redis from '@config/redis';
+import { logger } from '@utils/logger';
 
 export class RedisUtil {
   // 设置缓存（带过期时间）
@@ -7,7 +8,7 @@ export class RedisUtil {
       const data = typeof value === 'object' ? JSON.stringify(value) : value;
       await redis.set(key, data, 'EX', expire);
     } catch (error) {
-      console.error('Redis set error:', error);
+      logger.error('Redis set error:', error);
     }
   }
 
@@ -22,7 +23,7 @@ export class RedisUtil {
         return data;
       }
     } catch (error) {
-      console.error('Redis get error:', error);
+      logger.error('Redis get error:', error);
       return null;
     }
   }
@@ -32,7 +33,7 @@ export class RedisUtil {
     try {
       await redis.del(key);
     } catch (error) {
-      console.error('Redis del error:', error);
+      logger.error('Redis del error:', error);
     }
   }
 
@@ -44,7 +45,7 @@ export class RedisUtil {
         await redis.del(...keys);
       }
     } catch (error) {
-      console.error('Redis delByPattern error:', error);
+      logger.error('Redis delByPattern error:', error);
     }
   }
 }

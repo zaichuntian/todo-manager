@@ -1,6 +1,6 @@
-import request from '../utils/request';
-import type { Todo, TodoFormData } from '../types/todo';
-import type { ApiResponse } from '../types/common';
+import request from '@utils/request';
+import type { Todo, TodoFormData } from '@src-types/todo';
+import type { ApiResponse } from '@src-types/common';
 
 // 获取todos
 export function getTodosApi(params: {

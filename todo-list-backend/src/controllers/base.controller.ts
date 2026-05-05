@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { success, fail } from '../utils/response';
+import { success, fail } from '@utils/response';
 
 export class BaseController {
   // 静态方法，处理分页响应

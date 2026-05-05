@@ -94,13 +94,13 @@
         :page-size="pageSize"
         :total="total"
         @current-change="
-          page => {
+          (page: number) => {
             pageNum = page;
             getUserList();
           }
         "
         @size-change="
-          size => {
+          (size: number) => {
             pageSize = size;
             getUserList();
           }

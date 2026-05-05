@@ -54,7 +54,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue';
 import dayjs from 'dayjs';
-import { api } from '@/api';
+import { api } from '@api';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 import '@styles/pages/home.css';

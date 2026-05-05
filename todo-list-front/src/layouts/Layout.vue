@@ -71,11 +71,11 @@
           <el-dropdown trigger="hover" effect="light">
             <div class="user-info">
               <div class="user-avatar">
-                <el-avatar :size="36" :icon="UserFilled" />
+                <el-avatar :size="36" :icon="UserFilled" :src="authStore.userInfo?.avatar" />
               </div>
               <div class="user-details">
-                <div class="user-name">{{ userInfo?.username || '用户' }}</div>
-                <div class="user-role">{{ getUserRole(userInfo?.role) }}</div>
+                <div class="user-name">{{ authStore.userInfo?.username || '用户' }}</div>
+                <div class="user-role">{{ getUserRole(authStore.userInfo?.role) }}</div>
               </div>
               <el-icon class="dropdown-icon"><ArrowDown /></el-icon>
             </div>
@@ -83,10 +83,10 @@
               <el-dropdown-menu>
                 <el-dropdown-item @click="goProfile">
                   <div class="dropdown-user-info">
-                    <el-avatar :size="24" :icon="UserFilled" />
+                    <el-avatar :size="24" :icon="UserFilled" :src="authStore.userInfo?.avatar" />
                     <div class="dropdown-user-details">
-                      <div class="dropdown-user-name">{{ userInfo?.username || '用户' }}</div>
-                      <div class="dropdown-user-role">{{ getUserRole(userInfo?.role) }}</div>
+                      <div class="dropdown-user-name">{{ authStore.userInfo?.username || '用户' }}</div>
+                      <div class="dropdown-user-role">{{ getUserRole(authStore.userInfo?.role) }}</div>
                     </div>
                   </div>
                 </el-dropdown-item>
@@ -139,7 +139,6 @@ import { useAuthStore } from '@stores/auth';
 import { useThemeStore } from '@stores/theme';
 
 const authStore = useAuthStore();
-const userInfo = authStore.userInfo;
 const themeStore = useThemeStore();
 
 const route = useRoute();

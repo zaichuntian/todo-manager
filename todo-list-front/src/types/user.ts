@@ -31,6 +31,7 @@ export interface UserInfo {
   role?: number;
   status?: number;
   token: string;
+  avatar?: string;
 }
 
 export type UserListParams = PaginationParams;

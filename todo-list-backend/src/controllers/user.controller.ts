@@ -9,6 +9,8 @@ import { CONSTANTS } from '@/constants';
 import { logger } from '@utils/logger';
 import User from '@models/user.model';
 import { Op } from 'sequelize';
+import fs from 'fs';
+import path from 'path';
 
 export class UserController extends BaseController {
   static async register(req: Request, res: Response) {
@@ -104,6 +106,7 @@ export class UserController extends BaseController {
         username: user.username,
         status: user.status,
         role: user.role,
+        avatar: user.avatar,
         token,
       };
 
@@ -240,11 +243,6 @@ export class UserController extends BaseController {
 
   static async batchDelete(req: Request, res: Response) {
     try {
-      console.log('=== 批量删除接口被调用 ===');
-      console.log('请求方法:', req.method);
-      console.log('请求路径:', req.path);
-      console.log('请求体:', JSON.stringify(req.body));
-
       const { uuids } = req.body;
 
       // 验证参数
@@ -253,7 +251,7 @@ export class UserController extends BaseController {
       }
 
       // 查询数据库中所有匹配的用户（包括已删除的）
-      const users: User[] = await User.findAll({
+      const users = await User.findAll({
         where: {
           uuid: {
             [Op.in]: uuids,
@@ -264,7 +262,7 @@ export class UserController extends BaseController {
 
       // 检查哪些UUID在数据库中不存在
       const existingUuids = new Set(users.map(u => u.uuid));
-      const notFoundUuids: string[] = uuids.filter(uuid => !existingUuids.has(uuid));
+      const notFoundUuids = uuids.filter(uuid => !existingUuids.has(uuid));
 
       // 如果有UUID不存在
       if (notFoundUuids.length > 0) {
@@ -272,7 +270,7 @@ export class UserController extends BaseController {
       }
 
       // 检查是否有用户已被软删除
-      const alreadyDeleted: User[] = users.filter(u => u.isDeleted === 1);
+      const alreadyDeleted = users.filter(u => u.isDeleted === 1);
 
       // 执行批量删除
       const [rows] = await UserService.batchDeleteByUuids(uuids);
@@ -288,7 +286,7 @@ export class UserController extends BaseController {
       logger.info('批量删除用户成功:', uuids.length);
 
       // 返回详细结果
-      const message: string =
+      const message =
         alreadyDeleted.length > 0
           ? `成功删除 ${rows} 个用户，${alreadyDeleted.length} 个用户已被删除`
           : `成功删除 ${rows} 个用户`;
@@ -297,6 +295,103 @@ export class UserController extends BaseController {
     } catch (err) {
       logger.error('批量删除用户失败:', err);
       res.json(fail('删除失败，稍后重试', 500));
+    }
+  }
+
+  // 上传头像
+  static async uploadAvatar(req: Request, res: Response) {
+    try {
+      // 获取当前登录用户
+      const user = req.user as User;
+      if (!user) {
+        return res.json(fail('用户未登录', 401));
+      }
+
+      // 检查是否有文件上传
+      if (!req.file) {
+        return res.json(fail('请选择要上传的图片', 400));
+      }
+
+      // 验证文件类型
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(req.file.mimetype)) {
+        // 删除临时文件
+        fs.unlinkSync(req.file.path);
+        return res.json(fail('请选择有效的图片文件（JPG、PNG、GIF）', 400));
+      }
+
+      // 验证文件大小（不超过2MB）
+      if (req.file.size > 2 * 1024 * 1024) {
+        fs.unlinkSync(req.file.path);
+        return res.json(fail('图片大小不能超过2MB', 400));
+      }
+
+      // 生成存储路径
+      const uploadDir = path.join(__dirname, '../../public/uploads/avatars');
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      }
+
+      // 生成文件名
+      const ext = path.extname(req.file.originalname);
+      const fileName = `${user.uuid}${ext}`;
+      const destPath = path.join(uploadDir, fileName);
+
+      // 移动文件到目标位置
+      fs.renameSync(req.file.path, destPath);
+
+      // 更新用户头像路径
+      const avatarPath = `/uploads/avatars/${fileName}`;
+      await UserService.updateByUuid(user.uuid, { avatar: avatarPath });
+
+      logger.info('用户头像上传成功:', user.username);
+      res.json(success({ avatar: avatarPath }, '头像上传成功'));
+    } catch (err) {
+      logger.error('上传头像失败:', err);
+      // 清理可能的临时文件
+      if (req.file && req.file.path) {
+        try {
+          fs.unlinkSync(req.file.path);
+        } catch (e) {
+          console.error('清理临时文件失败:', e);
+        }
+      }
+      res.json(fail('上传头像失败', 500));
+    }
+  }
+
+  // 获取头像
+  static async getAvatar(req: Request, res: Response) {
+    try {
+      const { uuid } = req.params;
+
+      // 查找用户
+      const user = await User.findOne({
+        where: {
+          uuid,
+          isDeleted: 0,
+        },
+        attributes: ['avatar'],
+      });
+
+      if (!user || !user.avatar) {
+        // 返回默认头像
+        res.status(404).json(fail('头像不存在', 404));
+        return;
+      }
+
+      // 检查文件是否存在
+      const avatarPath = path.join(__dirname, '../../public', user.avatar);
+      if (!fs.existsSync(avatarPath)) {
+        res.status(404).json(fail('头像文件不存在', 404));
+        return;
+      }
+
+      // 返回头像文件
+      res.sendFile(avatarPath);
+    } catch (err) {
+      logger.error('获取头像失败:', err);
+      res.json(fail('获取头像失败', 500));
     }
   }
 

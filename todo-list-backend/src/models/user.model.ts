@@ -11,6 +11,7 @@ class User extends Model {
   public nickname!: string;
   public phone!: string;
   public email!: string;
+  public avatar!: string;
   public isDeleted!: number;
 }
 
@@ -52,6 +53,10 @@ User.init(
     },
     email: {
       type: DataTypes.STRING(255),
+      allowNull: true,
+    },
+    avatar: {
+      type: DataTypes.STRING(500),
       allowNull: true,
     },
     isDeleted: {

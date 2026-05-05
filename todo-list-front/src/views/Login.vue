@@ -17,9 +17,9 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import ParticleBackground from '@components/effect/ParticleBackground';
-import LoginForm from '@components/auth/LoginForm';
-import RegisterForm from '@components/auth/RegisterForm';
+import ParticleBackground from '@components/effect/ParticleBackground.vue';
+import LoginForm from '@components/auth/LoginForm.vue';
+import RegisterForm from '@components/auth/RegisterForm.vue';
 import { loginRules, registerRules } from '@utils/validationRules';
 import '@styles/pages/login.css';
 

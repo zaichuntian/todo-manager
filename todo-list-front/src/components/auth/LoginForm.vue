@@ -6,11 +6,12 @@
       <!-- 光效扫描线 -->
       <div class="light-scan"></div>
       <div class="login-header">
-        <div class="login-icon">
-          <div class="icon-circle"></div>
+        <!-- 用户头像展示（始终显示，有用户信息显示头像，否则显示默认图标） -->
+        <div class="user-avatar-wrapper">
+          <el-avatar :size="64" :icon="User" :src="auth.userInfo?.avatar" class="user-avatar" />
+          <div class="user-name" v-if="auth.userInfo?.username">{{ auth.userInfo.username }}</div>
         </div>
         <h2 class="login-title">欢迎回来</h2>
-        <p class="login-subtitle">请输入您的账号和密码</p>
       </div>
       <el-form
         @submit.prevent="handleSubmit"
@@ -107,6 +108,7 @@ import { updateUserInfoCache } from '@utils/request';
 import QrcodeVue from 'qrcode.vue';
 import gsap from 'gsap';
 import { User, Lock } from '@element-plus/icons-vue';
+import { ElAvatar } from 'element-plus';
 
 defineProps<{
   rules: any;

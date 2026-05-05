@@ -14,5 +14,14 @@ export const useAuthStore = defineStore('auth', {
       this.userInfo = {} as UserInfo;
       localStorage.removeItem('userInfo');
     },
+    // 退出登录，保留用户信息（用于登录框展示）
+    logout() {
+      if (this.userInfo) {
+        // 只清除 token，保留其他信息
+        const { token, ...rest } = this.userInfo;
+        this.userInfo = rest as UserInfo;
+        localStorage.setItem('userInfo', JSON.stringify(rest));
+      }
+    },
   },
 });

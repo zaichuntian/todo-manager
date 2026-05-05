@@ -7,9 +7,40 @@
 
     <el-card class="common-card profile-card">
       <div class="profile-header">
-        <div class="profile-avatar">
-          <el-avatar :size="120" :icon="UserFilled" />
+        <div class="profile-avatar-wrapper">
+          <div class="profile-avatar" @click="openAvatarPreview">
+            <el-avatar :size="120" :icon="UserFilled" :src="avatarUrl" />
+            <div class="avatar-overlay">
+              <el-icon class="preview-icon"><ZoomIn /></el-icon>
+            </div>
+          </div>
+          <input ref="avatarInput" type="file" accept="image/*" class="avatar-input" @change="handleAvatarChange" />
         </div>
+
+        <!-- 头像预览弹窗 -->
+        <el-dialog
+          v-model="avatarPreviewVisible"
+          title="头像预览"
+          width="400px"
+          :show-footer="false"
+          @close="avatarPreviewVisible = false"
+        >
+          <div class="avatar-preview-content">
+            <div class="preview-image-wrapper">
+              <img :src="avatarUrl || defaultAvatar" :alt="'头像'" class="preview-image" />
+            </div>
+            <div class="preview-actions">
+              <el-button type="default" @click="downloadAvatar" :disabled="!avatarUrl" class="preview-btn">
+                <el-icon><Download /></el-icon>
+                下载图片
+              </el-button>
+              <el-button type="primary" @click="handlePreviewUpdate" class="preview-btn">
+                <el-icon><Camera /></el-icon>
+                更新头像
+              </el-button>
+            </div>
+          </div>
+        </el-dialog>
         <div class="profile-info">
           <h2 class="profile-name">{{ typedUserInfo?.username || '用户' }}</h2>
           <p class="profile-role">
@@ -162,12 +193,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue';
-import { UserFilled, Timer, Check, Close } from '@element-plus/icons-vue';
+import { UserFilled, Timer, Check, Close, Camera, ZoomIn, Download } from '@element-plus/icons-vue';
 import gsap from 'gsap';
 import { useAuthStore } from '@stores/auth';
 import { api } from '@api';
 import { ElMessage } from 'element-plus';
 import '@/assets/styles/pages/profile.css';
+import logger from '@utils/logger.ts';
+import { updateUserInfoCache } from '@utils/request.ts';
 
 const authStore = useAuthStore();
 const userInfo = authStore.userInfo;
@@ -181,6 +214,7 @@ interface UserInfo {
   token: string;
   email?: string;
   phone?: string;
+  avatar?: string;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -221,6 +255,14 @@ const form = ref({
   updatedAt: '',
 });
 
+// 头像相关
+const avatarUrl = ref('');
+const avatarInput = ref<HTMLInputElement | null>(null);
+const avatarUploading = ref(false);
+const avatarPreviewVisible = ref(false);
+const defaultAvatar =
+  'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="50" r="45" fill="%23ddd"/%3E%3Ccircle cx="50" cy="40" r="15" fill="%23999"/%3E%3Cpath d="M35 60 Q50 75 65 60" stroke="%23999" stroke-width="8" fill="none" stroke-linecap="round"/%3E%3C/svg%3E';
+
 // 加载状态
 const loading = ref(false);
 
@@ -247,7 +289,7 @@ const computeRoleTextColor = computed(() => {
 
 // 粒子加载完成回调
 const particlesLoaded = async (container: any) => {
-  console.log('Particles container loaded', container);
+  logger.info('Particles container loaded', container);
 };
 
 // 粒子配置
@@ -376,7 +418,7 @@ const getUserData = async () => {
     // 填充表单数据
     fillFormData();
   } catch (error) {
-    console.error('获取用户数据失败:', error);
+    logger.error('获取用户数据失败:', error);
   }
 };
 
@@ -391,6 +433,93 @@ const fillFormData = () => {
       createdAt: formatTime(typedUserInfo.createdAt),
       updatedAt: formatTime(typedUserInfo.updatedAt),
     };
+    // 设置头像
+    if (typedUserInfo.avatar) {
+      avatarUrl.value = typedUserInfo.avatar;
+    }
+  }
+};
+
+// 打开头像预览弹窗
+const openAvatarPreview = () => {
+  avatarPreviewVisible.value = true;
+};
+
+// 触发头像上传（供弹窗调用）
+const triggerAvatarUpload = () => {
+  avatarInput.value?.click();
+};
+
+// 下载头像
+const downloadAvatar = () => {
+  if (!avatarUrl.value) {
+    ElMessage.warning('暂无头像可下载');
+    return;
+  }
+
+  const link = document.createElement('a');
+  link.href = avatarUrl.value;
+  link.download = `avatar_${typedUserInfo?.username || 'user'}.png`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  ElMessage.success('头像下载成功');
+};
+
+// 从预览弹窗更新头像
+const handlePreviewUpdate = () => {
+  avatarPreviewVisible.value = false;
+  triggerAvatarUpload();
+};
+
+// 处理头像上传
+const handleAvatarChange = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (!file) return;
+
+  // 验证文件类型
+  const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+  if (!validTypes.includes(file.type)) {
+    ElMessage.error('请选择有效的图片文件（JPG、PNG、GIF）');
+    return;
+  }
+
+  // 验证文件大小（不超过2MB）
+  if (file.size > 2 * 1024 * 1024) {
+    ElMessage.error('图片大小不能超过2MB');
+    return;
+  }
+
+  try {
+    avatarUploading.value = true;
+
+    const formData = new FormData();
+    formData.append('avatar', file);
+
+    // 调用上传API
+    const res: any = await api.user.uploadAvatar(formData);
+
+    if (res && res.avatar) {
+      // 直接使用后端返回的头像路径，添加时间戳防止缓存
+      avatarUrl.value = `${res.avatar}?t=${Date.now()}`;
+
+      // 更新用户信息到 localStorage 和状态管理
+      const updatedUserInfo = { ...userInfo, avatar: res.avatar };
+      localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo));
+      authStore.setUserInfo(updatedUserInfo);
+      updateUserInfoCache(updatedUserInfo);
+
+      ElMessage.success('头像上传成功');
+    }
+  } catch (error) {
+    logger.error('上传头像失败:', error);
+    ElMessage.error('上传头像失败');
+  } finally {
+    avatarUploading.value = false;
+    // 重置input，允许重新选择同一文件
+    target.value = '';
   }
 };
 
@@ -418,7 +547,7 @@ const handleSubmit = async () => {
     // 显示成功消息
     ElMessage.success('修改成功');
   } catch (error) {
-    console.error('修改用户信息失败:', error);
+    logger.error('修改用户信息失败:', error);
     ElMessage.error('修改失败');
   } finally {
     loading.value = false;

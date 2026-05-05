@@ -25,8 +25,8 @@ export function useLayout() {
   });
 
   const handleLogout = () => {
-    // 修复：将 clearToken 改为 clearUserInfo
-    authStore.clearUserInfo();
+    // 退出登录，保留用户信息（用于登录框展示）
+    authStore.logout();
     ElMessage.success('退出登录成功');
     router.push('/login');
   };

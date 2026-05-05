@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import registerRoutes from '@routes/index';
 import '@models/index';
 import { logger } from '@utils/logger';
@@ -29,6 +30,9 @@ app.use(
   })
 );
 app.use(express.json());
+
+// 静态文件服务（头像等上传文件）
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // 注册路由
 registerRoutes(app);

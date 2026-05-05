@@ -49,3 +49,12 @@ export function updateUserStatusApi(uuid: string, status: number): Promise<ApiRe
 export function batchDeleteUserApi(uuids: string[]): Promise<ApiResponse<void>> {
   return request.delete('/users/batch', { data: { uuids } });
 }
+
+// 上传头像
+export function uploadAvatarApi(formData: FormData): Promise<ApiResponse<{ avatar: string }>> {
+  return request.post('/users/avatar', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+}

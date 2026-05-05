@@ -1,5 +1,13 @@
 import { getTodosApi, updateTodoStatusApi, deleteTodoApi, addTodoApi, updateTodoApi } from './todo';
-import { loginApi, registerApi, getUserListApi, updateUserApi, deleteUserApi, updateUserStatusApi } from './user';
+import {
+  loginApi,
+  registerApi,
+  getUserListApi,
+  updateUserApi,
+  deleteUserApi,
+  updateUserStatusApi,
+  uploadAvatarApi,
+} from './user';
 import { getCategoriesApi, addCategoryApi, updateCategoryApi, deleteCategoryApi } from './category';
 import { getLoginQrCode, checkLoginStatus, wechatLoginCallback } from './wechat';
 import { logger } from '@/utils/logger';
@@ -55,6 +63,7 @@ export const api = {
     update: updateUserApi,
     delete: deleteUserApi,
     updateStatus: updateUserStatusApi,
+    uploadAvatar: uploadAvatarApi,
   },
 
   // 分类相关

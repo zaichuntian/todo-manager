@@ -26,7 +26,7 @@ export class WechatController {
 
       // 测试模式：生成一个本地回调URL，用户扫码后直接登录
       // 将下面的IP替换为你的电脑局域网IP地址
-      const localIp = '192.168.0.44'; // 请修改为你的实际IP
+      const localIp = '192.168.0.107'; // 请修改为你的实际IP
       const qrCodeUrl = `http://${localIp}:3001/api/wechat/login/callback?code=test_code&state=${state}`;
 
       // 存储 state 状态到 Redis（有效期5分钟）

@@ -240,19 +240,20 @@ export class UserController extends BaseController {
 
   static async batchDelete(req: Request, res: Response) {
     try {
-      // 检查请求体
-      console.log('批量删除请求体:', req.body);
+      console.log('=== 批量删除接口被调用 ===');
+      console.log('请求方法:', req.method);
+      console.log('请求路径:', req.path);
+      console.log('请求体:', JSON.stringify(req.body));
+
       const { uuids } = req.body;
 
       // 验证参数
       if (!uuids || !Array.isArray(uuids) || uuids.length === 0) {
-        return res.json(fail('请选择要删除的用户'));
+        return res.json(fail('请选择要删除的用户', 400));
       }
 
-      console.log('批量删除用户UUIDs:', uuids);
-
-      // 直接查询数据库，检查这些UUID是否存在
-      const users = await User.findAll({
+      // 查询数据库中所有匹配的用户（包括已删除的）
+      const users: User[] = await User.findAll({
         where: {
           uuid: {
             [Op.in]: uuids,
@@ -260,28 +261,42 @@ export class UserController extends BaseController {
         },
         attributes: ['uuid', 'username', 'isDeleted', 'status'],
       });
-      console.log('数据库中找到的用户:', users);
 
-      // 检查符合条件的用户
-      const validUsers = users.filter(user => user.isDeleted === 0);
-      console.log('符合删除条件的用户:', validUsers);
+      // 检查哪些UUID在数据库中不存在
+      const existingUuids = new Set(users.map(u => u.uuid));
+      const notFoundUuids: string[] = uuids.filter(uuid => !existingUuids.has(uuid));
 
-      // 批量删除用户
-      try {
-        const [rows] = await UserService.batchDeleteByUuids(uuids);
-        console.log('批量删除影响行数:', rows);
-        if (rows === 0) return res.json(fail('删除失败，用户不存在或不符合删除条件'));
-
-        logger.info('批量删除用户成功:', uuids.length);
-        res.json(success(null, `成功删除 ${rows} 个用户`));
-      } catch (error) {
-        console.error('批量删除用户失败:', error);
-        res.json(fail('删除失败，稍后重试'));
+      // 如果有UUID不存在
+      if (notFoundUuids.length > 0) {
+        return res.json(fail(`以下用户不存在: ${notFoundUuids.join(', ')}`, 404));
       }
+
+      // 检查是否有用户已被软删除
+      const alreadyDeleted: User[] = users.filter(u => u.isDeleted === 1);
+
+      // 执行批量删除
+      const [rows] = await UserService.batchDeleteByUuids(uuids);
+
+      if (rows === 0) {
+        // 所有用户都已被删除
+        if (alreadyDeleted.length === users.length) {
+          return res.json(fail('所选用户均已被删除', 400));
+        }
+        return res.json(fail('删除失败', 400));
+      }
+
+      logger.info('批量删除用户成功:', uuids.length);
+
+      // 返回详细结果
+      const message: string =
+        alreadyDeleted.length > 0
+          ? `成功删除 ${rows} 个用户，${alreadyDeleted.length} 个用户已被删除`
+          : `成功删除 ${rows} 个用户`;
+
+      res.json(success(null, message));
     } catch (err) {
-      console.error('批量删除用户失败:', err);
       logger.error('批量删除用户失败:', err);
-      res.json(fail('删除失败，稍后重试'));
+      res.json(fail('删除失败，稍后重试', 500));
     }
   }
 

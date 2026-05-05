@@ -12,8 +12,8 @@ router.post('/login', userValidationRules.login, validate, UserController.login)
 router.get('/users', authMiddleware, UserController.getList);
 router.get('/users/:uuid', authMiddleware, UserController.getOne);
 router.put('/users/:uuid', authMiddleware, userValidationRules.update, validate, UserController.update);
-router.delete('/users/:uuid', authMiddleware, UserController.delete);
 router.delete('/users/batch', authMiddleware, UserController.batchDelete);
+router.delete('/users/:uuid', authMiddleware, UserController.delete);
 router.put('/users/:uuid/status', authMiddleware, UserController.updateStatus);
 
 // 微信登录相关路由
